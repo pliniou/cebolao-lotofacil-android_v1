@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">Cebolao Lotofacil</string>
+    <string name="error_no_history">Unable to load history.</string>
+    <string name="error_load_data_failed">Failed to load data.</string>
+    <string name="error_analysis_failed">Analysis failed.</string>
+    <string name="error_incomplete_selection">Please select 15 numbers.</string>
+    <string name="error_unknown">Unknown error occurred.</string>
+
+    <string name="studio_name">Cebola Studios</string>
+    <string name="studio_slogan">Sorte é estatística.</string>
+
+    <string name="about_purpose_desc_header">Purpose</string>
+    <string name="about_purpose_desc_body">This app helps analyze Lotofacil games.</string>
+    <string name="about_purpose_desc_footer">Use responsibly.</string>
+    <string name="about_purpose_item1_title">Analysis</string>
+    <string name="about_purpose_item1_desc">Analyze your games.</string>
+    <string name="about_purpose_item2_title">History</string>
+    <string name="about_purpose_item2_desc">View past results.</string>
+    <string name="about_purpose_item3_title">Statistics</string>
+    <string name="about_purpose_item3_desc">See number frequencies.</string>
+
+    <string name="about_legal_desc_header">Legal</string>
+    <string name="about_legal_item1">Not affiliated with Caixa.</string>
+    <string name="about_legal_item2">For informational purposes only.</string>
+    <string name="about_legal_item3">No guarantee of winning.</string>
+    <string name="about_legal_footer">Terms of Service</string>
+
+    <string name="about_privacy_desc_header">Privacy Policy</string>
+    <string name="about_privacy_desc_body">We respect your privacy.</string>
+    <string name="about_privacy_item1">No personal data collected.</string>
+    <string name="about_privacy_item2">Local storage only.</string>
+    <string name="about_privacy_item3">No tracking.</string>
+
+    <string name="about_rules_desc_header">Rules</string>
+    <string name="about_rules_item1">Choose 15 to 20 numbers.</string>
+    <string name="about_rules_item2">Win with 11, 12, 13, 14 or 15 hits.</string>
+    <string name="about_rules_item3">Draws daily except Sundays.</string>
+
+    <string name="about_bolao_desc_header">Bolão</string>
+    <string name="about_bolao_desc_body">Increase your chances with group play.</string>
+    <string name="about_bolao_desc_footer">Check official rules.</string>
+</resources>

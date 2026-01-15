@@ -2,7 +2,8 @@ package com.cebolao.lotofacil.ui.components
 
 import android.graphics.Paint
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
@@ -37,7 +38,13 @@ fun BarChart(
     val animatedProgress = remember { Animatable(0f) }
     LaunchedEffect(data) {
         animatedProgress.snapTo(0f)
-        animatedProgress.animateTo(1f, animationSpec = tween(700))
+        animatedProgress.animateTo(
+            targetValue = 1f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioLowBouncy,
+                stiffness = Spring.StiffnessLow
+            )
+        )
     }
 
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -80,6 +87,7 @@ fun BarChart(
         val chartAreaWidth = size.width - yAxisLabelWidth
         val chartAreaHeight = size.height - xAxisLabelHeight - valueLabelHeight
 
+        // Desenha uma grade de fundo mais moderna
         drawGrid(
             yAxisLabelWidth,
             chartAreaHeight,
@@ -89,40 +97,51 @@ fun BarChart(
             outlineVariant
         )
 
-        val barSpacing = 4.dp.toPx()
+        val barSpacing = 8.dp.toPx() // Aumentado para melhor respiro
         val totalSpacing = barSpacing * (data.size + 1)
         val barWidth = (chartAreaWidth - totalSpacing).coerceAtLeast(0f) / data.size
 
         data.forEachIndexed { index, (label, value) ->
-            val barHeight = (value.toFloat() / maxValue) * chartAreaHeight * animatedProgress.value
+            val progressFactor = animatedProgress.value
+            val barHeight = (value.toFloat() / maxValue) * chartAreaHeight * progressFactor
             val left = yAxisLabelWidth + barSpacing + index * (barWidth + barSpacing)
             val barCenterX = left + barWidth / 2
 
+            // Bar background (Glass-like)
             drawRoundRect(
-                color = surfaceVariant.copy(alpha = 0.2f),
+                color = surfaceVariant.copy(alpha = 0.1f),
                 topLeft = Offset(left, valueLabelHeight),
                 size = Size(barWidth, chartAreaHeight),
-                cornerRadius = CornerRadius(4.dp.toPx())
+                cornerRadius = CornerRadius(barWidth / 4)
             )
 
+            // Actual data bar with Gradient and rounded top
             if (barHeight > 0) {
                 drawRoundRect(
-                    brush = Brush.verticalGradient(listOf(primaryColor, secondaryColor)),
+                    brush = Brush.verticalGradient(
+                        colors = listOf(primaryColor, secondaryColor),
+                        startY = valueLabelHeight + chartAreaHeight - barHeight,
+                        endY = valueLabelHeight + chartAreaHeight
+                    ),
                     topLeft = Offset(left, valueLabelHeight + chartAreaHeight - barHeight),
                     size = Size(barWidth, barHeight),
-                    cornerRadius = CornerRadius(4.dp.toPx())
+                    cornerRadius = CornerRadius(x = barWidth / 3, y = barWidth / 3)
                 )
             }
 
-            val valueTextY = valueLabelHeight + chartAreaHeight - barHeight - 4.dp.toPx()
-            drawContext.canvas.nativeCanvas.drawText(
-                value.toString(),
-                barCenterX,
-                valueTextY,
-                valuePaint
-            )
+            // Value text above the bar
+            val valueTextY = valueLabelHeight + chartAreaHeight - barHeight - 6.dp.toPx()
+            if (progressFactor > 0.8f) { // Só mostra o texto quando a animação estiver quase pronta
+                drawContext.canvas.nativeCanvas.drawText(
+                    value.toString(),
+                    barCenterX,
+                    valueTextY,
+                    valuePaint
+                )
+            }
 
-            val labelTextY = size.height - xAxisLabelHeight + 12.dp.toPx()
+            // X-Axis Label
+            val labelTextY = size.height - xAxisLabelHeight + 14.dp.toPx()
             drawContext.canvas.nativeCanvas.save()
             drawContext.canvas.nativeCanvas.rotate(45f, barCenterX, labelTextY)
             drawContext.canvas.nativeCanvas.drawText(

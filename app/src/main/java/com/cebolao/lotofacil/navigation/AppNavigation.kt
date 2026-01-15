@@ -1,49 +1,88 @@
 package com.cebolao.lotofacil.navigation
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ListAlt
-import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material.icons.outlined.Analytics
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.runtime.Stable
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.cebolao.lotofacil.ui.screens.AboutScreen
+import com.cebolao.lotofacil.ui.screens.CheckerScreen
+import com.cebolao.lotofacil.ui.screens.FiltersScreen
+import com.cebolao.lotofacil.ui.screens.GeneratedGamesScreen
+import com.cebolao.lotofacil.ui.screens.HomeScreen
 
-const val CHECKER_NUMBERS_ARG = "numbers"
-
-@Stable
-sealed class Screen(
-    val route: String,
-    val title: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-    val baseRoute: String = route.substringBefore('?')
-) {
-    data object Home : Screen("home", "Início", Icons.Filled.Home, Icons.Outlined.Home)
-    data object Filters : Screen("filters", "Gerador", Icons.Filled.Tune, Icons.Outlined.Tune)
-    data object GeneratedGames : Screen("generated_games", "Jogos", Icons.AutoMirrored.Filled.ListAlt, Icons.AutoMirrored.Filled.ListAlt)
-    data object Checker : Screen("checker?$CHECKER_NUMBERS_ARG={$CHECKER_NUMBERS_ARG}", "Conferidor", Icons.Filled.Analytics, Icons.Outlined.Analytics) {
-        val arguments = listOf(
-            navArgument(CHECKER_NUMBERS_ARG) {
-                type = NavType.StringType
-                nullable = true
-                defaultValue = null
+/**
+ * Navigation utilities for type-safe navigation.
+ */
+object NavigationUtils {
+    fun NavController.navigateToDestination(destination: Destination) {
+        when (destination) {
+            is Destination.Home -> navigate(destination.route) {
+                popUpTo(graph.startDestinationId) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
             }
-        )
+            is Destination.Filters -> navigate(destination.route) {
+                popUpTo(graph.startDestinationId) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
+            }
+            is Destination.GeneratedGames -> navigate(destination.route) {
+                popUpTo(graph.startDestinationId) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
+            }
+            is Destination.Checker -> navigate(destination.route)
+            is Destination.About -> navigate(destination.route)
+        }
     }
-    data object About : Screen("about", "Sobre", Icons.Filled.Info, Icons.Outlined.Info)
 }
 
-val bottomNavItems = listOf(
-    Screen.Home,
-    Screen.Filters,
-    Screen.GeneratedGames,
-    Screen.Checker,
-    Screen.About
-)
+/**
+ * Navigation graph setup using type-safe destinations.
+ */
+@Composable
+fun AppNavigation(
+    modifier: Modifier = Modifier,
+    navController: androidx.navigation.NavHostController,
+    startDestination: Destination = Destination.Home,
+    onNavigateToGeneratedGames: () -> Unit = {}
+) {
+    
+    NavHost(
+        navController = navController,
+        startDestination = startDestination.route,
+        modifier = modifier
+    ) {
+        composable(Destination.Home.route) {
+            HomeScreen()
+        }
+        
+        composable(Destination.Filters.route) {
+            FiltersScreen {
+                onNavigateToGeneratedGames()
+            }
+        }
+        
+        composable(Destination.GeneratedGames.route) {
+            GeneratedGamesScreen()
+        }
+        
+        composable(
+            route = Destination.Checker.route,
+            arguments = Destination.Checker.arguments
+        ) {
+            CheckerScreen()
+        }
+        
+        composable(Destination.About.route) {
+            AboutScreen()
+        }
+    }
+}

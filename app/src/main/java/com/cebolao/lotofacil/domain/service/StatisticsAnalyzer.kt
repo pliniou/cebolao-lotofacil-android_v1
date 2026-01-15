@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
-import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -17,20 +16,14 @@ class StatisticsAnalyzer @Inject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) {
 
-    private val analysisCache = ConcurrentHashMap<String, StatisticsReport>()
-
     companion object {
         private const val TOP_NUMBERS_COUNT = 5
-        private const val CACHE_MAX_SIZE = 50
     }
 
     suspend fun analyze(draws: List<HistoricalDraw>): StatisticsReport = withContext(defaultDispatcher) {
         if (draws.isEmpty()) return@withContext StatisticsReport()
 
-        val cacheKey = generateCacheKey(draws)
-        analysisCache[cacheKey]?.let { return@withContext it }
-
-        val report = coroutineScope {
+        coroutineScope {
             val mostFrequentDeferred = async { calculateMostFrequent(draws) }
             val mostOverdueDeferred = async { calculateMostOverdue(draws) }
             val distributionsDeferred = async { calculateAllDistributions(draws) }
@@ -51,9 +44,6 @@ class StatisticsAnalyzer @Inject constructor(
                 analysisDate = System.currentTimeMillis()
             )
         }
-
-        manageCache(cacheKey, report)
-        report
     }
 
     private fun calculateMostFrequent(draws: List<HistoricalDraw>): List<Pair<Int, Int>> {
@@ -120,20 +110,6 @@ class StatisticsAnalyzer @Inject constructor(
     private fun calculateAverageSum(draws: List<HistoricalDraw>): Float {
         if (draws.isEmpty()) return 0f
         return draws.map { it.numbers.sum() }.average().toFloat()
-    }
-
-    private fun generateCacheKey(draws: List<HistoricalDraw>): String {
-        val firstContest = draws.firstOrNull()?.contestNumber ?: 0
-        val lastContest = draws.lastOrNull()?.contestNumber ?: 0
-        return "analysis_${draws.size}_${firstContest}_$lastContest"
-    }
-
-    private fun manageCache(key: String, report: StatisticsReport) {
-        if (analysisCache.size >= CACHE_MAX_SIZE) {
-            val toRemove = analysisCache.keys.take(CACHE_MAX_SIZE / 4)
-            toRemove.forEach { analysisCache.remove(it) }
-        }
-        analysisCache[key] = report
     }
 
     private data class DistributionResults(

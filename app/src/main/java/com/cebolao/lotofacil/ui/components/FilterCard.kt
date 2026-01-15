@@ -19,26 +19,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.data.FilterState
 import com.cebolao.lotofacil.data.FilterType
+import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+import com.cebolao.lotofacil.ui.theme.AppElevation
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @Composable
 fun FilterCard(
@@ -49,22 +48,28 @@ fun FilterCard(
     onInfoClick: () -> Unit,
     lastDrawNumbers: Set<Int>? = null
 ) {
-    val haptic = LocalHapticFeedback.current
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
     val requiresData = filterState.type == FilterType.REPETIDAS_CONCURSO_ANTERIOR
     val dataAvailable = !requiresData || lastDrawNumbers != null
     val enabled = filterState.isEnabled && dataAvailable
 
-    val elevation by animateDpAsState(if (enabled) 4.dp else 1.dp, spring(stiffness = Spring.StiffnessMedium), label = "elevation")
-    val border by animateColorAsState(if (enabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else Color.Transparent, tween(300), label = "borderColor")
+    val elevation by animateDpAsState(
+        if (enabled) AppCardDefaults.pinnedElevation else AppElevation.xs, 
+        spring(stiffness = Spring.StiffnessMedium), 
+        label = "elevation"
+    )
+    val border by animateColorAsState(
+        if (enabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else Color.Transparent, 
+        tween(300), 
+        label = "borderColor"
+    )
 
-    Card(
+    AppCard(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        elevation = CardDefaults.cardElevation(elevation),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceColorAtElevation(elevation)),
-        border = BorderStroke(1.dp, border)
+        border = BorderStroke(0.5.dp, border),
+        elevation = elevation
     ) {
-        Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+        Column(modifier = Modifier.padding(AppSpacing.lg)) {
             FilterHeader(
                 filterState,
                 dataAvailable,
@@ -90,6 +95,8 @@ fun FilterCard(
     }
 }
 
+
+
 @Composable
 private fun FilterHeader(
     filterState: FilterState,
@@ -99,26 +106,32 @@ private fun FilterHeader(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
         Icon(
             imageVector = filterState.type.icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(22.dp)
+            modifier = Modifier.size(24.dp)
         )
         Column(modifier = Modifier.weight(1f)) {
-            Text(filterState.type.title, style = MaterialTheme.typography.titleSmall)
+            Text(stringResource(filterState.type.titleRes), style = MaterialTheme.typography.titleSmall)
             if (!dataAvailable) {
                 Text(
-                    "Dados indisponíveis",
+                    stringResource(id = R.string.data_unavailable),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.error
                 )
             }
         }
         IconButton(onClick = onInfoClick) {
-            Icon(Icons.Outlined.Info, contentDescription = "Mais informações sobre o filtro ${filterState.type.title}")
+            Icon(
+                Icons.Outlined.Info,
+                contentDescription = stringResource(
+                    id = R.string.filter_info_content_description,
+                    stringResource(filterState.type.titleRes)
+                )
+            )
         }
         Switch(
             checked = filterState.isEnabled,
@@ -134,40 +147,13 @@ private fun FilterContent(
     onRangeChange: (ClosedFloatingPointRange<Float>) -> Unit,
     onRangeFinished: () -> Unit
 ) {
-    Column(
-        modifier = Modifier.padding(top = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            ValueIndicator("Mínimo", filterState.selectedRange.start.toInt())
-            ValueIndicator("Máximo", filterState.selectedRange.endInclusive.toInt(), Alignment.End)
-        }
-        RangeSlider(
-            value = filterState.selectedRange,
-            onValueChange = onRangeChange,
-            valueRange = filterState.type.fullRange,
-            steps = (filterState.type.fullRange.endInclusive - filterState.type.fullRange.start).toInt() - 1,
-            onValueChangeFinished = onRangeFinished
-        )
-    }
-}
-
-@Composable
-private fun ValueIndicator(label: String, value: Int, alignment: Alignment.Horizontal = Alignment.Start) {
-    Column(horizontalAlignment = alignment) {
-        Text(
-            label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(
-            value.toString(),
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
-    }
+    FilterRangeSlider(
+        value = filterState.selectedRange,
+        onValueChange = onRangeChange,
+        onValueChangeFinished = onRangeFinished,
+        valueRange = filterState.type.fullRange,
+        steps = (filterState.type.fullRange.endInclusive - filterState.type.fullRange.start).toInt() - 1,
+        enabled = true,
+        modifier = Modifier.padding(top = AppCardDefaults.contentSpacing)
+    )
 }

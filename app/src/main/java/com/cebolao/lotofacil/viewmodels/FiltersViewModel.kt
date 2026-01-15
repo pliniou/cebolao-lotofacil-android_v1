@@ -1,7 +1,6 @@
 package com.cebolao.lotofacil.viewmodels
 
 import androidx.compose.runtime.Stable
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cebolao.lotofacil.data.FilterState
 import com.cebolao.lotofacil.data.FilterType
@@ -9,22 +8,15 @@ import com.cebolao.lotofacil.domain.repository.GameRepository
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.usecase.GenerateGamesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.pow
 import kotlin.math.roundToInt
-
-sealed interface NavigationEvent {
-    object NavigateToGeneratedGames : NavigationEvent
-    data class ShowSnackbar(val message: String) : NavigationEvent
-}
 
 @Stable
 data class FiltersScreenState(
@@ -46,13 +38,11 @@ class FiltersViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     private val generateGamesUseCase: GenerateGamesUseCase,
     historyRepository: HistoryRepository
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val _filterStates = MutableStateFlow(FilterType.entries.map { FilterState(type = it) })
     private val _generationState = MutableStateFlow<GenerationUiState>(GenerationUiState.Idle)
     private val _lastDraw = MutableStateFlow<Set<Int>?>(null)
-    private val _eventChannel = Channel<NavigationEvent>(Channel.BUFFERED)
-    val navigationEvent = _eventChannel.receiveAsFlow()
 
     val uiState = combine(
         _filterStates, _generationState, _lastDraw
@@ -93,23 +83,39 @@ class FiltersViewModel @Inject constructor(
     }
 
     fun generateGames(quantity: Int) {
-        if (_generationState.value is GenerationUiState.Loading) return
+        val currentState = _generationState.value
+        if (currentState is GenerationUiState.Loading) return
+        
         viewModelScope.launch {
             _generationState.value = GenerationUiState.Loading("Criando jogos com base nos seus filtros...")
-            generateGamesUseCase(quantity, uiState.value.filterStates)
-                .onSuccess { games ->
-                    gameRepository.addGeneratedGames(games)
-                    _eventChannel.send(NavigationEvent.NavigateToGeneratedGames)
-                }
-                .onFailure { e ->
-                    _eventChannel.send(NavigationEvent.ShowSnackbar(e.message ?: "Erro desconhecido"))
-                }
-            _generationState.value = GenerationUiState.Idle
+            
+            try {
+                generateGamesUseCase(quantity, uiState.value.filterStates)
+                    .onSuccess { games ->
+                        gameRepository.addGeneratedGames(games)
+                        navigateToGeneratedGames()
+                    }
+                    .onFailure { e ->
+                        showSnackbar(e.message ?: "Erro desconhecido")
+                    }
+            } catch (e: Exception) {
+                showSnackbar(e.message ?: "Erro ao gerar jogos")
+            } finally {
+                _generationState.value = GenerationUiState.Idle
+            }
         }
     }
 
     fun resetAllFilters() {
         _filterStates.value = FilterType.entries.map { FilterState(type = it) }
+    }
+
+    fun requestResetAllFilters() {
+        showResetConfirmation()
+    }
+
+    fun confirmResetAllFilters() {
+        resetAllFilters()
     }
 
     private fun calculateSuccessProbability(activeFilters: List<FilterState>): Float {

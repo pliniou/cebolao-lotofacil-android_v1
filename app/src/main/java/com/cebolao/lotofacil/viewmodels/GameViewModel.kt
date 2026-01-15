@@ -12,19 +12,32 @@ import com.cebolao.lotofacil.domain.usecase.CheckGameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.cebolao.lotofacil.viewmodels.CheckerUiState
+
+sealed interface GameUiEvent {
+    data object ShowClearGamesDialog : GameUiEvent
+    data object HideClearGamesDialog : GameUiEvent
+    data class ShowDeleteGameDialog(val game: LotofacilGame) : GameUiEvent
+    data object HideDeleteGameDialog : GameUiEvent
+    data class ShowAnalysisDialog(val result: GameAnalysisResult) : GameUiEvent
+    data object HideAnalysisDialog : GameUiEvent
+}
 
 @Stable
 data class GameScreenUiState(
-    val gameToDelete: LotofacilGame? = null
+    val isLoading: Boolean = false
 )
 
 @Stable
@@ -48,6 +61,9 @@ class GameViewModel @Inject constructor(
     private val checkGameUseCase: CheckGameUseCase
 ) : ViewModel() {
 
+    private val _events = Channel<GameUiEvent>()
+    val events: Flow<GameUiEvent> = _events.receiveAsFlow()
+
     val generatedGames: StateFlow<ImmutableList<LotofacilGame>> = gameRepository.games
         .stateIn(
             scope = viewModelScope,
@@ -62,31 +78,39 @@ class GameViewModel @Inject constructor(
     val analysisState: StateFlow<GameAnalysisUiState> = _analysisState.asStateFlow()
 
     fun clearUnpinned() = viewModelScope.launch {
+        _events.send(GameUiEvent.ShowClearGamesDialog)
+    }
+
+    fun confirmClearUnpinned() = viewModelScope.launch {
         gameRepository.clearUnpinnedGames()
+        _events.send(GameUiEvent.HideClearGamesDialog)
+    }
+
+    fun dismissClearDialog() = viewModelScope.launch {
+        _events.send(GameUiEvent.HideClearGamesDialog)
     }
 
     fun togglePinState(gameToToggle: LotofacilGame) = viewModelScope.launch {
         gameRepository.togglePinState(gameToToggle)
     }
 
-    fun requestDeleteGame(game: LotofacilGame) {
-        _uiState.update { it.copy(gameToDelete = game) }
+    fun requestDeleteGame(game: LotofacilGame) = viewModelScope.launch {
+        _events.send(GameUiEvent.ShowDeleteGameDialog(game))
     }
 
-    fun confirmDeleteGame() {
-        viewModelScope.launch {
-            _uiState.value.gameToDelete?.let { game ->
-                gameRepository.deleteGame(game)
-                _uiState.update { it.copy(gameToDelete = null) }
-            }
-        }
+    fun confirmDeleteGame(game: LotofacilGame) = viewModelScope.launch {
+        gameRepository.deleteGame(game)
+        _events.send(GameUiEvent.HideDeleteGameDialog)
     }
 
-    fun dismissDeleteDialog() {
-        _uiState.update { it.copy(gameToDelete = null) }
+    fun dismissDeleteDialog() = viewModelScope.launch {
+        _events.send(GameUiEvent.HideDeleteGameDialog)
     }
 
     fun analyzeGame(game: LotofacilGame) {
+        // Prevent duplicate analysis requests
+        if (_analysisState.value is GameAnalysisUiState.Loading) return
+        
         viewModelScope.launch {
             _analysisState.value = GameAnalysisUiState.Loading
             try {
@@ -100,6 +124,7 @@ class GameViewModel @Inject constructor(
                         checkResult = checkUiState.result
                     )
                     _analysisState.value = GameAnalysisUiState.Success(result)
+                    _events.send(GameUiEvent.ShowAnalysisDialog(result))
                 } else {
                     val errorResId = (checkUiState as? CheckerUiState.Error)?.messageResId ?: R.string.error_analysis_failed
                     _analysisState.value = GameAnalysisUiState.Error(errorResId)
@@ -110,7 +135,10 @@ class GameViewModel @Inject constructor(
         }
     }
 
-    fun dismissAnalysisDialog() {
-        _analysisState.value = GameAnalysisUiState.Idle
+    fun dismissAnalysisDialog() = viewModelScope.launch {
+        _events.send(GameUiEvent.HideAnalysisDialog)
+        if (_analysisState.value !is GameAnalysisUiState.Idle) {
+            _analysisState.value = GameAnalysisUiState.Idle
+        }
     }
 }

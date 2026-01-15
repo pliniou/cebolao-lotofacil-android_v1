@@ -8,7 +8,7 @@ import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.data.CheckResult
 import com.cebolao.lotofacil.data.LotofacilConstants
 import com.cebolao.lotofacil.domain.usecase.CheckGameUseCase
-import com.cebolao.lotofacil.navigation.CHECKER_NUMBERS_ARG
+import com.cebolao.lotofacil.navigation.Destination
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
@@ -46,7 +46,7 @@ class CheckerViewModel @Inject constructor(
     private var checkJob: Job? = null
 
     init {
-        savedStateHandle.get<String?>(CHECKER_NUMBERS_ARG)?.let { arg ->
+        savedStateHandle.get<String?>(Destination.Checker.NUMBERS_ARG)?.let { arg ->
             val numbers = arg.split(',').mapNotNull { it.toIntOrNull() }.toSet()
             if (numbers.isNotEmpty()) {
                 _selectedNumbers.value = numbers
@@ -84,7 +84,7 @@ class CheckerViewModel @Inject constructor(
         checkJob?.cancel()
         checkJob = checkGameUseCase(numbers)
             .onEach { state -> _uiState.value = state }
-            .catch { emit ->
+            .catch { _ ->
                 _uiState.value = CheckerUiState.Error(R.string.error_unknown, canRetry = true)
             }
             .launchIn(viewModelScope)

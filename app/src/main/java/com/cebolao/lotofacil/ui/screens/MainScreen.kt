@@ -9,6 +9,8 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -19,29 +21,30 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.cebolao.lotofacil.navigation.Screen
-import com.cebolao.lotofacil.navigation.bottomNavItems
+import com.cebolao.lotofacil.navigation.AppNavigation
+import com.cebolao.lotofacil.navigation.Destination
+import com.cebolao.lotofacil.navigation.NavigationUtils.navigateToDestination
+import com.cebolao.lotofacil.navigation.bottomNavDestinations
 
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
     val haptic = LocalHapticFeedback.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
     val bottomBarVisible by remember(currentDestination) {
         derivedStateOf {
-            bottomNavItems.any { it.baseRoute == currentDestination?.route?.substringBefore('?') }
+            bottomNavDestinations.any { it.baseRoute == currentDestination?.route?.substringBefore('?') }
         }
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             AnimatedVisibility(
                 visible = bottomBarVisible,
@@ -49,29 +52,23 @@ fun MainScreen() {
                 exit = slideOutVertically { it }
             ) {
                 NavigationBar {
-                    bottomNavItems.forEach { screen ->
-                        val isSelected = currentDestination?.hierarchy?.any { it.route?.startsWith(screen.baseRoute) == true } == true
+                    bottomNavDestinations.forEach { destination ->
+                        val isSelected = currentDestination?.hierarchy?.any { it.route?.startsWith(destination.baseRoute) == true } == true
                         NavigationBarItem(
                             selected = isSelected,
                             onClick = {
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
+                                navController.navigateToDestination(destination)
                             },
                             icon = {
                                 Icon(
-                                    imageVector = if (isSelected) screen.selectedIcon else screen.unselectedIcon,
-                                    contentDescription = screen.title
+                                    imageVector = if (isSelected) destination.selectedIcon else destination.unselectedIcon,
+                                    contentDescription = destination.title
                                 )
                             },
                             label = {
                                 Text(
-                                    screen.title,
+                                    destination.title,
                                     fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
                                 )
                             },
@@ -83,25 +80,12 @@ fun MainScreen() {
             }
         }
     ) { innerPadding ->
-        NavHost(
+        AppNavigation(
             navController = navController,
-            startDestination = Screen.Home.route,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(Screen.Home.route) { HomeScreen() }
-            composable(Screen.Filters.route) {
-                FiltersScreen {
-                    navController.navigate(Screen.GeneratedGames.route) {
-                        popUpTo(navController.graph.findStartDestination().id)
-                    }
-                }
+            modifier = Modifier.padding(innerPadding),
+            onNavigateToGeneratedGames = {
+                navController.navigateToDestination(Destination.GeneratedGames)
             }
-            composable(Screen.GeneratedGames.route) { GeneratedGamesScreen() }
-            composable(
-                route = Screen.Checker.route,
-                arguments = Screen.Checker.arguments
-            ) { CheckerScreen() }
-            composable(Screen.About.route) { AboutScreen() }
-        }
+        )
     }
 }

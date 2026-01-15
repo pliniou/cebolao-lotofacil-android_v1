@@ -1,6 +1,5 @@
 package com.cebolao.lotofacil.data.repository
 
-import android.util.Log
 import com.cebolao.lotofacil.data.HistoricalDraw
 import com.cebolao.lotofacil.data.datasource.HistoryLocalDataSource
 import com.cebolao.lotofacil.data.datasource.HistoryRemoteDataSource
@@ -26,6 +25,7 @@ class HistoryRepositoryImpl @Inject constructor(
 ) : HistoryRepository {
     private val historyCache = ConcurrentHashMap<Int, HistoricalDraw>()
     private val cacheMutex = Mutex()
+    private var sortedHistoryCache: List<HistoricalDraw>? = null
 
     // CORREÇÃO: Substituído _isSyncing por _syncStatus para um controle de estado mais rico.
     private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
@@ -41,7 +41,9 @@ class HistoryRepositoryImpl @Inject constructor(
         if (historyCache.isEmpty()) {
             loadInitialHistory()
         }
-        return historyCache.values.sortedByDescending { it.contestNumber }
+        return sortedHistoryCache ?: historyCache.values.sortedByDescending { it.contestNumber }.also {
+            sortedHistoryCache = it
+        }
     }
 
     override suspend fun getLastDraw(): HistoricalDraw? {
@@ -49,6 +51,7 @@ class HistoryRepositoryImpl @Inject constructor(
         if (lastRemote != null) {
             cacheMutex.withLock {
                 historyCache[lastRemote.contestNumber] = lastRemote
+                sortedHistoryCache = null
             }
             localDataSource.saveNewContests(listOf(lastRemote))
             return lastRemote
@@ -68,32 +71,36 @@ class HistoryRepositoryImpl @Inject constructor(
                 if (newDraws.isNotEmpty()) {
                     cacheMutex.withLock {
                         historyCache.putAll(newDraws.associateBy { it.contestNumber })
+                        sortedHistoryCache = null
                     }
                     localDataSource.saveNewContests(newDraws)
                 }
             }
-            // CORREÇÃO: Emite o estado de sucesso após a conclusão.
             _syncStatus.value = SyncStatus.Success
         } catch (e: Exception) {
-            val errorMessage = "Falha ao sincronizar histórico"
-            Log.e("HistoryRepository", errorMessage, e)
-            // CORREÇÃO: Emite o estado de falha com uma mensagem.
+            val errorMessage = when {
+                e is java.net.SocketTimeoutException || e is java.net.UnknownHostException -> 
+                    "Falha de conexão. Verifique sua internet e tente novamente."
+                e is java.io.IOException -> 
+                    "Erro ao acessar os dados. Tente novamente em alguns instantes."
+                else -> 
+                    "Ocorreu um erro inesperado. Tente novamente mais tarde."
+            }
             _syncStatus.value = SyncStatus.Failed(errorMessage)
         }
     }
 
     private suspend fun loadInitialHistory() {
         if (historyCache.isNotEmpty()) return
-        // O status de carregamento é gerenciado pela chamada `syncHistory`.
         try {
             val localHistory = localDataSource.getLocalHistory()
             cacheMutex.withLock {
                 historyCache.clear()
                 historyCache.putAll(localHistory.associateBy { it.contestNumber })
+                sortedHistoryCache = null
             }
             syncHistory()
         } catch (e: Exception) {
-            Log.e("HistoryRepository", "Erro crítico ao carregar histórico local", e)
             _syncStatus.value = SyncStatus.Failed("Não foi possível carregar o histórico local.")
         }
     }

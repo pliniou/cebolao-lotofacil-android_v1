@@ -4,15 +4,16 @@ import androidx.compose.ui.graphics.Color
 
 
 // Tema Claro
-val LightPrimary = Color(0xFF930089) // Roxo oficial da Lotofácil, cor de destaque principal.
+// Tema Claro
+val LightPrimary = Color(0xFF930089)
 val LightOnPrimary = Color(0xFFFFFFFF)
-val LightPrimaryContainer = Color(0xFFFFD7F3) // Tom claro para fundos de elementos primários.
+val LightPrimaryContainer = Color(0xFFFFD7F3)
 val LightOnPrimaryContainer = Color(0xFF30002D)
-val LightSecondary = Color(0xFF6E5868) // Tom de ameixa como secundário, para ações e ênfase menor.
+val LightSecondary = Color(0xFF6E5868)
 val LightOnSecondary = Color(0xFFFFFFFF)
 val LightSecondaryContainer = Color(0xFFF8DAED)
 val LightOnSecondaryContainer = Color(0xFF271624)
-val LightTertiary = Color(0xFF81524F) // Tom terroso para contraste sutil e elementos terciários.
+val LightTertiary = Color(0xFF81524F)
 val LightOnTertiary = Color(0xFFFFFFFF)
 val LightTertiaryContainer = Color(0xFFFFDAD8)
 val LightOnTertiaryContainer = Color(0xFF321010)
@@ -20,17 +21,19 @@ val LightError = Color(0xFFBA1A1A)
 val LightErrorContainer = Color(0xFFFFDAD6)
 val LightOnError = Color(0xFFFFFFFF)
 val LightOnErrorContainer = Color(0xFF410002)
-val LightBackground = Color(0xFFFFF7F9) // Fundo levemente rosado para aquecer a UI.
+val LightBackground = Color(0xFFFFF7F9)
 val LightOnBackground = Color(0xFF1F1A1D)
-val LightSurface = Color(0xFFFFF7F9) // Superfície base para cards e painéis.
+val LightSurface = Color(0xFFFFF7F9)
 val LightOnSurface = Color(0xFF1F1A1D)
-val LightSurfaceVariant = Color(0xFFF0DEE6) // Variante para divisores e fundos de componentes.
+val LightSurfaceVariant = Color(0xFFF0DEE6)
 val LightOnSurfaceVariant = Color(0xFF4E444A)
-val LightOutline = Color(0xFF80747B) // Cor para bordas e contornos.
-val LightOutlineVariant = Color(0xFFD2C2CB) // Contorno mais sutil.
+val LightOutline = Color(0xFF80747B)
+val LightOutlineVariant = Color(0xFFD2C2CB)
+val LightSurfaceGlass = Color(0xCCFFF7F9) // Semi-transparente para glassmorphism
+val LightPrimaryGlow = Color(0x40930089)
 
 // Tema Escuro
-val DarkPrimary = Color(0xFFFFAAF0) // Roxo mais vibrante para se destacar no fundo escuro.
+val DarkPrimary = Color(0xFFFFAAF0)
 val DarkOnPrimary = Color(0xFF5C0056)
 val DarkPrimaryContainer = Color(0xFF7A0071)
 val DarkOnPrimaryContainer = Color(0xFFFFD7F3)
@@ -46,11 +49,13 @@ val DarkError = Color(0xFFFFB4AB)
 val DarkErrorContainer = Color(0xFF93000A)
 val DarkOnError = Color(0xFF690005)
 val DarkOnErrorContainer = Color(0xFFFFDAD6)
-val DarkBackground = Color(0xFF171215) // Fundo escuro profundo para conforto visual.
+val DarkBackground = Color(0xFF0F0A0D) // Escuro mais profundo para contraste premium
 val DarkOnBackground = Color(0xFFEBE0E3)
-val DarkSurface = Color(0xFF171215)
+val DarkSurface = Color(0xFF1A1418) // Superfície levemente elevada
 val DarkOnSurface = Color(0xFFEBE0E3)
-val DarkSurfaceVariant = Color(0xFF4E444A)
+val DarkSurfaceVariant = Color(0xFF322A2F)
 val DarkOnSurfaceVariant = Color(0xFFD2C2CB)
 val DarkOutline = Color(0xFF9A8D95)
-val DarkOutlineVariant = Color(0xFF4E444A)
+val DarkOutlineVariant = Color(0xFF322A2F)
+val DarkSurfaceGlass = Color(0xCC1A1418)
+val DarkPrimaryGlow = Color(0x60FFAAF0)

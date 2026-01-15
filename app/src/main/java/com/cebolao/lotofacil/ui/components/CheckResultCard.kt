@@ -15,20 +15,22 @@ import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Celebration
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ErrorOutline
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.data.CheckResult
+import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 import kotlinx.collections.immutable.ImmutableMap
 
 @Composable
@@ -36,17 +38,13 @@ fun CheckResultCard(
     result: CheckResult,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    AppCard(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
-        ),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = AppCardDefaults.elevation
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            modifier = Modifier.padding(AppCardDefaults.defaultPadding),
+            verticalArrangement = Arrangement.spacedBy(AppCardDefaults.contentSpacing)
         ) {
             val totalWins = result.scoreCounts.values.sum()
             ResultHeader(totalWins, result.lastCheckedContest)
@@ -68,17 +66,21 @@ private fun ResultHeader(totalWins: Int, contestsChecked: Int) {
     val color = if (totalWins > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
-        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(26.dp))
+        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(28.dp))
         Column {
             Text(
-                text = if (totalWins > 0) "Premiações já ocorridas" else "Análise de Desempenho",
+                text = if (totalWins > 0) {
+                    stringResource(id = R.string.awards_occurred)
+                } else {
+                    stringResource(id = R.string.performance_analysis)
+                },
                 style = MaterialTheme.typography.titleMedium,
                 color = color
             )
             Text(
-                text = "Análise em $contestsChecked concursos",
+                text = pluralStringResource(id = R.plurals.analysis_in_contests, contestsChecked, contestsChecked),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -88,7 +90,7 @@ private fun ResultHeader(totalWins: Int, contestsChecked: Int) {
 
 @Composable
 private fun ScoreBreakdown(scoreCounts: ImmutableMap<Int, Int>) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
         (15 downTo 11).forEach { score ->
             scoreCounts[score]?.let { count ->
                 val animated by animateIntAsState(
@@ -102,12 +104,12 @@ private fun ScoreBreakdown(scoreCounts: ImmutableMap<Int, Int>) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        "$score Acertos",
+                        pluralStringResource(id = R.plurals.hits_count_label, score, score),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
-                        "$animated ${if (animated == 1) "vez" else "vezes"}",
+                        pluralStringResource(id = R.plurals.times_count, animated, animated),
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -122,7 +124,7 @@ private fun ScoreBreakdown(scoreCounts: ImmutableMap<Int, Int>) {
 private fun LastHitInfo(result: CheckResult) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs)
     ) {
         Icon(
             Icons.Default.CheckCircle,
@@ -131,7 +133,15 @@ private fun LastHitInfo(result: CheckResult) {
             modifier = Modifier.size(18.dp)
         )
         Text(
-            text = "Último prêmio no concurso ${result.lastHitContest} com ${result.lastHitScore} acertos.",
+            text = if (result.lastHitContest != null && result.lastHitScore != null) {
+                stringResource(
+                    id = R.string.last_award,
+                    result.lastHitContest,
+                    result.lastHitScore
+                )
+            } else {
+                stringResource(id = R.string.no_awards_found)
+            },
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -153,9 +163,9 @@ private fun NoWinsMessage() {
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(20.dp)
         )
-        Spacer(Modifier.width(8.dp))
+        Spacer(Modifier.width(AppSpacing.sm))
         Text(
-            "Nenhum prêmio encontrado.",
+            stringResource(id = R.string.no_awards_found),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

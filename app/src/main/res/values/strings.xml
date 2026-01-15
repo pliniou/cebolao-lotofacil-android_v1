@@ -1,42 +1,196 @@
 <resources>
-    <string name="app_name">Cebolao Lotofacil</string>
-    <string name="error_no_history">Unable to load history.</string>
-    <string name="error_load_data_failed">Failed to load data.</string>
-    <string name="error_analysis_failed">Analysis failed.</string>
-    <string name="error_incomplete_selection">Please select 15 numbers.</string>
-    <string name="error_unknown">Unknown error occurred.</string>
+    <string name="app_name">Cebolão Lotofácil</string>
+
+    <string name="error_no_history">Não foi possível carregar o histórico.</string>
+    <string name="error_load_data_failed">Falha ao carregar dados.</string>
+    <string name="error_analysis_failed">Falha na análise.</string>
+    <string name="error_incomplete_selection">Selecione 15 números.</string>
+    <string name="error_unknown">Erro desconhecido.</string>
+    <string name="error_load_title">Falha ao carregar dados</string>
+    <string name="try_again">Tentar novamente</string>
 
     <string name="studio_name">Cebola Studios</string>
-    <string name="studio_slogan">Sorte é estatística.</string>
+    <string name="studio_slogan">Sorte e estatística.</string>
+    <string name="studio_logo_description">Logo Cebola Studios</string>
 
-    <string name="about_purpose_desc_header">Purpose</string>
-    <string name="about_purpose_desc_body">This app helps analyze Lotofacil games.</string>
-    <string name="about_purpose_desc_footer">Use responsibly.</string>
-    <string name="about_purpose_item1_title">Analysis</string>
-    <string name="about_purpose_item1_desc">Analyze your games.</string>
-    <string name="about_purpose_item2_title">History</string>
-    <string name="about_purpose_item2_desc">View past results.</string>
-    <string name="about_purpose_item3_title">Statistics</string>
-    <string name="about_purpose_item3_desc">See number frequencies.</string>
+    <string name="about_purpose_desc_header">Finalidade</string>
+    <string name="about_purpose_desc_body">Este app ajuda a analisar jogos da Lotofácil.</string>
+    <string name="about_purpose_desc_footer">Use com responsabilidade.</string>
+    <string name="about_purpose_item1_title">Análise</string>
+    <string name="about_purpose_item1_desc">Analise seus jogos.</string>
+    <string name="about_purpose_item2_title">Histórico</string>
+    <string name="about_purpose_item2_desc">Veja resultados anteriores.</string>
+    <string name="about_purpose_item3_title">Estatísticas</string>
+    <string name="about_purpose_item3_desc">Acompanhe a frequência das dezenas.</string>
 
-    <string name="about_legal_desc_header">Legal</string>
-    <string name="about_legal_item1">Not affiliated with Caixa.</string>
-    <string name="about_legal_item2">For informational purposes only.</string>
-    <string name="about_legal_item3">No guarantee of winning.</string>
-    <string name="about_legal_footer">Terms of Service</string>
+    <string name="about_legal_desc_header">Aviso legal</string>
+    <string name="about_legal_item1">Não é afiliado à Caixa.</string>
+    <string name="about_legal_item2">Conteúdo apenas informativo.</string>
+    <string name="about_legal_item3">Não há garantia de prêmio.</string>
+    <string name="about_legal_footer">Termos de uso</string>
 
-    <string name="about_privacy_desc_header">Privacy Policy</string>
-    <string name="about_privacy_desc_body">We respect your privacy.</string>
-    <string name="about_privacy_item1">No personal data collected.</string>
-    <string name="about_privacy_item2">Local storage only.</string>
-    <string name="about_privacy_item3">No tracking.</string>
+    <string name="about_privacy_desc_header">Privacidade</string>
+    <string name="about_privacy_desc_body">Respeitamos sua privacidade.</string>
+    <string name="about_privacy_item1">Nenhum dado pessoal é coletado.</string>
+    <string name="about_privacy_item2">Armazenamento apenas local.</string>
+    <string name="about_privacy_item3">Sem rastreamento.</string>
 
-    <string name="about_rules_desc_header">Rules</string>
-    <string name="about_rules_item1">Choose 15 to 20 numbers.</string>
-    <string name="about_rules_item2">Win with 11, 12, 13, 14 or 15 hits.</string>
-    <string name="about_rules_item3">Draws daily except Sundays.</string>
+    <string name="about_rules_desc_header">Regras</string>
+    <string name="about_rules_item1">Escolha de 15 a 20 números.</string>
+    <string name="about_rules_item2">Ganha com 11, 12, 13, 14 ou 15 acertos.</string>
+    <string name="about_rules_item3">Sorteios diários, exceto domingos.</string>
 
     <string name="about_bolao_desc_header">Bolão</string>
-    <string name="about_bolao_desc_body">Increase your chances with group play.</string>
-    <string name="about_bolao_desc_footer">Check official rules.</string>
+    <string name="about_bolao_desc_body">Aumente suas chances com jogo em grupo.</string>
+    <string name="about_bolao_desc_footer">Consulte as regras oficiais.</string>
+
+    <!-- HomeScreen -->
+    <string name="sync_failed_message">Não foi possível atualizar. Exibindo dados locais.</string>
+    <string name="cebolao_title">Cebolão</string>
+    <string name="lotofacil_subtitle">Gerador Lotofácil</string>
+    <string name="last_contest">Último concurso</string>
+    <string name="sum_label">Soma</string>
+    <string name="even_label">Pares</string>
+    <string name="prime_label">Primos</string>
+    <string name="frame_label">Moldura</string>
+    <string name="portrait_label">Miolo</string>
+    <string name="fibonacci_label">Fibonacci</string>
+    <string name="multiples_of_3_label">Múltiplos de 3</string>
+    <string name="statistics_center">Central de Estatísticas</string>
+    <string name="most_delayed_numbers">Dezenas mais atrasadas</string>
+    <string name="delayed_suffix"> atrás</string>
+    <string name="most_drawn_numbers">Dezenas mais sorteadas</string>
+    <string name="frequency_suffix">x</string>
+    <string name="understanding_statistics">Entendendo as estatísticas</string>
+    <string name="how_to_read_data">Como ler os dados</string>
+    <string name="analysis_period_title">Período de análise</string>
+    <string name="time_window_all">Todos</string>
+    <string name="time_window_last">Últimos %d</string>
+    <string name="statistics_explanation_delayed_prefix">• Dezenas atrasadas/sorteadas: </string>
+    <string name="statistics_explanation_delayed_body">Mostram as 5 dezenas mais "frias" (sem sair) e "quentes" (mais frequentes). O valor abaixo indica o atraso (em concursos) ou a frequência total.</string>
+    <string name="statistics_explanation_distribution_prefix">• Gráficos de distribuição: </string>
+    <string name="statistics_explanation_distribution_body">A barra mais alta indica a ocorrência mais comum de um padrão (ex.: 8 números pares). Use os filtros acima do gráfico para explorar diferentes estatísticas.</string>
+
+    <!-- GeneratedGamesScreen -->
+    <string name="clear_games_title">Limpar jogos?</string>
+    <string name="clear_games_message">Isso removerá todos os jogos não fixados. Deseja continuar?</string>
+    <string name="clear_button">Limpar</string>
+    <string name="cancel_button">Cancelar</string>
+    <string name="delete_game_title">Excluir jogo?</string>
+    <string name="delete_game_message">Esta ação é permanente. Deseja excluir este jogo?</string>
+    <string name="delete_button">Excluir</string>
+    <string name="analyzing_game">Analisando jogo…</string>
+    <string name="analysis_error_title">Erro na análise</string>
+    <string name="my_games">Meus jogos</string>
+    <string name="my_games_subtitle">Visualize, analise e gerencie seus jogos</string>
+    <string name="clear_unpinned_games">Limpar jogos não fixados</string>
+    <string name="empty_games_message">Nenhum jogo gerado ainda.\nVá para a tela de Gerador para começar!</string>
+    <string name="game_analysis_title">Análise do jogo</string>
+    <string name="close_button">Fechar</string>
+    <string name="historical_performance">Desempenho histórico</string>
+    <string name="never_won_message">Este jogo nunca foi premiado nos concursos analisados.</string>
+    <string name="recent_hits_title">Acertos nos últimos 15 sorteios</string>
+    <string name="game_stats_title">Estatísticas do jogo</string>
+    <string name="selected_numbers_progress">%1$d de 15 números</string>
+
+    <!-- CheckerScreen -->
+    <string name="check_game_title">Conferidor</string>
+    <string name="check_game_subtitle">Teste seu jogo contra o histórico</string>
+    <string name="check_game_button">Conferir jogo</string>
+    <string name="clear_selection_button">Limpar seleção</string>
+
+    <!-- FiltersScreen -->
+    <string name="filters_header_title">Gerador inteligente</string>
+    <string name="filters_header_subtitle">Refine a sorte com base em estatísticas</string>
+    <string name="reset_filters">Resetar filtros</string>
+    <string name="reset_filters_title">Resetar filtros?</string>
+    <string name="reset_filters_message">Isso desativará todos os filtros e restaurará os padrões. Deseja continuar?</string>
+    <string name="reset_button">Resetar</string>
+
+    <!-- GameCard -->
+    <string name="analyze_button">Analisar</string>
+    <string name="pin_game">Fixar jogo</string>
+    <string name="unpin_game">Desafixar jogo</string>
+    <string name="delete_game">Excluir jogo</string>
+
+    <!-- FilterCard -->
+    <string name="data_unavailable">Dados indisponíveis</string>
+    <string name="filter_info_content_description">Mais informações sobre o filtro %1$s</string>
+
+    <string name="min_value">Mínimo</string>
+    <string name="max_value">Máximo</string>
+
+    <!-- FilterStatsPanel -->
+    <string name="filters_analysis_title">Análise dos filtros</string>
+    <string name="success_probability_title">Chance de sucesso</string>
+    <string name="no_active_filters">Nenhum filtro ativo.</string>
+    <string name="restrictiveness_very_tight">Muito restrito</string>
+    <string name="restrictiveness_tight">Restrito</string>
+    <string name="restrictiveness_moderate">Moderado</string>
+    <string name="restrictiveness_loose">Flexível</string>
+    <string name="restrictiveness_very_loose">Muito flexível</string>
+    <string name="restrictiveness_disabled">Desabilitado</string>
+
+    <!-- CheckResultCard -->
+    <string name="awards_occurred">Premiações já ocorridas</string>
+    <string name="performance_analysis">Análise de desempenho</string>
+    <!-- Plurals for internationalization -->
+    <plurals name="analysis_in_contests">
+        <item quantity="one">Análise em %d concurso</item>
+        <item quantity="other">Análise em %d concursos</item>
+    </plurals>
+    <plurals name="hits_count_label">
+        <item quantity="one">%d acerto</item>
+        <item quantity="other">%d acertos</item>
+    </plurals>
+    <string name="last_award">Último prêmio no concurso %1$d com %2$d acertos.</string>
+    <string name="no_awards_found">Nenhum prêmio encontrado.</string>
+
+    <!-- GenerationActionsPanel -->
+    <string name="game_quantity">Quantidade de jogos</string>
+    <string name="total_cost">Custo total:</string>
+    <string name="decrease_quantity">Diminuir</string>
+    <string name="increase_quantity">Aumentar</string>
+
+    <!-- Filter Types -->
+    <string name="filter_soma_dezenas_title">Soma das dezenas</string>
+    <string name="filter_soma_dezenas_description">A soma dos 15 números. A grande maioria dos sorteios (cerca de 72%) possui uma soma entre 170 e 220. Este é um dos filtros mais eficazes para eliminar combinações improváveis.</string>
+
+    <string name="filter_pares_title">Números pares</string>
+    <string name="filter_pares_description">A quantidade de números pares. O ideal é um equilíbrio. Cerca de 78% dos sorteios têm entre 6 e 9 números pares.</string>
+
+    <string name="filter_primos_title">Números primos</string>
+    <string name="filter_primos_description">A quantidade de números primos. Existem 9 primos (2, 3, 5, 7, 11, 13, 17, 19, 23). Cerca de 74% dos sorteios têm entre 4 e 7 primos.</string>
+
+    <string name="filter_moldura_title">Dezenas na moldura</string>
+    <string name="filter_moldura_description">A quantidade de números nas bordas do volante (16 números no total). Cerca de 76% dos sorteios têm entre 8 e 11 números da moldura.</string>
+
+    <string name="filter_retrato_title">Dezenas no retrato</string>
+    <string name="filter_retrato_description">A quantidade de números no centro do volante (9 números no total). Cerca de 71% dos sorteios têm entre 4 e 7 números do retrato.</string>
+
+    <string name="filter_fibonacci_title">Sequência de Fibonacci</string>
+    <string name="filter_fibonacci_description">A quantidade de números da sequência de Fibonacci (1, 2, 3, 5, 8, 13, 21). Cerca de 68% dos sorteios têm entre 3 e 5 números de Fibonacci.</string>
+
+    <string name="filter_multiplos_3_title">Múltiplos de 3</string>
+    <string name="filter_multiplos_3_description">A quantidade de números que são múltiplos de 3. Cerca de 69% dos sorteios têm entre 3 e 6 múltiplos de 3.</string>
+
+    <string name="filter_repetidas_anterior_title">Repetidas do anterior</string>
+    <string name="filter_repetidas_anterior_description">A quantidade de números que se repetiram do concurso anterior. Este é um padrão muito forte: 84% dos sorteios repetem entre 8 e 10 números.</string>
+
+    <!-- InfoItem Resources -->
+    <string name="info_item_rules_title">Regras e prêmios</string>
+    <string name="info_item_rules_subtitle">O manual oficial da Caixa</string>
+    <string name="info_item_probabilities_title">A realidade dos números</string>
+    <string name="info_item_probabilities_subtitle">A matemática da (falta de) sorte</string>
+    <string name="info_item_bolao_title">Bolão: mais chances</string>
+    <string name="info_item_bolao_subtitle">Dividindo o prêmio (e a aposta)</string>
+    <string name="info_item_purpose_title">Finalidade do app</string>
+    <string name="info_item_purpose_subtitle">Para que (não) serve este app</string>
+    <string name="info_item_legal_title">O juridiquês</string>
+    <string name="info_item_legal_subtitle">A parte chata, mas necessária</string>
+    <string name="info_item_privacy_title">Sua privacidade</string>
+    <string name="info_item_privacy_subtitle">Como (não) usamos seus dados</string>
+
+    <!-- Dialogs -->
+    <string name="understood_button">Entendi</string>
 </resources>

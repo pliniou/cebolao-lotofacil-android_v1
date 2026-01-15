@@ -1,26 +1,27 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.kotlin.serialization)
+    alias(deps.plugins.android.application)
+    alias(deps.plugins.kotlin.android)
+    alias(deps.plugins.kotlin.compose)
+    alias(deps.plugins.hilt)
+    alias(deps.plugins.ksp)
+    alias(deps.plugins.kotlin.serialization)
 }
 
 android {
     namespace = "com.cebolao.lotofacil"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.cebolao.lotofacil"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 2
-        versionName = "2.0.0" // Versão atualizada
+        targetSdk = 36
+        versionCode = 1
+        versionName = "1.0.0"
         testInstrumentationRunner = "com.cebolao.lotofacil.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+        @Suppress("DEPRECATION")
         resourceConfigurations += setOf("pt", "en")
     }
 
@@ -43,17 +44,16 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
         isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
 
     buildFeatures {
-        compose = true
         buildConfig = true
     }
 
@@ -75,51 +75,59 @@ android {
 
 dependencies {
     // Core Library Desugaring
-    coreLibraryDesugaring(libs.android.desugarJdkLibs)
+    coreLibraryDesugaring(deps.android.desugarJdkLibs)
 
     // AndroidX Core & Activity
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.bundles.androidx.lifecycle)
+    implementation(deps.androidx.core.ktx)
+    implementation(deps.androidx.core.splashscreen)
+    implementation(deps.androidx.activity.compose)
+    implementation(deps.bundles.androidx.lifecycle)
 
     // WorkManager for background tasks
-    implementation(libs.androidx.work.runtime.ktx)
+    implementation(deps.androidx.work.runtime.ktx)
 
     // Compose BOM and dependencies
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.bundles.androidx.compose)
+    implementation(platform(deps.androidx.compose.bom))
+    implementation(deps.bundles.androidx.compose)
 
     // Collections & Serialization
-    implementation(libs.kotlinx.collections.immutable)
-    implementation(libs.kotlinx.serialization.json)
+    implementation(deps.kotlinx.collections.immutable)
+    implementation(deps.kotlinx.serialization.json)
+    implementation(deps.kotlinx.coroutines.android)
 
     // DataStore for persistence
-    implementation(libs.androidx.datastore.preferences)
+    implementation(deps.androidx.datastore.preferences)
 
     // Hilt for dependency injection
-    implementation(libs.hilt.android)
-    implementation(libs.hilt.navigation.compose)
-    implementation(libs.hilt.work)
-    ksp(libs.hilt.compiler)
+    implementation(deps.hilt.android)
+    ksp(deps.hilt.compiler)
+    implementation(deps.hilt.navigation.compose)
+    implementation(deps.hilt.work)
+    ksp(deps.hilt.compiler.androidx)
 
     // Networking
-    implementation(libs.bundles.networking)
+    implementation(deps.bundles.networking)
 
     // Utilities
-    implementation(libs.androidx.interpolator)
-    implementation(libs.androidx.navigation.compose)
+    implementation(deps.androidx.interpolator)
+    implementation(deps.androidx.navigation.compose)
 
     // Testing - Unit Tests
-    testImplementation(libs.bundles.testing.unit)
-    kspTest(libs.hilt.compiler)
+    testImplementation(deps.bundles.testing.unit)
+    kspTest(deps.hilt.compiler)
 
     // Testing - Android Tests
-    androidTestImplementation(libs.bundles.testing.android)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    kspAndroidTest(libs.hilt.compiler)
+    androidTestImplementation(platform(deps.androidx.compose.bom))
+    androidTestImplementation(deps.bundles.testing.android)
+    androidTestImplementation(deps.hilt.android.testing)
+    kspAndroidTest(deps.hilt.compiler)
 
     // Debug Tools
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    debugImplementation(deps.androidx.ui.tooling)
+    debugImplementation(deps.androidx.ui.test.manifest)
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }

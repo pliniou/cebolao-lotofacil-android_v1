@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
@@ -25,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cebolao.lotofacil.ui.theme.LotofacilPurple
+import com.cebolao.lotofacil.ui.theme.AppElevation
 
 enum class NumberBallVariant {
     Primary, Secondary, Lotofacil
@@ -41,11 +43,11 @@ fun NumberBall(
     isDisabled: Boolean = false,
     variant: NumberBallVariant = NumberBallVariant.Primary
 ) {
-    val elevation by animateDpAsState(
+    val tonalElevation by animateDpAsState(
         targetValue = when {
-            isSelected -> 4.dp
-            isHighlighted -> 2.dp
-            else -> 1.dp
+            isSelected -> AppElevation.md
+            isHighlighted -> AppElevation.sm
+            else -> AppElevation.xs
         },
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
@@ -65,20 +67,21 @@ fun NumberBall(
     val animatedContentColor by animateColorAsState(contentColor, tween(250), label = "contentColor")
     val animatedBorderColor by animateColorAsState(borderColor, tween(250), label = "borderColor")
 
-    Box(
+    // Efeito de brilho externo (glow) para selecionados
+    val glowColor = if (isSelected) animatedContainerColor.copy(alpha = 0.4f) else Color.Transparent
+
+    Surface(
         modifier = modifier
             .size(size)
-            .shadow(
-                elevation = elevation,
-                shape = CircleShape,
-                spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
-            )
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(animatedContainerColor, animatedContainerColor.copy(alpha = 0.85f))
-                ),
-                shape = CircleShape
-            )
+            .drawBehind {
+                if (isSelected) {
+                    drawCircle(
+                        color = glowColor,
+                        radius = size.toPx() * 0.65f
+                    )
+                }
+            }
+            .clip(CircleShape)
             .border(
                 width = if (isHighlighted && !isSelected) 1.5.dp else 0.5.dp,
                 color = animatedBorderColor,
@@ -93,16 +96,31 @@ fun NumberBall(
                 }
                 contentDescription = "Número $number, $state"
             },
-        contentAlignment = Alignment.Center
+        shape = CircleShape,
+        color = animatedContainerColor,
+        tonalElevation = tonalElevation
     ) {
-        Text(
-            text = "%02d".format(number),
-            color = animatedContentColor,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontSize = (size.value / 3.2).sp,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.background(
+                Brush.radialGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.15f),
+                        Color.Transparent
+                    ),
+                    center = androidx.compose.ui.geometry.Offset(x = size.value * 0.3f, y = size.value * 0.3f)
+                )
             )
-        )
+        ) {
+            Text(
+                text = "%02d".format(number),
+                color = animatedContentColor,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontSize = (size.value / 3.0).sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }
     }
 }
 
@@ -113,37 +131,45 @@ private fun getBallColors(
     isDisabled: Boolean,
     variant: NumberBallVariant
 ): Triple<Color, Color, Color> {
-    val primaryColor = when (variant) {
-        NumberBallVariant.Primary -> MaterialTheme.colorScheme.primary
-        NumberBallVariant.Secondary -> MaterialTheme.colorScheme.secondary
-        NumberBallVariant.Lotofacil -> LotofacilPurple
-    }
-
     return when {
-        variant == NumberBallVariant.Lotofacil -> Triple(
-            LotofacilPurple,
-            Color.White,
-            LotofacilPurple.copy(alpha = 0.5f)
-        )
-        isSelected -> Triple(
-            primaryColor,
-            MaterialTheme.colorScheme.onPrimary,
-            primaryColor.copy(alpha = 0.3f)
-        )
         isDisabled -> Triple(
             MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
             MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
             MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
         )
+        isSelected -> {
+            val primaryColor = when (variant) {
+                NumberBallVariant.Primary -> MaterialTheme.colorScheme.primary
+                NumberBallVariant.Secondary -> MaterialTheme.colorScheme.secondary
+                NumberBallVariant.Lotofacil -> MaterialTheme.colorScheme.primary
+            }
+            Triple(
+                primaryColor,
+                MaterialTheme.colorScheme.onPrimary,
+                primaryColor.copy(alpha = 0.3f)
+            )
+        }
         isHighlighted -> Triple(
             MaterialTheme.colorScheme.primaryContainer,
             MaterialTheme.colorScheme.onPrimaryContainer,
             MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
         )
-        else -> Triple(
-            MaterialTheme.colorScheme.surfaceVariant,
-            MaterialTheme.colorScheme.onSurfaceVariant,
-            MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-        )
+        else -> {
+            val surfaceColor = when (variant) {
+                NumberBallVariant.Primary -> MaterialTheme.colorScheme.surfaceVariant
+                NumberBallVariant.Secondary -> MaterialTheme.colorScheme.secondaryContainer
+                NumberBallVariant.Lotofacil -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+            }
+            val onSurfaceColor = when (variant) {
+                NumberBallVariant.Primary -> MaterialTheme.colorScheme.onSurfaceVariant
+                NumberBallVariant.Secondary -> MaterialTheme.colorScheme.onSecondaryContainer
+                NumberBallVariant.Lotofacil -> MaterialTheme.colorScheme.onPrimaryContainer
+            }
+            Triple(
+                surfaceColor,
+                onSurfaceColor,
+                MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+            )
+        }
     }
 }

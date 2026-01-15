@@ -6,7 +6,7 @@ import com.cebolao.lotofacil.data.LotofacilGame
 import com.cebolao.lotofacil.di.DefaultDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import java.security.SecureRandom
+import java.util.Random
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,9 +14,9 @@ class GameGenerationException(message: String) : Exception(message)
 
 @Singleton
 class GameGenerator @Inject constructor(
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    private val random: Random = Random()
 ) {
-    private val secureRandom = SecureRandom()
     private val allNumbers = (1..25).toList()
 
     suspend fun generateGames(
@@ -25,26 +25,26 @@ class GameGenerator @Inject constructor(
         lastDraw: Set<Int>? = null,
         maxAttempts: Int = 250_000
     ): List<LotofacilGame> = withContext(defaultDispatcher) {
-        val validGames = mutableSetOf<LotofacilGame>()
+        val uniqueGames = linkedMapOf<Set<Int>, LotofacilGame>()
         var attempts = 0
 
-        while (validGames.size < count && attempts < maxAttempts) {
+        while (uniqueGames.size < count && attempts < maxAttempts) {
             val game = generateRandomGame()
             if (isGameValid(game, activeFilters, lastDraw)) {
-                validGames.add(game)
+                uniqueGames.putIfAbsent(game.numbers.toSet(), game)
             }
             attempts++
         }
 
-        if (validGames.size < count) {
+        if (uniqueGames.size < count) {
             throw GameGenerationException("Não foi possível gerar a quantidade de jogos desejada com os filtros atuais. Tente configurações menos restritivas.")
         }
 
-        return@withContext validGames.toList()
+        return@withContext uniqueGames.values.toList()
     }
 
     private fun generateRandomGame(): LotofacilGame {
-        val selectedNumbers = allNumbers.shuffled(secureRandom).take(15).toSet()
+        val selectedNumbers = allNumbers.shuffled(random).take(15).toSet()
         return LotofacilGame(selectedNumbers)
     }
 

@@ -1,48 +1,48 @@
 [versions]
 # Build & Plugins
-agp = "8.5.0"
-kotlin = "2.0.0"
-ksp = "2.0.0-1.0.22"
-composeCompiler = "1.5.11" # Mantido por compatibilidade com Kotlin 2.0.0
+agp = "8.13.2"
+kotlin = "2.0.21"
+ksp = "2.0.21-1.0.25"
+composeCompiler = "1.5.4"
 # AndroidX Core
-coreKtx = "1.13.1"
-lifecycle = "2.8.2" # Atualizado
-activityCompose = "1.9.0"
-navigationCompose = "2.7.7"
-workRuntimeKtx = "2.9.0"
-lifecycleCompose = "2.8.2" # Adicionado para collectAsStateWithLifecycle
+coreKtx = "1.17.0"
+lifecycle = "2.10.0"
+activityCompose = "1.12.2"
+navigationCompose = "2.9.6"
+workRuntimeKtx = "2.11.0"
+lifecycleCompose = "2.10.0"
 # Compose
-composeBom = "2024.06.00"
-composeAnimation = "1.6.8"
+composeBom = "2026.01.00"
+composeAnimation = "1.10.1"
 # Dependency Injection
-hilt = "2.51.1"
-hiltNavigationCompose = "1.2.0"
-hiltWork = "1.2.0"
+hilt = "2.55"
+hiltNavigationCompose = "1.3.0"
+hiltWork = "1.3.0"
 # Storage & Preferences
-datastore = "1.1.1"
+datastore = "1.2.0"
 # Networking
 retrofit = "2.11.0"
 okhttp = "4.12.0"
 retrofitKotlinxConverter = "1.0.0"
 # Kotlin Libraries
-kotlinxCollectionsImmutable = "0.3.7"
-kotlinxSerialization = "1.7.1" # Atualizado
-kotlinxCoroutines = "1.8.1"
+kotlinxCollectionsImmutable = "0.3.8"
+kotlinxSerialization = "1.7.3"
+kotlinxCoroutines = "1.9.0"
 # Utilities
 interpolator = "1.0.0"
-coreSplashScreen = "1.0.1"
+coreSplashScreen = "1.2.0"
 # Desugaring
-desugarJdkLibs = "2.0.4"
+desugarJdkLibs = "2.1.5"
 # Testing
 junit = "4.13.2"
-androidxJunit = "1.2.0"
-espressoCore = "3.6.0"
-coroutinesTest = "1.8.1"
+androidxJunit = "1.3.0"
+espressoCore = "3.7.0"
+coroutinesTest = "1.9.0"
 archCoreTesting = "2.2.0"
-mockitoCore = "5.12.0"
-mockitoKotlin = "5.3.1"
-turbine = "1.1.0"
-workTesting = "2.9.0"
+mockitoCore = "5.14.2"
+mockitoKotlin = "5.4.0"
+turbine = "1.2.0"
+workTesting = "2.11.0"
 
 [libraries]
 # AndroidX Core
@@ -72,7 +72,6 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltWork" }
 hilt-compiler-androidx = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltWork" }
-# CORREÇÃO: Adicionada a dependência de teste do Hilt.
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 # DataStore
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
@@ -123,7 +122,7 @@ androidx-compose = [
 ]
 androidx-lifecycle = [
     "androidx-lifecycle-runtime-ktx",
-    "androidx-lifecycle-viewmodel-compose",
+    "androidx.lifecycle-viewmodel-compose",
     "androidx-lifecycle-runtime-compose-lifecycle"
 ]
 networking = [
@@ -145,6 +144,5 @@ testing-android = [
     "testing-android-espresso-core",
     "testing-android-ui-test-junit4",
     "testing-android-work",
-    # CORREÇÃO: Adicionada a dependência de teste do Hilt ao bundle.
     "hilt-android-testing"
 ]

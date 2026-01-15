@@ -5,33 +5,22 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.automirrored.filled.FactCheck
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -41,24 +30,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.data.LotofacilConstants
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
-import com.cebolao.lotofacil.ui.components.BarChart
+import com.cebolao.lotofacil.ui.components.AppCard
+import com.cebolao.lotofacil.ui.components.BottomActionsBar
 import com.cebolao.lotofacil.ui.components.CheckResultCard
+import com.cebolao.lotofacil.ui.components.ErrorCard
+import com.cebolao.lotofacil.ui.components.GameStatsList
+import com.cebolao.lotofacil.ui.components.NumberBallItem
 import com.cebolao.lotofacil.ui.components.NumberGrid
+import com.cebolao.lotofacil.ui.components.RecentHitsChartContent
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
+import com.cebolao.lotofacil.ui.components.shimmer
+import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.viewmodels.CheckerUiState
 import com.cebolao.lotofacil.viewmodels.CheckerViewModel
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
+fun CheckerScreen(checkerViewModel: CheckerViewModel =  hiltViewModel()) {
     val checkerState by checkerViewModel.uiState.collectAsStateWithLifecycle()
     val selectedNumbers by checkerViewModel.selectedNumbers.collectAsStateWithLifecycle()
     val isButtonEnabled by remember(selectedNumbers, checkerState) {
@@ -68,7 +63,7 @@ fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
     }
 
     Scaffold(
-        modifier = Modifier.windowInsetsPadding(WindowInsets.statusBars),
+        modifier = Modifier.fillMaxSize(),
         bottomBar = {
             BottomActionsBar(
                 selectedCount = selectedNumbers.size,
@@ -82,24 +77,23 @@ fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(top = 16.dp, bottom = 120.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(innerPadding)
+                .windowInsetsPadding(WindowInsets.statusBars),
+            contentPadding = PaddingValues(
+                bottom = AppSpacing.xxxl
+            ),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.xl)
         ) {
             item {
                 StandardScreenHeader(
-                    title = "Conferidor",
-                    subtitle = "Teste seu jogo contra a história",
-                    icon = Icons.Default.Analytics
+                    title = stringResource(id = R.string.check_game_title),
+                    subtitle = stringResource(id = R.string.check_game_subtitle),
+                    icon = Icons.AutoMirrored.Filled.FactCheck
                 )
             }
             item {
-                Column(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    SelectionProgress(selectedNumbers.size)
-                    AnimateOnEntry {
+                AnimateOnEntry(delayMillis = 100L) {
+                    Box(Modifier.padding(horizontal = AppSpacing.lg)) {
                         NumberSelectionCard(
                             selectedNumbers = selectedNumbers,
                             onNumberClick = { checkerViewModel.onNumberClicked(it) }
@@ -108,15 +102,17 @@ fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
                 }
             }
             item {
-                AnimatedContent(
-                    targetState = checkerState,
-                    label = "result-content",
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                ) { state ->
-                    when (state) {
-                        is CheckerUiState.Success -> ResultSection(state)
-                        is CheckerUiState.Error -> ErrorCard(state.messageResId)
-                        else -> {}
+                Box(Modifier.padding(horizontal = AppSpacing.lg)) {
+                    AnimatedContent(
+                        targetState = checkerState,
+                        label = "result-content"
+                    ) { state ->
+                        when (state) {
+                            is CheckerUiState.Success -> ResultSection(state)
+                            is CheckerUiState.Error -> ErrorCard(state.messageResId)
+                            is CheckerUiState.Loading -> CheckerResultSkeleton()
+                            else -> {}
+                        }
                     }
                 }
             }
@@ -125,19 +121,48 @@ fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
 }
 
 @Composable
-private fun NumberSelectionCard(selectedNumbers: Set<Int>, onNumberClick: (Int) -> Unit) {
-    Card(
+private fun CheckerResultSkeleton() {
+    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        repeat(3) {
+            AppCard(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier.padding(AppCardDefaults.defaultPadding),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Box(Modifier.size(150.dp, 20.dp).clip(MaterialTheme.shapes.small).shimmer())
+                    Box(Modifier.fillMaxWidth().height(80.dp).clip(MaterialTheme.shapes.medium).shimmer())
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun NumberSelectionCard(
+    selectedNumbers: Set<Int>,
+    onNumberClick: (Int) -> Unit
+) {
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
-        )
+        elevation = AppCardDefaults.elevation
     ) {
-        Box(Modifier.padding(16.dp)) {
+        Box(Modifier.padding(AppCardDefaults.defaultPadding)) {
+            val numberItems = remember(selectedNumbers) {
+                val selectionSize = selectedNumbers.size
+                (1..25).map { number ->
+                    val isSelected = number in selectedNumbers
+                    NumberBallItem(
+                        number = number,
+                        isSelected = isSelected,
+                        isDisabled = selectionSize >= LotofacilConstants.GAME_SIZE && !isSelected
+                    )
+                }
+            }
+            
             NumberGrid(
-                selectedNumbers = selectedNumbers,
-                onNumberClick = onNumberClick,
-                maxSelection = LotofacilConstants.GAME_SIZE
+                items = numberItems,
+                onNumberClick = onNumberClick
             )
         }
     }
@@ -146,66 +171,40 @@ private fun NumberSelectionCard(selectedNumbers: Set<Int>, onNumberClick: (Int) 
 @Composable
 private fun ResultSection(state: CheckerUiState.Success) {
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        AnimateOnEntry { CheckResultCard(state.result) }
-        AnimateOnEntry(delayMillis = 100) { SimpleStatsCard(state.simpleStats) }
-        AnimateOnEntry(delayMillis = 200) { BarChartCard(state.result) }
+        CheckResultCard(state.result)
+        SimpleStatsCard(state.simpleStats)
+        BarChartCard(state.result)
     }
 }
 
 @Composable
 private fun SimpleStatsCard(stats: ImmutableList<Pair<String, String>>) {
-    Card(
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
-        )
+        elevation = AppCardDefaults.elevation
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier.padding(AppCardDefaults.defaultPadding),
+            verticalArrangement = Arrangement.spacedBy(AppCardDefaults.contentSpacing)
         ) {
-            Text("Estatísticas do Jogo", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(id = R.string.game_stats_title), style = MaterialTheme.typography.titleMedium)
             HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
-            stats.forEach { (label, value) ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(label, style = MaterialTheme.typography.bodyMedium)
-                    Text(
-                        value,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-            }
+            GameStatsList(stats = stats)
         }
     }
 }
 
 @Composable
 private fun BarChartCard(result: com.cebolao.lotofacil.data.CheckResult) {
-    Card(
+    AppCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
-        )
+        elevation = AppCardDefaults.elevation
     ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Acertos nos Últimos 15 Sorteios", style = MaterialTheme.typography.titleMedium)
-            val chartData = result.recentHits.map { it.first.toString().takeLast(4) to it.second }
-            val maxValue = (chartData.maxOfOrNull { it.second }?.coerceAtLeast(10) ?: 10)
-            BarChart(
-                data = chartData.toImmutableList(),
-                maxValue = maxValue,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-            )
+        Column(
+            Modifier.padding(AppCardDefaults.defaultPadding),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+        ) {
+            RecentHitsChartContent(recentHits = result.recentHits)
         }
     }
 }
@@ -227,72 +226,9 @@ private fun SelectionProgress(count: Int) {
             strokeCap = StrokeCap.Round
         )
         Text(
-            "$count de 15 números",
+            stringResource(id = R.string.selected_numbers_progress, count),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Composable
-private fun BottomActionsBar(
-    selectedCount: Int,
-    isLoading: Boolean,
-    isButtonEnabled: Boolean,
-    onClearClick: () -> Unit,
-    onCheckClick: () -> Unit
-) {
-    Surface(shadowElevation = 8.dp, tonalElevation = 3.dp) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .windowInsetsPadding(WindowInsets.navigationBars),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (selectedCount > 0) {
-                OutlinedButton(
-                    onClick = onClearClick,
-                    modifier = Modifier.height(52.dp)
-                ) {
-                    Icon(Icons.Default.Delete, contentDescription = "Limpar seleção")
-                }
-            }
-            Button(
-                onClick = onCheckClick,
-                enabled = isButtonEnabled,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(52.dp)
-            ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.5.dp
-                    )
-                } else {
-                    Text("Conferir Jogo", style = MaterialTheme.typography.titleMedium)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ErrorCard(messageResId: Int) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
-    ) {
-        Text(
-            stringResource(messageResId),
-            modifier = Modifier
-                .padding(24.dp)
-                .align(Alignment.CenterHorizontally),
-            color = MaterialTheme.colorScheme.onErrorContainer,
-            textAlign = TextAlign.Center
         )
     }
 }

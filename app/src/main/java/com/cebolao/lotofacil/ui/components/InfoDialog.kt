@@ -13,8 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,9 +22,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @Composable
 fun InfoDialog(
@@ -34,19 +36,23 @@ fun InfoDialog(
     dialogTitle: String,
     modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Default.Info,
-    dismissButtonText: String = "Entendi",
+    dismissButtonText: String = "",
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val resolvedDismissText = if (dismissButtonText.isBlank()) {
+        stringResource(id = R.string.understood_button)
+    } else {
+        dismissButtonText
+    }
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Card(
+        AppCard(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 48.dp),
-            shape = MaterialTheme.shapes.extraLarge,
-            elevation = CardDefaults.cardElevation(6.dp)
+                .padding(horizontal = AppSpacing.xl, vertical = AppSpacing.xxxl),
+            elevation = AppCardDefaults.elevation
         ) {
             Column(
                 modifier = Modifier
@@ -83,7 +89,7 @@ fun InfoDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismissRequest) { Text(dismissButtonText) }
+                    TextButton(onClick = onDismissRequest) { Text(resolvedDismissText) }
                 }
             }
         }

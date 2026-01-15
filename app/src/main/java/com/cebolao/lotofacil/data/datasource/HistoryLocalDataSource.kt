@@ -3,9 +3,12 @@ package com.cebolao.lotofacil.data.datasource
 import android.content.Context
 import android.util.Log
 import com.cebolao.lotofacil.data.HistoricalDraw
+import com.cebolao.lotofacil.data.LotofacilConstants
 import com.cebolao.lotofacil.domain.repository.UserPreferencesRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
@@ -24,32 +27,36 @@ class HistoryLocalDataSourceImpl @Inject constructor(
 
     private val lineRegex = """^\d+\s*-\s*[\d, ]+$""".toRegex()
     private val historyFileName = "lotofacil_resultados.txt"
+    private val cacheMutex = Mutex()
+    private var cachedHistory: List<HistoricalDraw>? = null
 
     companion object {
         private const val TAG = "HistoryLocalDataSource"
     }
 
     override suspend fun getLocalHistory(): List<HistoricalDraw> = withContext(Dispatchers.IO) {
+        cachedHistory?.let { return@withContext it }
+
         val assetHistory = parseHistoryFromAssets()
         val savedHistoryStrings = userPreferencesRepository.getHistory()
         val savedHistory = savedHistoryStrings.mapNotNull { parseLine(it) }
 
-        // Combina e deduplica, dando preferência a dados mais completos (com data) se houver conflito
-        val allDraws = (assetHistory + savedHistory)
-            .groupBy { it.contestNumber }
-            .mapValues { (_, draws) -> draws.maxByOrNull { it.date?.isNotEmpty() ?: false } ?: draws.first() }
-            .values
-            .sortedByDescending { it.contestNumber }
-
-        Log.d(TAG, "Loaded ${allDraws.size} contests from local sources (Assets: ${assetHistory.size}, DataStore: ${savedHistory.size})")
-        allDraws
+        cacheMutex.withLock {
+            cachedHistory?.let { return@withContext it }
+            val allDraws = mergeHistory(assetHistory, savedHistory)
+            cachedHistory = allDraws
+            allDraws
+        }
     }
 
     override suspend fun saveNewContests(newDraws: List<HistoricalDraw>) {
         if (newDraws.isEmpty()) return
 
+        cacheMutex.withLock {
+            cachedHistory = null
+        }
+
         val newHistoryEntries = newDraws.map { draw ->
-            // Formato padronizado: "CONCURSO - NUM1,NUM2,..."
             "${draw.contestNumber} - ${draw.numbers.sorted().joinToString(",")}"
         }.toSet()
 
@@ -57,12 +64,27 @@ class HistoryLocalDataSourceImpl @Inject constructor(
         Log.d(TAG, "Persisted ${newDraws.size} new contests locally.")
     }
 
-    private suspend fun parseHistoryFromAssets(): List<HistoricalDraw> = withContext(Dispatchers.IO) {
-        try {
+    private fun mergeHistory(
+        assetHistory: List<HistoricalDraw>,
+        savedHistory: List<HistoricalDraw>
+    ): List<HistoricalDraw> {
+        Log.d(
+            TAG,
+            "Loaded ${assetHistory.size} contests from assets and ${savedHistory.size} from DataStore"
+        )
+        return (assetHistory + savedHistory)
+            .groupBy { it.contestNumber }
+            .mapValues { (_, draws) -> draws.maxByOrNull { it.date?.isNotEmpty() ?: false } ?: draws.first() }
+            .values
+            .sortedByDescending { it.contestNumber }
+    }
+
+    private fun parseHistoryFromAssets(): List<HistoricalDraw> {
+        return try {
             context.assets.open(historyFileName).bufferedReader().use { reader ->
                 reader.lineSequence()
                     .filter { it.isNotBlank() && it.matches(lineRegex) }
-                    .mapNotNull { line -> parseLine(line) }
+                    .mapNotNull { parseLine(it) }
                     .toList()
             }
         } catch (e: IOException) {
@@ -81,13 +103,17 @@ class HistoryLocalDataSourceImpl @Inject constructor(
 
             val contestNumber = parts[0].trim().toInt()
             val numbers = parts[1].split(",")
-                .map { it.trim().toInt() }
+                .mapNotNull { it.trim().toIntOrNull() }
                 .toSet()
 
-            if (numbers.size >= 15 && contestNumber > 0) {
-                HistoricalDraw(contestNumber, numbers)
+            val validNumbers = numbers.filter { it in LotofacilConstants.VALID_NUMBER_RANGE }.toSet()
+            if (contestNumber > 0 && validNumbers.size == LotofacilConstants.GAME_SIZE) {
+                HistoricalDraw(contestNumber, validNumbers)
             } else {
-                Log.w(TAG, "Parsed line with invalid data: contest=$contestNumber, numbers=${numbers.size}")
+                Log.w(
+                    TAG,
+                    "Parsed line with invalid data: contest=$contestNumber, uniqueNumbers=${validNumbers.size}, values=${numbers}"
+                )
                 null
             }
         } catch (e: NumberFormatException) {

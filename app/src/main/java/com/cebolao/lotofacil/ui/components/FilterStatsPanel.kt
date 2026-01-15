@@ -9,23 +9,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.data.FilterState
 import com.cebolao.lotofacil.data.RestrictivenessCategory
+import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @Composable
 fun FilterStatsPanel(
@@ -33,19 +34,15 @@ fun FilterStatsPanel(
     successProbability: Float, // ATUALIZADO: Recebe a probabilidade de sucesso
     modifier: Modifier = Modifier
 ) {
-    Card(
+    AppCard(
         modifier = modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
-        ),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = AppCardDefaults.elevation
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.padding(AppCardDefaults.defaultPadding),
+            verticalArrangement = Arrangement.spacedBy(AppCardDefaults.contentSpacing)
         ) {
-            Text("Análise dos Filtros", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(id = R.string.filters_analysis_title), style = MaterialTheme.typography.titleMedium)
 
             // ATUALIZAÇÃO: Usa a nova métrica de probabilidade
             FilterRestrictiveness(probability = successProbability)
@@ -79,7 +76,7 @@ private fun FilterRestrictiveness(probability: Float) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Chance de Sucesso", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(id = R.string.success_probability_title), style = MaterialTheme.typography.bodyMedium)
             Text(
                 text = "${(animatedProbability * 100).toInt()}%",
                 style = MaterialTheme.typography.titleSmall,
@@ -102,9 +99,9 @@ private fun FilterRestrictiveness(probability: Float) {
 @Composable
 private fun FilterStatistics(filters: List<FilterState>) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        if (filters.none { it.isEnabled }) {
+        if (filters.isEmpty()) {
             Text(
-                "Nenhum filtro ativo.",
+                stringResource(id = R.string.no_active_filters),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -123,7 +120,7 @@ private fun FilterStatRow(filter: FilterState) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(filter.type.title, style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(filter.type.titleRes), style = MaterialTheme.typography.bodyMedium)
         RestrictivenessChip(filter.restrictivenessCategory)
     }
 }
@@ -131,12 +128,12 @@ private fun FilterStatRow(filter: FilterState) {
 @Composable
 private fun RestrictivenessChip(category: RestrictivenessCategory) {
     val (color, text) = when (category) {
-        RestrictivenessCategory.VERY_TIGHT -> MaterialTheme.colorScheme.error to "Muito Restrito"
-        RestrictivenessCategory.TIGHT -> MaterialTheme.colorScheme.error.copy(alpha = 0.8f) to "Restrito"
-        RestrictivenessCategory.MODERATE -> MaterialTheme.colorScheme.tertiary to "Moderado"
-        RestrictivenessCategory.LOOSE -> MaterialTheme.colorScheme.primary to "Flexível"
-        RestrictivenessCategory.VERY_LOOSE -> MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) to "Muito Flexível"
-        RestrictivenessCategory.DISABLED -> MaterialTheme.colorScheme.outline to "Desabilitado"
+        RestrictivenessCategory.VERY_TIGHT -> MaterialTheme.colorScheme.error to stringResource(id = R.string.restrictiveness_very_tight)
+        RestrictivenessCategory.TIGHT -> MaterialTheme.colorScheme.error.copy(alpha = 0.8f) to stringResource(id = R.string.restrictiveness_tight)
+        RestrictivenessCategory.MODERATE -> MaterialTheme.colorScheme.tertiary to stringResource(id = R.string.restrictiveness_moderate)
+        RestrictivenessCategory.LOOSE -> MaterialTheme.colorScheme.primary to stringResource(id = R.string.restrictiveness_loose)
+        RestrictivenessCategory.VERY_LOOSE -> MaterialTheme.colorScheme.primary.copy(alpha = 0.8f) to stringResource(id = R.string.restrictiveness_very_loose)
+        RestrictivenessCategory.DISABLED -> MaterialTheme.colorScheme.outline to stringResource(id = R.string.restrictiveness_disabled)
     }
     Surface(
         color = color.copy(alpha = 0.12f),
@@ -146,7 +143,7 @@ private fun RestrictivenessChip(category: RestrictivenessCategory) {
             text = text,
             style = MaterialTheme.typography.labelSmall,
             color = color,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = AppSpacing.sm, vertical = AppSpacing.xs)
         )
     }
 }

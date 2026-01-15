@@ -1,0 +1,94 @@
+package com.cebolao.lotofacil.ui.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+
+@Composable
+fun ErrorCard(
+    message: String,
+    modifier: Modifier = Modifier,
+    actions: @Composable (() -> Unit)? = null
+) {
+    AppCard(
+        modifier = modifier.fillMaxWidth(),
+        backgroundColor = MaterialTheme.colorScheme.errorContainer
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(AppCardDefaults.defaultPadding),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.fillMaxWidth()
+            )
+            
+            actions?.invoke()
+        }
+    }
+}
+
+@Composable
+fun ErrorCard(
+    messageResId: Int,
+    modifier: Modifier = Modifier,
+    actions: @Composable (() -> Unit)? = null
+) {
+    ErrorCard(
+        message = stringResource(id = messageResId),
+        modifier = modifier,
+        actions = actions
+    )
+}
+
+@Composable
+fun ErrorActions(
+    onRetry: (() -> Unit)? = null,
+    onDismiss: (() -> Unit)? = null,
+    retryText: String = "",
+    dismissText: String = ""
+) {
+    val resolvedRetryText = if (retryText.isBlank()) {
+        stringResource(id = R.string.try_again)
+    } else {
+        retryText
+    }
+    val resolvedDismissText = if (dismissText.isBlank()) {
+        stringResource(id = R.string.close_button)
+    } else {
+        dismissText
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
+    ) {
+        onDismiss?.let { dismiss ->
+            OutlinedButton(onClick = dismiss) {
+                Text(resolvedDismissText)
+            }
+        }
+        onRetry?.let { retry ->
+            Button(onClick = retry) {
+                Text(resolvedRetryText)
+            }
+        }
+    }
+}

@@ -1,7 +1,6 @@
 package com.cebolao.lotofacil.ui.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,12 +25,9 @@ import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.PrivacyTip
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,27 +35,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
-import com.cebolao.lotofacil.ui.components.BolaoInfoContent
+import com.cebolao.lotofacil.ui.components.ClickableCard
 import com.cebolao.lotofacil.ui.components.InfoDialog
-import com.cebolao.lotofacil.ui.components.LegalInfoContent
-import com.cebolao.lotofacil.ui.components.PrivacyInfoContent
-import com.cebolao.lotofacil.ui.components.ProbabilitiesTable
-import com.cebolao.lotofacil.ui.components.PurposeInfoContent
-import com.cebolao.lotofacil.ui.components.RulesInfoContent
-
-private data class InfoItem(
-    val title: String,
-    val subtitle: String,
-    val icon: ImageVector,
-    val content: @Composable () -> Unit
-)
+import com.cebolao.lotofacil.ui.screens.about.BolaoInfoContent
+import com.cebolao.lotofacil.ui.screens.about.InfoItem
+import com.cebolao.lotofacil.ui.screens.about.LegalInfoContent
+import com.cebolao.lotofacil.ui.screens.about.PrivacyInfoContent
+import com.cebolao.lotofacil.ui.screens.about.ProbabilitiesTable
+import com.cebolao.lotofacil.ui.screens.about.PurposeInfoContent
+import com.cebolao.lotofacil.ui.screens.about.RulesInfoContent
+import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.iconLarge
 
 @Composable
 fun AboutScreen() {
@@ -68,19 +61,19 @@ fun AboutScreen() {
     dialogContent?.let { item ->
         InfoDialog(
             onDismissRequest = { dialogContent = null },
-            dialogTitle = item.title,
+            dialogTitle = stringResource(id = item.titleResId),
             icon = item.icon
         ) { item.content() }
     }
 
     val items = remember {
         listOf(
-            InfoItem(title = "Regras e Prêmios", subtitle = "O manual oficial da Caixa", icon = Icons.Default.Gavel, content = { RulesInfoContent() }),
-            InfoItem(title = "A Realidade dos Números", subtitle = "A matemática da (falta de) sorte", icon = Icons.Default.Calculate, content = { ProbabilitiesTable() }),
-            InfoItem(title = "Bolão: Mais Chances", subtitle = "Dividindo o prêmio (e a aposta)", icon = Icons.Default.Group, content = { BolaoInfoContent() }),
-            InfoItem(title = "Finalidade do App", subtitle = "Para que (não) serve este app", icon = Icons.Default.Lightbulb, content = { PurposeInfoContent() }),
-            InfoItem(title = "O Juridiquês", subtitle = "A parte chata, mas necessária", icon = Icons.Default.Info, content = { LegalInfoContent() }),
-            InfoItem(title = "Sua Privacidade", subtitle = "Como (não) usamos seus dados", icon = Icons.Default.PrivacyTip, content = { PrivacyInfoContent() })
+            InfoItem.Rules(Icons.Default.Gavel, content = { RulesInfoContent() }),
+            InfoItem.Probabilities(Icons.Default.Calculate, content = { ProbabilitiesTable() }),
+            InfoItem.Bolao(Icons.Default.Group, content = { BolaoInfoContent() }),
+            InfoItem.Purpose(Icons.Default.Lightbulb, content = { PurposeInfoContent() }),
+            InfoItem.Legal(Icons.Default.Info, content = { LegalInfoContent() }),
+            InfoItem.Privacy(Icons.Default.PrivacyTip, content = { PrivacyInfoContent() })
         )
     }
 
@@ -88,14 +81,17 @@ fun AboutScreen() {
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.statusBars),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 120.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues(
+            top = dimensionResource(id = R.dimen.about_content_padding), 
+            bottom = dimensionResource(id = R.dimen.about_bottom_padding)
+        ),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.about_card_spacing))
     ) {
         item {
             StudioHero()
         }
-        items(items, key = { it.title }) { info ->
-            AnimateOnEntry(Modifier.padding(horizontal = 20.dp)) {
+        items(items, key = { it.titleResId }) { info ->
+            AnimateOnEntry(Modifier.padding(horizontal = dimensionResource(id = R.dimen.about_horizontal_padding))) {
                 InfoCard(info) { dialogContent = info }
             }
         }
@@ -107,17 +103,21 @@ private fun StudioHero() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 24.dp, start = 24.dp, end = 16.dp),
+            .padding(
+                bottom = dimensionResource(id = R.dimen.spacing_xxl), 
+                start = dimensionResource(id = R.dimen.spacing_lg), 
+                end = dimensionResource(id = R.dimen.spacing_lg)
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             painter = painterResource(R.drawable.logo_cebola),
-            contentDescription = "Logo Cebola Studios",
-            modifier = Modifier.size(80.dp)
+            contentDescription = stringResource(id = R.string.studio_logo_description),
+            modifier = Modifier.size(dimensionResource(id = R.dimen.about_logo_size))
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_lg)))
         Text(stringResource(R.string.studio_name), style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_sm)))
         Text(
             stringResource(R.string.studio_slogan),
             style = MaterialTheme.typography.bodyLarge,
@@ -129,25 +129,26 @@ private fun StudioHero() {
 
 @Composable
 private fun InfoCard(item: InfoItem, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+    ClickableCard(
+        onClick = onClick,
         shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp)
-        )
+        elevation = AppCardDefaults.elevation
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(AppCardDefaults.defaultPadding),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(item.icon, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
-            Spacer(Modifier.width(16.dp))
+            Icon(
+                item.icon, 
+                null, 
+                tint = MaterialTheme.colorScheme.primary, 
+                modifier = Modifier.size(iconLarge())
+            )
+            Spacer(Modifier.width(AppSpacing.md))
             Column(Modifier.weight(1f)) {
-                Text(item.title, style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(id = item.titleResId), style = MaterialTheme.typography.titleMedium)
                 Text(
-                    item.subtitle,
+                    stringResource(id = item.subtitleResId),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

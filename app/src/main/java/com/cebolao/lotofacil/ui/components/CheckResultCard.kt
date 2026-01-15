@@ -28,7 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.CheckResult
+import com.cebolao.lotofacil.domain.model.CheckResult
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import kotlinx.collections.immutable.ImmutableMap
@@ -171,3 +171,4 @@ private fun NoWinsMessage() {
         )
     }
 }
+

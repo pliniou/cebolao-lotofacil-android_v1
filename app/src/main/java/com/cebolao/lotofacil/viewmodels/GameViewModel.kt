@@ -5,8 +5,8 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.CheckResult
-import com.cebolao.lotofacil.data.LotofacilGame
+import com.cebolao.lotofacil.domain.model.CheckResult
+import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.domain.repository.GameRepository
 import com.cebolao.lotofacil.domain.usecase.CheckGameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,7 +37,11 @@ sealed interface GameUiEvent {
 
 @Stable
 data class GameScreenUiState(
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val showClearGamesDialog: Boolean = false,
+    val gameToDelete: LotofacilGame? = null,
+    val analysisResult: GameAnalysisResult? = null,
+    val analysisState: GameAnalysisUiState = GameAnalysisUiState.Idle
 )
 
 @Stable
@@ -59,10 +63,7 @@ sealed interface GameAnalysisUiState {
 class GameViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     private val checkGameUseCase: CheckGameUseCase
-) : ViewModel() {
-
-    private val _events = Channel<GameUiEvent>()
-    val events: Flow<GameUiEvent> = _events.receiveAsFlow()
+) : StateViewModel<GameScreenUiState>(GameScreenUiState()) {
 
     val generatedGames: StateFlow<ImmutableList<LotofacilGame>> = gameRepository.games
         .stateIn(
@@ -71,48 +72,37 @@ class GameViewModel @Inject constructor(
             initialValue = persistentListOf()
         )
 
-    private val _uiState = MutableStateFlow(GameScreenUiState())
-    val uiState: StateFlow<GameScreenUiState> = _uiState.asStateFlow()
+    fun clearUnpinned() = updateState { it.copy(showClearGamesDialog = true) }
 
-    private val _analysisState = MutableStateFlow<GameAnalysisUiState>(GameAnalysisUiState.Idle)
-    val analysisState: StateFlow<GameAnalysisUiState> = _analysisState.asStateFlow()
-
-    fun clearUnpinned() = viewModelScope.launch {
-        _events.send(GameUiEvent.ShowClearGamesDialog)
+    fun confirmClearUnpinned() {
+        viewModelScope.launch {
+            gameRepository.clearUnpinnedGames()
+            updateState { it.copy(showClearGamesDialog = false) }
+        }
     }
 
-    fun confirmClearUnpinned() = viewModelScope.launch {
-        gameRepository.clearUnpinnedGames()
-        _events.send(GameUiEvent.HideClearGamesDialog)
-    }
-
-    fun dismissClearDialog() = viewModelScope.launch {
-        _events.send(GameUiEvent.HideClearGamesDialog)
-    }
+    fun dismissClearDialog() = updateState { it.copy(showClearGamesDialog = false) }
 
     fun togglePinState(gameToToggle: LotofacilGame) = viewModelScope.launch {
         gameRepository.togglePinState(gameToToggle)
     }
 
-    fun requestDeleteGame(game: LotofacilGame) = viewModelScope.launch {
-        _events.send(GameUiEvent.ShowDeleteGameDialog(game))
+    fun requestDeleteGame(game: LotofacilGame) = updateState { it.copy(gameToDelete = game) }
+
+    fun confirmDeleteGame(game: LotofacilGame) {
+        viewModelScope.launch {
+            gameRepository.deleteGame(game)
+            updateState { it.copy(gameToDelete = null) }
+        }
     }
 
-    fun confirmDeleteGame(game: LotofacilGame) = viewModelScope.launch {
-        gameRepository.deleteGame(game)
-        _events.send(GameUiEvent.HideDeleteGameDialog)
-    }
-
-    fun dismissDeleteDialog() = viewModelScope.launch {
-        _events.send(GameUiEvent.HideDeleteGameDialog)
-    }
+    fun dismissDeleteDialog() = updateState { it.copy(gameToDelete = null) }
 
     fun analyzeGame(game: LotofacilGame) {
-        // Prevent duplicate analysis requests
-        if (_analysisState.value is GameAnalysisUiState.Loading) return
+        if (currentState.analysisState is GameAnalysisUiState.Loading) return
         
         viewModelScope.launch {
-            _analysisState.value = GameAnalysisUiState.Loading
+            updateState { it.copy(analysisState = GameAnalysisUiState.Loading) }
             try {
                 val checkUiState = checkGameUseCase(game.numbers)
                     .first { it is CheckerUiState.Success || it is CheckerUiState.Error }
@@ -123,22 +113,25 @@ class GameViewModel @Inject constructor(
                         simpleStats = checkUiState.simpleStats,
                         checkResult = checkUiState.result
                     )
-                    _analysisState.value = GameAnalysisUiState.Success(result)
-                    _events.send(GameUiEvent.ShowAnalysisDialog(result))
+                    updateState { it.copy(
+                        analysisState = GameAnalysisUiState.Success(result),
+                        analysisResult = result
+                    ) }
                 } else {
                     val errorResId = (checkUiState as? CheckerUiState.Error)?.messageResId ?: R.string.error_analysis_failed
-                    _analysisState.value = GameAnalysisUiState.Error(errorResId)
+                    updateState { it.copy(analysisState = GameAnalysisUiState.Error(errorResId)) }
                 }
             } catch (_: Exception) {
-                _analysisState.value = GameAnalysisUiState.Error(R.string.error_analysis_failed)
+                updateState { it.copy(analysisState = GameAnalysisUiState.Error(R.string.error_analysis_failed)) }
             }
         }
     }
 
-    fun dismissAnalysisDialog() = viewModelScope.launch {
-        _events.send(GameUiEvent.HideAnalysisDialog)
-        if (_analysisState.value !is GameAnalysisUiState.Idle) {
-            _analysisState.value = GameAnalysisUiState.Idle
-        }
+    fun dismissAnalysisDialog() = updateState { 
+        it.copy(
+            analysisResult = null,
+            analysisState = GameAnalysisUiState.Idle
+        )
     }
 }
+

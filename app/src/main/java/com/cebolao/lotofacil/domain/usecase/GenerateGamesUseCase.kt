@@ -1,8 +1,8 @@
 package com.cebolao.lotofacil.domain.usecase
 
-import com.cebolao.lotofacil.data.FilterState
-import com.cebolao.lotofacil.data.FilterType
-import com.cebolao.lotofacil.data.LotofacilGame
+import com.cebolao.lotofacil.domain.model.FilterState
+import com.cebolao.lotofacil.domain.model.FilterType
+import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.di.DefaultDispatcher
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.service.GameGenerationException

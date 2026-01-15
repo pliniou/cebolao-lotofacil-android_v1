@@ -33,7 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.LotofacilGame
+import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.CheckResultCard
 import com.cebolao.lotofacil.ui.components.EmptyState
@@ -54,38 +54,9 @@ fun GeneratedGamesScreen(
     gameViewModel: GameViewModel = hiltViewModel()
 ) {
     val games by gameViewModel.generatedGames.collectAsStateWithLifecycle()
-    val analysisState by gameViewModel.analysisState.collectAsStateWithLifecycle()
-    
-    var showClearDialog by remember { mutableStateOf(false) }
-    var gameToDelete by remember { mutableStateOf<LotofacilGame?>(null) }
-    var analysisResult by remember { mutableStateOf<GameAnalysisResult?>(null) }
+    val uiState by gameViewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        gameViewModel.events.collect { event ->
-            when (event) {
-                is GameUiEvent.ShowClearGamesDialog -> {
-                    showClearDialog = true
-                }
-                is GameUiEvent.HideClearGamesDialog -> {
-                    showClearDialog = false
-                }
-                is GameUiEvent.ShowDeleteGameDialog -> {
-                    gameToDelete = event.game
-                }
-                is GameUiEvent.HideDeleteGameDialog -> {
-                    gameToDelete = null
-                }
-                is GameUiEvent.ShowAnalysisDialog -> {
-                    analysisResult = event.result
-                }
-                is GameUiEvent.HideAnalysisDialog -> {
-                    analysisResult = null
-                }
-            }
-        }
-    }
-
-    if (showClearDialog) {
+    if (uiState.showClearGamesDialog) {
         AlertDialog(
             onDismissRequest = { gameViewModel.dismissClearDialog() },
             title = { Text(stringResource(id = R.string.clear_games_title)) },
@@ -103,7 +74,7 @@ fun GeneratedGamesScreen(
         )
     }
 
-    gameToDelete?.let { game ->
+    uiState.gameToDelete?.let { game ->
         AlertDialog(
             onDismissRequest = { gameViewModel.dismissDeleteDialog() },
             title = { Text(stringResource(id = R.string.delete_game_title)) },
@@ -121,9 +92,9 @@ fun GeneratedGamesScreen(
         )
     }
 
-    when (val state = analysisState) {
+    when (val state = uiState.analysisState) {
         is GameAnalysisUiState.Success -> {
-            analysisResult?.let { result ->
+            uiState.analysisResult?.let { result ->
                 GameAnalysisDialog(
                     result = result,
                     onDismissRequest = { gameViewModel.dismissAnalysisDialog() }
@@ -171,7 +142,8 @@ fun GeneratedGamesScreen(
                             IconButton(onClick = { gameViewModel.clearUnpinned() }) {
                                 Icon(
                                     Icons.Default.DeleteSweep, 
-                                    contentDescription = stringResource(id = R.string.clear_unpinned_games)
+                                    contentDescription = stringResource(id = R.string.clear_unpinned_games),
+                                    tint = MaterialTheme.colorScheme.error // Distinctive action
                                 )
                             }
                         }
@@ -184,7 +156,7 @@ fun GeneratedGamesScreen(
                     EmptyState(messageResId = R.string.empty_games_message)
                 }
             } else {
-                itemsIndexed(games, key = { _, game -> game.creationTimestamp }) { index, game ->
+                itemsIndexed(games, key = { _, game -> game.id }) { index, game ->
                     AnimateOnEntry(delayMillis = ((index * 60).coerceAtMost(500)).toLong()) {
                         Box(Modifier.padding(horizontal = AppSpacing.lg)) {
                             GameCard(
@@ -239,3 +211,4 @@ private fun GameAnalysisDialog(
 
     }
 }
+

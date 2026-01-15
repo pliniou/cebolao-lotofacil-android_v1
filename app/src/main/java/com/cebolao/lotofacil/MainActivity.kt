@@ -5,21 +5,21 @@ import android.animation.ObjectAnimator
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.animation.AccelerateInterpolator
+import android.view.animation.AnticipateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.ui.screens.MainScreen
 import com.cebolao.lotofacil.ui.theme.CebolaoLotofacilTheme
@@ -32,34 +32,39 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splash = installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        enableEdgeToEdge()
 
-        var isAppReady by mutableStateOf(false)
-
-        splash.setKeepOnScreenCondition { !isAppReady }
+        // Keep the splash screen on-screen until the ViewModel is ready
+        splashScreen.setKeepOnScreenCondition {
+            mainViewModel.uiState.value.isReady.not()
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            splash.setOnExitAnimationListener { splashView ->
+            splashScreen.setOnExitAnimationListener { splashScreenView ->
+                // Custom exit animation: slide up and fade out
                 val slideUp = ObjectAnimator.ofFloat(
-                    splashView.view,
+                    splashScreenView.view,
                     View.TRANSLATION_Y,
                     0f,
-                    -splashView.view.height.toFloat()
+                    -splashScreenView.view.height.toFloat()
                 )
+                slideUp.interpolator = AnticipateInterpolator()
+                slideUp.duration = 400L
+
                 val fadeOut = ObjectAnimator.ofFloat(
-                    splashView.view,
+                    splashScreenView.view,
                     View.ALPHA,
                     1f,
                     0f
                 )
+                fadeOut.duration = 400L
+
                 AnimatorSet().apply {
-                    interpolator = AccelerateInterpolator()
-                    duration = 400L
                     playTogether(slideUp, fadeOut)
-                    doOnEnd { splashView.remove() }
+                    doOnEnd { splashScreenView.remove() }
                     start()
                 }
             }
@@ -67,7 +72,6 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
-            isAppReady = uiState.isReady
 
             CebolaoLotofacilTheme(
                 darkTheme = isSystemInDarkTheme(),

@@ -1,4 +1,4 @@
-package com.cebolao.lotofacil.data
+package com.cebolao.lotofacil.domain.model
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
@@ -33,7 +33,7 @@ enum class FilterType(
     SOMA_DEZENAS(
         titleRes = R.string.filter_soma_dezenas_title,
         descriptionRes = R.string.filter_soma_dezenas_description,
-        fullRange = 120f..270f, // Soma mínima (1..15) e máxima (11..25)
+        fullRange = 120f..270f,
         defaultRange = 170f..220f,
         icon = Icons.Default.Calculate,
         historicalSuccessRate = 0.72f
@@ -41,7 +41,7 @@ enum class FilterType(
     PARES(
         titleRes = R.string.filter_pares_title,
         descriptionRes = R.string.filter_pares_description,
-        fullRange = 0f..12f, // Existem 12 números pares de 1 a 25
+        fullRange = 0f..12f,
         defaultRange = 6f..9f,
         icon = Icons.Default.Numbers,
         historicalSuccessRate = 0.78f
@@ -57,7 +57,7 @@ enum class FilterType(
     MOLDURA(
         titleRes = R.string.filter_moldura_title,
         descriptionRes = R.string.filter_moldura_description,
-        fullRange = 0f..15f, // Máximo de 15 números no jogo
+        fullRange = 0f..15f,
         defaultRange = 8f..11f,
         icon = Icons.Default.Grid4x4,
         historicalSuccessRate = 0.76f
@@ -81,7 +81,7 @@ enum class FilterType(
     MULTIPLOS_DE_3(
         titleRes = R.string.filter_multiplos_3_title,
         descriptionRes = R.string.filter_multiplos_3_description,
-        fullRange = 0f..8f, // Existem 8 múltiplos de 3
+        fullRange = 0f..8f,
         defaultRange = 3f..6f,
         icon = Icons.Default.Functions,
         historicalSuccessRate = 0.69f

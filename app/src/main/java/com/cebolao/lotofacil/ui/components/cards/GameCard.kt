@@ -37,7 +37,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.LotofacilGame
+import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.NumberBallVariant
 import com.cebolao.lotofacil.ui.components.OptimizedNumberBall
@@ -175,3 +175,4 @@ private fun GameCardActions(
         }
     }
 }
+

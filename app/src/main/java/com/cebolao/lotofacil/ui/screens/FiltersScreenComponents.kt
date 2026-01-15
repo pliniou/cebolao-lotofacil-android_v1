@@ -8,12 +8,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.FilterState
-import com.cebolao.lotofacil.data.FilterType
+import com.cebolao.lotofacil.domain.model.FilterState
+import com.cebolao.lotofacil.domain.model.FilterType
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.FilterCard
 import com.cebolao.lotofacil.ui.components.FilterStatsPanel
@@ -39,7 +40,11 @@ fun FiltersHeader(
                 haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                 onResetFilters()
             }) {
-                Icon(Icons.Default.FilterAlt, androidx.compose.ui.res.stringResource(id = R.string.reset_filters))
+                Icon(
+                    Icons.Default.FilterAlt, 
+                    contentDescription = stringResource(id = R.string.reset_filters),
+                    tint = MaterialTheme.colorScheme.tertiary
+                )
             }
         }
     )

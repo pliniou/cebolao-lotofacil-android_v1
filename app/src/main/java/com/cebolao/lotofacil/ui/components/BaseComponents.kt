@@ -30,10 +30,15 @@ fun AppCard(
     shape: Shape = MaterialTheme.shapes.large,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     contentColor: Color = contentColorFor(backgroundColor),
-    border: BorderStroke? = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+    border: BorderStroke? = null,
     elevation: Dp = AppCardDefaults.elevation,
     content: @Composable () -> Unit
 ) {
+    val defaultBorder = BorderStroke(
+        width = 1.dp,
+        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+    )
+
     Card(
         modifier = modifier,
         shape = shape,
@@ -41,7 +46,7 @@ fun AppCard(
             containerColor = backgroundColor,
             contentColor = contentColor
         ),
-        border = border,
+        border = border ?: defaultBorder,
         elevation = CardDefaults.cardElevation(elevation)
     ) {
         content()

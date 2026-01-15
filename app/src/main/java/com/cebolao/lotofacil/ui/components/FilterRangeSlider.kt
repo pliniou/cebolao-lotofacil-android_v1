@@ -1,10 +1,12 @@
 package com.cebolao.lotofacil.ui.components
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.Text
@@ -57,16 +59,25 @@ private fun ValueIndicator(
     value: Int, 
     alignment: Alignment.Horizontal = Alignment.Start
 ) {
-    Column(horizontalAlignment = alignment) {
+    Column(
+        horizontalAlignment = alignment,
+        modifier = Modifier
+            .background(
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                MaterialTheme.shapes.small
+            )
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+    ) {
         Text(
             label,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Medium
         )
         Text(
             value.toString(),
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.ExtraBold,
             color = MaterialTheme.colorScheme.primary
         )
     }

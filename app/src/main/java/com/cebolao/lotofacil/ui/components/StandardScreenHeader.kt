@@ -1,6 +1,7 @@
 package com.cebolao.lotofacil.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,9 +10,9 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,25 +30,23 @@ fun StandardScreenHeader(
     subtitle: String? = null,
     icon: ImageVector? = null,
     iconPainter: Painter? = null,
-    actions: @Composable RowScope.() -> Unit = {}
+    actions: (@Composable RowScope.() -> Unit)? = null
 ) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                MaterialTheme.colorScheme.surface
-            )
-            .padding(top = AppSpacing.lg, bottom = AppSpacing.sm)
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 1.dp
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = AppSpacing.lg)
+            modifier = Modifier.padding(
+                horizontal = AppSpacing.lg,
+                vertical = AppSpacing.xl
+            )
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -58,24 +57,29 @@ fun StandardScreenHeader(
                             modifier = Modifier
                                 .size(48.dp)
                                 .background(
-                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
-                                    MaterialTheme.shapes.medium
+                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                                    CircleShape
+                                )
+                                .border(
+                                    width = 1.dp,
+                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    shape = CircleShape
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
                             if (icon != null) {
-                                Icon(
+                                androidx.compose.material3.Icon(
                                     imageVector = icon,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(28.dp)
+                                    modifier = Modifier.size(24.dp)
                                 )
-                            } else {
-                                Icon(
-                                    painter = iconPainter!!,
+                            } else if (iconPainter != null) {
+                                androidx.compose.material3.Icon(
+                                    painter = iconPainter,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(28.dp)
+                                    modifier = Modifier.size(24.dp)
                                 )
                             }
                         }
@@ -84,14 +88,13 @@ fun StandardScreenHeader(
                     Column {
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.headlineMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                            style = MaterialTheme.typography.headlineMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
                         )
-                        if (subtitle != null) {
+                        subtitle?.let {
                             Text(
-                                text = subtitle,
+                                text = it,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -99,18 +102,14 @@ fun StandardScreenHeader(
                     }
                 }
                 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
-                ) {
-                    actions()
+                actions?.let {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs),
+                        content = it
+                    )
                 }
             }
-            
-            HorizontalDivider(
-                modifier = Modifier.padding(top = AppSpacing.lg),
-                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-            )
         }
     }
 }

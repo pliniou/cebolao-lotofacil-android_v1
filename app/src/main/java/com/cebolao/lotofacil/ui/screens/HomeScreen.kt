@@ -93,7 +93,7 @@ fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
                 StandardScreenHeader(
                     title = stringResource(id = R.string.cebolao_title),
                     subtitle = stringResource(id = R.string.lotofacil_subtitle),
-                    iconPainter = painterResource(id = R.drawable.ic_lotofacil_logo)
+                    iconPainter = painterResource(id = R.drawable.ic_splashicon)
                 )
             }
             if (uiState.isScreenLoading) {

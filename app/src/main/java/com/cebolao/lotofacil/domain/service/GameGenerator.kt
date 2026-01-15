@@ -1,8 +1,8 @@
 package com.cebolao.lotofacil.domain.service
 
-import com.cebolao.lotofacil.data.FilterState
-import com.cebolao.lotofacil.data.FilterType
-import com.cebolao.lotofacil.data.LotofacilGame
+import com.cebolao.lotofacil.domain.model.FilterState
+import com.cebolao.lotofacil.domain.model.FilterType
+import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.di.DefaultDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -25,35 +25,47 @@ class GameGenerator @Inject constructor(
         lastDraw: Set<Int>? = null,
         maxAttempts: Int = 250_000
     ): List<LotofacilGame> = withContext(defaultDispatcher) {
-        val uniqueGames = linkedMapOf<Set<Int>, LotofacilGame>()
+        val uniqueGames = mutableSetOf<Set<Int>>()
+        val resultList = mutableListOf<LotofacilGame>()
         var attempts = 0
 
-        while (uniqueGames.size < count && attempts < maxAttempts) {
-            val game = generateRandomGame()
-            if (isGameValid(game, activeFilters, lastDraw)) {
-                uniqueGames.putIfAbsent(game.numbers.toSet(), game)
+        val enabledFilters = activeFilters.filter { it.isEnabled }
+
+        while (resultList.size < count && attempts < maxAttempts) {
+            val numbers = generateRandomNumbers()
+            if (uniqueGames.add(numbers)) {
+                val game = LotofacilGame(numbers)
+                if (isGameValid(game, enabledFilters, lastDraw)) {
+                    resultList.add(game)
+                }
             }
             attempts++
         }
 
-        if (uniqueGames.size < count) {
+        if (resultList.size < count) {
             throw GameGenerationException("Não foi possível gerar a quantidade de jogos desejada com os filtros atuais. Tente configurações menos restritivas.")
         }
 
-        return@withContext uniqueGames.values.toList()
+        return@withContext resultList
     }
 
-    private fun generateRandomGame(): LotofacilGame {
-        val selectedNumbers = allNumbers.shuffled(random).take(15).toSet()
-        return LotofacilGame(selectedNumbers)
+    private fun generateRandomNumbers(): Set<Int> {
+        // Optimized selection: Fisher-Yates shuffle variant for small pool
+        val pool = allNumbers.toMutableList()
+        val selection = mutableSetOf<Int>()
+        repeat(15) {
+            val index = random.nextInt(pool.size)
+            selection.add(pool.removeAt(index))
+        }
+        return selection
     }
 
     private fun isGameValid(
         game: LotofacilGame,
-        activeFilters: List<FilterState>,
+        enabledFilters: List<FilterState>,
         lastDraw: Set<Int>?
     ): Boolean {
-        for (filter in activeFilters.filter { it.isEnabled }) {
+        return enabledFilters.all { filter ->
             val value = when (filter.type) {
                 FilterType.SOMA_DEZENAS -> game.sum
                 FilterType.PARES -> game.evens
@@ -64,10 +76,8 @@ class GameGenerator @Inject constructor(
                 FilterType.MULTIPLOS_DE_3 -> game.multiplesOf3
                 FilterType.REPETIDAS_CONCURSO_ANTERIOR -> game.repeatedFrom(lastDraw)
             }
-            if (!filter.containsValue(value)) {
-                return false
-            }
+            filter.containsValue(value)
         }
-        return true
     }
 }
+

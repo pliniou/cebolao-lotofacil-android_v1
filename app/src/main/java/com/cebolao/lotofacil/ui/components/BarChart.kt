@@ -29,7 +29,6 @@ import kotlin.math.roundToInt
 
 @Composable
 fun BarChart(
-    // OTIMIZAÇÃO: Parâmetro alterado para ImmutableList para garantir estabilidade no Compose.
     data: ImmutableList<Pair<String, Int>>,
     modifier: Modifier = Modifier,
     chartHeight: Dp = 200.dp,
@@ -83,11 +82,11 @@ fun BarChart(
     Canvas(modifier = modifier.height(chartHeight)) {
         val yAxisLabelWidth = 36.dp.toPx()
         val xAxisLabelHeight = 36.dp.toPx()
-        val valueLabelHeight = 18.dp.toPx()
+        val valueLabelHeight = 22.dp.toPx()
         val chartAreaWidth = size.width - yAxisLabelWidth
         val chartAreaHeight = size.height - xAxisLabelHeight - valueLabelHeight
 
-        // Desenha uma grade de fundo mais moderna
+        // Draw refined grid
         drawGrid(
             yAxisLabelWidth,
             chartAreaHeight,
@@ -97,7 +96,7 @@ fun BarChart(
             outlineVariant
         )
 
-        val barSpacing = 8.dp.toPx() // Aumentado para melhor respiro
+        val barSpacing = 10.dp.toPx()
         val totalSpacing = barSpacing * (data.size + 1)
         val barWidth = (chartAreaWidth - totalSpacing).coerceAtLeast(0f) / data.size
 
@@ -107,16 +106,24 @@ fun BarChart(
             val left = yAxisLabelWidth + barSpacing + index * (barWidth + barSpacing)
             val barCenterX = left + barWidth / 2
 
-            // Bar background (Glass-like)
+            // Bar background (Subtle surface)
             drawRoundRect(
-                color = surfaceVariant.copy(alpha = 0.1f),
+                color = surfaceVariant.copy(alpha = 0.05f),
                 topLeft = Offset(left, valueLabelHeight),
                 size = Size(barWidth, chartAreaHeight),
-                cornerRadius = CornerRadius(barWidth / 4)
+                cornerRadius = CornerRadius(barWidth / 5)
             )
 
-            // Actual data bar with Gradient and rounded top
+            // Actual data bar with Gradient and Glow effect
             if (barHeight > 0) {
+                // Subtle glow/shadow
+                drawRoundRect(
+                    color = primaryColor.copy(alpha = 0.15f),
+                    topLeft = Offset(left - 2.dp.toPx(), valueLabelHeight + chartAreaHeight - barHeight - 2.dp.toPx()),
+                    size = Size(barWidth + 4.dp.toPx(), barHeight + 4.dp.toPx()),
+                    cornerRadius = CornerRadius(x = barWidth / 2.5f, y = barWidth / 2.5f)
+                )
+
                 drawRoundRect(
                     brush = Brush.verticalGradient(
                         colors = listOf(primaryColor, secondaryColor),
@@ -129,9 +136,11 @@ fun BarChart(
                 )
             }
 
-            // Value text above the bar
-            val valueTextY = valueLabelHeight + chartAreaHeight - barHeight - 6.dp.toPx()
-            if (progressFactor > 0.8f) { // Só mostra o texto quando a animação estiver quase pronta
+            // Value text above the bar with scale animation
+            val valueTextY = valueLabelHeight + chartAreaHeight - barHeight - 8.dp.toPx()
+            if (progressFactor > 0.6f) {
+                val textAlpha = ((progressFactor - 0.6f) * 2.5f).coerceIn(0f, 1f)
+                valuePaint.alpha = (textAlpha * 255).toInt()
                 drawContext.canvas.nativeCanvas.drawText(
                     value.toString(),
                     barCenterX,
@@ -141,7 +150,7 @@ fun BarChart(
             }
 
             // X-Axis Label
-            val labelTextY = size.height - xAxisLabelHeight + 14.dp.toPx()
+            val labelTextY = size.height - xAxisLabelHeight + 16.dp.toPx()
             drawContext.canvas.nativeCanvas.save()
             drawContext.canvas.nativeCanvas.rotate(45f, barCenterX, labelTextY)
             drawContext.canvas.nativeCanvas.drawText(
@@ -164,24 +173,36 @@ private fun DrawScope.drawGrid(
     lineColor: Color
 ) {
     val gridLines = 4
-    val dashEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 4f))
+    val dashEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 8f))
 
     (0..gridLines).forEach { i ->
         val y = topPadding + chartAreaHeight * (1f - i.toFloat() / gridLines)
         val value = (maxValue * i.toFloat() / gridLines).roundToInt()
+        
+        // Horizontal grid line
         drawLine(
-            color = lineColor.copy(alpha = 0.5f),
+            color = lineColor.copy(alpha = 0.2f),
             start = Offset(yAxisLabelWidth, y),
             end = Offset(size.width, y),
             strokeWidth = 1.dp.toPx(),
-            pathEffect = dashEffect
+            pathEffect = if (i == 0) null else dashEffect
         )
+        
+        // Y-Axis labels
         val textY = y + (textPaint.descent() - textPaint.ascent()) / 2 - textPaint.descent()
         drawContext.canvas.nativeCanvas.drawText(
             value.toString(),
-            yAxisLabelWidth - 4.dp.toPx(),
+            yAxisLabelWidth - 6.dp.toPx(),
             textY,
             textPaint
         )
     }
+    
+    // Y-Axis line
+    drawLine(
+        color = lineColor.copy(alpha = 0.3f),
+        start = Offset(yAxisLabelWidth, topPadding),
+        end = Offset(yAxisLabelWidth, topPadding + chartAreaHeight),
+        strokeWidth = 1.5.dp.toPx()
+    )
 }

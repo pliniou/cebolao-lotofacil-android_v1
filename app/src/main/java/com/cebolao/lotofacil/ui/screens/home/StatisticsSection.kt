@@ -2,6 +2,7 @@ package com.cebolao.lotofacil.ui.screens.home
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,9 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.StatisticsReport
+import com.cebolao.lotofacil.domain.model.StatisticsReport
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.BarChart
 import com.cebolao.lotofacil.ui.components.ClickableCard
@@ -135,22 +137,32 @@ private fun TimeWindowSelector(selected: Int, onSelect: (Int) -> Unit) {
 @Composable
 private fun TimeWindowChip(isSelected: Boolean, onClick: () -> Unit, label: String) {
     val container by animateColorAsState(
-        targetValue = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
+        targetValue = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.08f) else MaterialTheme.colorScheme.surface,
+        animationSpec = tween(250),
         label = "chipContainer"
     )
     val content by animateColorAsState(
-        targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+        targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+        animationSpec = tween(250),
         label = "chipContent"
     )
+    val borderColor by animateColorAsState(
+        targetValue = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.15f),
+        animationSpec = tween(250),
+        label = "chipBorder"
+    )
+
     ClickableCard(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
         backgroundColor = container,
-        border = if (!isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)) else null
+        border = BorderStroke(1.dp, borderColor),
+        elevation = if (isSelected) 2.dp else 0.dp
     ) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelLarge,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
             color = content,
             modifier = Modifier.padding(horizontal = AppSpacing.md, vertical = AppSpacing.sm)
         )
@@ -160,24 +172,47 @@ private fun TimeWindowChip(isSelected: Boolean, onClick: () -> Unit, label: Stri
 @Composable
 private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVector, suffix: String) {
     Column(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = Modifier.padding(horizontal = AppSpacing.lg),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
         ) {
-            Icon(icon, null, tint = MaterialTheme.colorScheme.primary)
-            Text(title, style = MaterialTheme.typography.titleMedium)
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    icon, 
+                    null, 
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+        Row(
+            Modifier.fillMaxWidth(), 
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.md, Alignment.CenterHorizontally)
+        ) {
             numbers.forEach { (num, value) ->
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
                 ) {
-                    OptimizedNumberBall(num, size = 40.dp)
-                    Text("$value$suffix", style = MaterialTheme.typography.bodySmall)
+                    OptimizedNumberBall(num, size = 42.dp)
+                    Text(
+                        "$value$suffix", 
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.secondary,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         }

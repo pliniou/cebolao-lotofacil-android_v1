@@ -11,7 +11,7 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.cebolao.lotofacil.data.StatisticsReport
+import com.cebolao.lotofacil.domain.model.StatisticsReport
 import com.cebolao.lotofacil.domain.model.LastDrawStats
 import com.cebolao.lotofacil.R
 
@@ -57,3 +57,4 @@ data class HomeUiState(
     val isLoading: Boolean
         get() = isScreenLoading || isStatsLoading
 }
+

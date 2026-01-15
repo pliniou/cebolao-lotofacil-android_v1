@@ -39,7 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.LotofacilConstants
+import com.cebolao.lotofacil.domain.model.LotofacilConstants
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.viewmodels.GenerationUiState
 import java.math.BigDecimal
@@ -177,3 +177,4 @@ private fun QuantitySelector(
         }
     }
 }
+

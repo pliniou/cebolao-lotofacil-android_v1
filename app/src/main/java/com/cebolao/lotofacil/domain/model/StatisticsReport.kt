@@ -1,4 +1,4 @@
-package com.cebolao.lotofacil.data
+package com.cebolao.lotofacil.domain.model
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Immutable
@@ -36,8 +36,6 @@ data class StatisticsReport(
     val totalDrawsAnalyzed: Int = 0,
     @SerialName("analysis_date")
     val analysisDate: Long = System.currentTimeMillis(),
-    // CORREÇÃO: Adicionada a anotação @Transient para instruir o Kotlinx Serialization
-    // a ignorar este campo, pois o tipo 'Any' não é serializável por padrão, evitando crashes.
     @Transient
     @SerialName("advanced_metrics")
     val advancedMetrics: Map<String, Any> = emptyMap(),

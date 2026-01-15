@@ -1,9 +1,9 @@
 package com.cebolao.lotofacil.domain.usecase
 
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.CheckResult
-import com.cebolao.lotofacil.data.HistoricalDraw
-import com.cebolao.lotofacil.data.LotofacilGame
+import com.cebolao.lotofacil.domain.model.CheckResult
+import com.cebolao.lotofacil.domain.model.HistoricalDraw
+import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.di.DefaultDispatcher
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.service.GameStatsAnalyzer

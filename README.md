@@ -39,7 +39,7 @@ Uma solução da Cebola Studios para gerar jogos da Lotofácil com base em estat
 
 1.  Clone o repositório: `git clone https://github.com/cebola-studios/cebolao-generator.git`
 2.  Abra o projeto no Android Studio e aguarde a sincronização do Gradle.
-3.  Compile o projeto: `./gradlew build`
+3.  Compile o projeto: `./gradlew build` (Certifique-se de usar o JDK 17)
 4.  Execute no seu emulador ou dispositivo.
 
 ## 🏗️ Estrutura do Projeto

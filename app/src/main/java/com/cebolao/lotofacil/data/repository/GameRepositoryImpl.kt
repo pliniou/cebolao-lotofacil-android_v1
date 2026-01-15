@@ -1,6 +1,6 @@
 package com.cebolao.lotofacil.data.repository
 
-import com.cebolao.lotofacil.data.LotofacilGame
+import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.di.ApplicationScope
 import com.cebolao.lotofacil.domain.repository.GameRepository
 import com.cebolao.lotofacil.domain.repository.UserPreferencesRepository
@@ -36,15 +36,16 @@ class GameRepositoryImpl @Inject constructor(
         .map { gamesList -> gamesList.filter { it.isPinned }.toImmutableList() }
         .stateIn(
             scope = repositoryScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Eagerly, // Change to Eagerly for faster first-load UI
             initialValue = persistentListOf()
         )
 
     init {
         repositoryScope.launch {
-            val pinnedGameStrings = userPreferencesRepository.pinnedGames.first()
-            val loadedGames = pinnedGameStrings.mapNotNull { LotofacilGame.fromCompactString(it) }
-            _games.value = loadedGames.toImmutableList()
+            userPreferencesRepository.pinnedGames.first().let { pinnedGameStrings ->
+                val loadedGames = pinnedGameStrings.mapNotNull { LotofacilGame.fromCompactString(it) }
+                _games.update { (it + loadedGames).distinctBy { g -> g.id }.toImmutableList() }
+            }
         }
     }
 
@@ -53,18 +54,19 @@ class GameRepositoryImpl @Inject constructor(
             _games.update { currentGames ->
                 val currentPinned = currentGames.filter { it.isPinned }
                 (currentPinned + newGames)
-                    .distinctBy { it.numbers }
-                    .sortedWith(compareBy<LotofacilGame> { !it.isPinned }.thenByDescending { it.creationTimestamp })
+                    .distinctBy { it.numbers } // Keep uniqueness by numbers for gameplay
+                    .sortedWith(
+                        compareBy<LotofacilGame> { !it.isPinned }
+                            .thenByDescending { it.creationTimestamp }
+                    )
                     .toImmutableList()
             }
         }
     }
 
     override suspend fun clearUnpinnedGames() {
-        gamesMutex.withLock {
-            _games.update { currentGames ->
-                currentGames.filter { it.isPinned }.toImmutableList()
-            }
+        _games.update { currentGames ->
+            currentGames.filter { it.isPinned }.toImmutableList()
         }
     }
 
@@ -73,7 +75,7 @@ class GameRepositoryImpl @Inject constructor(
         gamesMutex.withLock {
             _games.update { currentGames ->
                 currentGames
-                    .map { if (it.numbers == updatedGame.numbers) updatedGame else it }
+                    .map { if (it.id == updatedGame.id) updatedGame else it }
                     .toImmutableList()
             }
         }
@@ -83,7 +85,7 @@ class GameRepositoryImpl @Inject constructor(
     override suspend fun deleteGame(gameToDelete: LotofacilGame) {
         gamesMutex.withLock {
             _games.update { currentGames ->
-                currentGames.filterNot { it.numbers == gameToDelete.numbers }.toImmutableList()
+                currentGames.filterNot { it.id == gameToDelete.id }.toImmutableList()
             }
         }
         if (gameToDelete.isPinned) {
@@ -96,3 +98,4 @@ class GameRepositoryImpl @Inject constructor(
         userPreferencesRepository.savePinnedGames(pinned.map { it.toCompactString() }.toSet())
     }
 }
+

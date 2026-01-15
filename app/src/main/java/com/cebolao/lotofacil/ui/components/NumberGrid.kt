@@ -3,10 +3,11 @@ package com.cebolao.lotofacil.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -30,6 +31,7 @@ interface StableKey {
     val key: Any
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NumberGrid(
     modifier: Modifier = Modifier,
@@ -38,16 +40,18 @@ fun NumberGrid(
 ) {
     val haptic = LocalHapticFeedback.current
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(5),
-        modifier = modifier.padding(8.dp),
+    // Using FlowRow instead of LazyVerticalGrid to avoid nested scrolling issues
+    // and infinite height constraints within LazyColumn.
+    FlowRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .wrapContentHeight(),
         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        maxItemsInEachRow = 5
     ) {
-        items(
-            items = items,
-            key = { it.key }
-        ) { item ->
+        items.forEach { item ->
             Box(
                 modifier = Modifier
                     .clip(CircleShape)

@@ -1,5 +1,6 @@
 package com.cebolao.lotofacil.ui.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,8 +45,13 @@ fun BottomActionsBar(
         tonalElevation = 0.dp,
         color = MaterialTheme.colorScheme.surface
     ) {
-        Column {
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+        Column(
+            modifier = Modifier.border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
+            )
+        ) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -2,8 +2,8 @@ package com.cebolao.lotofacil.viewmodels
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
-import com.cebolao.lotofacil.data.FilterState
-import com.cebolao.lotofacil.data.FilterType
+import com.cebolao.lotofacil.domain.model.FilterState
+import com.cebolao.lotofacil.domain.model.FilterType
 import com.cebolao.lotofacil.domain.repository.GameRepository
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.usecase.GenerateGamesUseCase
@@ -37,94 +37,105 @@ sealed interface GenerationUiState {
 class FiltersViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     private val generateGamesUseCase: GenerateGamesUseCase,
-    historyRepository: HistoryRepository
-) : BaseViewModel() {
-
-    private val _filterStates = MutableStateFlow(FilterType.entries.map { FilterState(type = it) })
-    private val _generationState = MutableStateFlow<GenerationUiState>(GenerationUiState.Idle)
-    private val _lastDraw = MutableStateFlow<Set<Int>?>(null)
-
-    val uiState = combine(
-        _filterStates, _generationState, _lastDraw
-    ) { filters, generation, lastDraw ->
-        val activeFilters = filters.filter { it.isEnabled }
-        FiltersScreenState(
-            filterStates = filters,
-            generationState = generation,
-            lastDraw = lastDraw,
-            activeFiltersCount = activeFilters.size,
-            successProbability = calculateSuccessProbability(activeFilters)
-        )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), FiltersScreenState())
+    private val historyRepository: HistoryRepository
+) : StateViewModel<FiltersScreenState>(FiltersScreenState()) {
 
     init {
+        loadLastDraw()
+    }
+
+    private fun loadLastDraw() {
         viewModelScope.launch {
-            _lastDraw.value = historyRepository.getLastDraw()?.numbers
+            val lastDrawNumbers = historyRepository.getLastDraw()?.numbers
+            updateState { state ->
+                state.copy(
+                    lastDraw = lastDrawNumbers,
+                    filterStates = FilterType.entries.map { FilterState(type = it) }
+                )
+            }
+            updateProbability()
         }
     }
 
-    fun onFilterToggle(type: FilterType, isEnabled: Boolean) =
-        _filterStates.update { it.map { f -> if (f.type == type) f.copy(isEnabled = isEnabled) else f } }
+    fun onFilterToggle(type: FilterType, isEnabled: Boolean) {
+        updateState { state ->
+            state.copy(
+                filterStates = state.filterStates.map { f ->
+                    if (f.type == type) f.copy(isEnabled = isEnabled) else f
+                }
+            )
+        }
+        updateProbability()
+    }
 
     fun onRangeAdjust(type: FilterType, newRange: ClosedFloatingPointRange<Float>) {
-        val roundedStart = newRange.start.roundToInt().toFloat()
-        val roundedEnd = newRange.endInclusive.roundToInt().toFloat()
-        val snappedRange = roundedStart..roundedEnd
-
-        _filterStates.update { currentStates ->
-            currentStates.map { filterState ->
-                if (filterState.type == type && filterState.selectedRange != snappedRange) {
-                    filterState.copy(selectedRange = snappedRange)
-                } else {
-                    filterState
+        val snappedRange = newRange.start.roundToInt().toFloat()..newRange.endInclusive.roundToInt().toFloat()
+        
+        updateState { state ->
+            state.copy(
+                filterStates = state.filterStates.map { f ->
+                    if (f.type == type) f.copy(selectedRange = snappedRange) else f
                 }
-            }
+            )
+        }
+        updateProbability()
+    }
+
+    private fun updateProbability() {
+        updateState { state ->
+            val activeFilters = state.filterStates.filter { it.isEnabled }
+            state.copy(
+                activeFiltersCount = activeFilters.size,
+                successProbability = calculateSuccessProbability(activeFilters)
+            )
         }
     }
 
     fun generateGames(quantity: Int) {
-        val currentState = _generationState.value
-        if (currentState is GenerationUiState.Loading) return
+        if (currentState.generationState is GenerationUiState.Loading) return
         
         viewModelScope.launch {
-            _generationState.value = GenerationUiState.Loading("Criando jogos com base nos seus filtros...")
+            updateState { it.copy(generationState = GenerationUiState.Loading("Criando jogos...")) }
             
             try {
-                generateGamesUseCase(quantity, uiState.value.filterStates)
+                generateGamesUseCase(quantity, currentState.filterStates)
                     .onSuccess { games ->
                         gameRepository.addGeneratedGames(games)
                         navigateToGeneratedGames()
                     }
                     .onFailure { e ->
-                        showSnackbar(e.message ?: "Erro desconhecido")
+                        showSnackbar(e.message ?: "Erro ao gerar jogos")
                     }
             } catch (e: Exception) {
-                showSnackbar(e.message ?: "Erro ao gerar jogos")
+                showSnackbar(e.message ?: "Erro inesperado")
             } finally {
-                _generationState.value = GenerationUiState.Idle
+                updateState { it.copy(generationState = GenerationUiState.Idle) }
             }
         }
     }
 
     fun resetAllFilters() {
-        _filterStates.value = FilterType.entries.map { FilterState(type = it) }
+        updateState { state ->
+            state.copy(
+                filterStates = FilterType.entries.map { FilterState(type = it) },
+                activeFiltersCount = 0,
+                successProbability = 1f
+            )
+        }
     }
 
-    fun requestResetAllFilters() {
-        showResetConfirmation()
-    }
+    fun requestResetAllFilters() = showResetConfirmation()
 
-    fun confirmResetAllFilters() {
-        resetAllFilters()
-    }
+    fun confirmResetAllFilters() = resetAllFilters()
 
     private fun calculateSuccessProbability(activeFilters: List<FilterState>): Float {
         if (activeFilters.isEmpty()) return 1f
         val probability = activeFilters.fold(1.0) { acc, filter ->
             val rangeCoverage = filter.rangePercentage
-            val filterSuccessChance = filter.type.historicalSuccessRate.pow(1 - rangeCoverage)
+            val filterSuccessChance = filter.type.historicalSuccessRate.toDouble().pow(1.0 - rangeCoverage)
             acc * filterSuccessChance
         }
         return probability.toFloat().coerceIn(0f, 1f)
     }
 }
+

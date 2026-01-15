@@ -1,6 +1,6 @@
 package com.cebolao.lotofacil.domain.repository
 
-import com.cebolao.lotofacil.data.HistoricalDraw
+import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 

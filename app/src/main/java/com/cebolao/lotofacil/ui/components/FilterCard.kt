@@ -33,8 +33,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.FilterState
-import com.cebolao.lotofacil.data.FilterType
+import com.cebolao.lotofacil.domain.model.FilterState
+import com.cebolao.lotofacil.domain.model.FilterType
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
@@ -157,3 +157,4 @@ private fun FilterContent(
         modifier = Modifier.padding(top = AppCardDefaults.contentSpacing)
     )
 }
+

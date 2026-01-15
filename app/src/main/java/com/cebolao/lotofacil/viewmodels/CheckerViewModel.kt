@@ -5,8 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.CheckResult
-import com.cebolao.lotofacil.data.LotofacilConstants
+import com.cebolao.lotofacil.domain.model.CheckResult
+import com.cebolao.lotofacil.domain.model.LotofacilConstants
 import com.cebolao.lotofacil.domain.usecase.CheckGameUseCase
 import com.cebolao.lotofacil.navigation.Destination
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +19,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
+
+@Stable
+data class CheckerScreenState(
+    val uiState: CheckerUiState = CheckerUiState.Idle,
+    val selectedNumbers: Set<Int> = emptySet()
+)
 
 @Stable
 sealed interface CheckerUiState {
@@ -35,13 +41,7 @@ sealed interface CheckerUiState {
 class CheckerViewModel @Inject constructor(
     private val checkGameUseCase: CheckGameUseCase,
     savedStateHandle: SavedStateHandle
-) : ViewModel() {
-
-    private val _uiState = MutableStateFlow<CheckerUiState>(CheckerUiState.Idle)
-    val uiState = _uiState.asStateFlow()
-
-    private val _selectedNumbers = MutableStateFlow<Set<Int>>(emptySet())
-    val selectedNumbers = _selectedNumbers.asStateFlow()
+) : StateViewModel<CheckerScreenState>(CheckerScreenState()) {
 
     private var checkJob: Job? = null
 
@@ -49,7 +49,7 @@ class CheckerViewModel @Inject constructor(
         savedStateHandle.get<String?>(Destination.Checker.NUMBERS_ARG)?.let { arg ->
             val numbers = arg.split(',').mapNotNull { it.toIntOrNull() }.toSet()
             if (numbers.isNotEmpty()) {
-                _selectedNumbers.value = numbers
+                updateState { it.copy(selectedNumbers = numbers) }
                 if (numbers.size == LotofacilConstants.GAME_SIZE) {
                     onCheckGameClicked()
                 }
@@ -58,23 +58,26 @@ class CheckerViewModel @Inject constructor(
     }
 
     fun onNumberClicked(number: Int) {
-        if (_uiState.value is CheckerUiState.Loading) return
-        _uiState.value = CheckerUiState.Idle
-        _selectedNumbers.update { currentSelection ->
-            val newSelection = currentSelection.toMutableSet()
+        if (currentState.uiState is CheckerUiState.Loading) return
+        
+        updateState { state ->
+            val newSelection = state.selectedNumbers.toMutableSet()
             if (number in newSelection) {
                 newSelection.remove(number)
             } else if (newSelection.size < LotofacilConstants.GAME_SIZE) {
                 newSelection.add(number)
             }
-            newSelection
+            state.copy(
+                selectedNumbers = newSelection,
+                uiState = CheckerUiState.Idle
+            )
         }
     }
 
     fun onCheckGameClicked() {
-        val selection = _selectedNumbers.value
+        val selection = currentState.selectedNumbers
         if (selection.size != LotofacilConstants.GAME_SIZE) {
-            _uiState.value = CheckerUiState.Error(R.string.error_incomplete_selection, canRetry = false)
+            updateState { it.copy(uiState = CheckerUiState.Error(R.string.error_incomplete_selection, canRetry = false)) }
             return
         }
         checkGame(selection)
@@ -83,16 +86,16 @@ class CheckerViewModel @Inject constructor(
     private fun checkGame(numbers: Set<Int>) {
         checkJob?.cancel()
         checkJob = checkGameUseCase(numbers)
-            .onEach { state -> _uiState.value = state }
+            .onEach { state -> updateState { it.copy(uiState = state) } }
             .catch { _ ->
-                _uiState.value = CheckerUiState.Error(R.string.error_unknown, canRetry = true)
+                updateState { it.copy(uiState = CheckerUiState.Error(R.string.error_unknown, canRetry = true)) }
             }
             .launchIn(viewModelScope)
     }
 
     fun clearSelection() {
         checkJob?.cancel()
-        _selectedNumbers.value = emptySet()
-        _uiState.value = CheckerUiState.Idle
+        updateState { CheckerScreenState() }
     }
 }
+

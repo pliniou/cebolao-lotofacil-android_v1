@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,11 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.LotofacilConstants
+import com.cebolao.lotofacil.domain.model.LotofacilConstants
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.BottomActionsBar
 import com.cebolao.lotofacil.ui.components.CheckResultCard
+import com.cebolao.lotofacil.ui.components.ErrorActions
 import com.cebolao.lotofacil.ui.components.ErrorCard
 import com.cebolao.lotofacil.ui.components.GameStatsList
 import com.cebolao.lotofacil.ui.components.NumberBallItem
@@ -53,65 +55,82 @@ import com.cebolao.lotofacil.viewmodels.CheckerViewModel
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
-fun CheckerScreen(checkerViewModel: CheckerViewModel =  hiltViewModel()) {
-    val checkerState by checkerViewModel.uiState.collectAsStateWithLifecycle()
-    val selectedNumbers by checkerViewModel.selectedNumbers.collectAsStateWithLifecycle()
-    val isButtonEnabled by remember(selectedNumbers, checkerState) {
+fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
+    val screenState by checkerViewModel.uiState.collectAsStateWithLifecycle()
+    val isButtonEnabled by remember(screenState) {
         derivedStateOf {
-            selectedNumbers.size == LotofacilConstants.GAME_SIZE && checkerState !is CheckerUiState.Loading
+            screenState.selectedNumbers.size == LotofacilConstants.GAME_SIZE && screenState.uiState !is CheckerUiState.Loading
         }
     }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        topBar = {
+            StandardScreenHeader(
+                title = stringResource(id = R.string.check_game_title),
+                subtitle = stringResource(id = R.string.check_game_subtitle),
+                icon = Icons.AutoMirrored.Filled.FactCheck
+            )
+        },
         bottomBar = {
             BottomActionsBar(
-                selectedCount = selectedNumbers.size,
-                isLoading = checkerState is CheckerUiState.Loading,
+                selectedCount = screenState.selectedNumbers.size,
+                isLoading = screenState.uiState is CheckerUiState.Loading,
                 isButtonEnabled = isButtonEnabled,
-                onClearClick = { checkerViewModel.clearSelection() },
-                onCheckClick = { checkerViewModel.onCheckGameClicked() }
+                onClearClick = checkerViewModel::clearSelection,
+                onCheckClick = checkerViewModel::onCheckGameClicked
             )
-        }
-    ) { innerPadding ->
-        LazyColumn(
+        },
+        contentWindowInsets = WindowInsets.statusBars
+    ) { paddingValues ->
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .windowInsetsPadding(WindowInsets.statusBars),
-            contentPadding = PaddingValues(
-                bottom = AppSpacing.xxxl
-            ),
-            verticalArrangement = Arrangement.spacedBy(AppSpacing.xl)
+                .padding(paddingValues)
+                .windowInsetsPadding(WindowInsets.statusBars)
         ) {
-            item {
-                StandardScreenHeader(
-                    title = stringResource(id = R.string.check_game_title),
-                    subtitle = stringResource(id = R.string.check_game_subtitle),
-                    icon = Icons.AutoMirrored.Filled.FactCheck
-                )
-            }
-            item {
-                AnimateOnEntry(delayMillis = 100L) {
-                    Box(Modifier.padding(horizontal = AppSpacing.lg)) {
-                        NumberSelectionCard(
-                            selectedNumbers = selectedNumbers,
-                            onNumberClick = { checkerViewModel.onNumberClicked(it) }
-                        )
-                    }
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(AppSpacing.lg),
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
+            ) {
+                item {
+                    NumberGridSection(
+                        selectedNumbers = screenState.selectedNumbers,
+                        onNumberClicked = checkerViewModel::onNumberClicked
+                    )
                 }
-            }
-            item {
-                Box(Modifier.padding(horizontal = AppSpacing.lg)) {
+
+                item {
+                    val currentUiState = screenState.uiState
                     AnimatedContent(
-                        targetState = checkerState,
-                        label = "result-content"
+                        targetState = currentUiState,
+                        label = "checker_result_content"
                     ) { state ->
                         when (state) {
-                            is CheckerUiState.Success -> ResultSection(state)
-                            is CheckerUiState.Error -> ErrorCard(state.messageResId)
-                            is CheckerUiState.Loading -> CheckerResultSkeleton()
-                            else -> {}
+                            is CheckerUiState.Idle -> { /* Nothing shown */ }
+                            is CheckerUiState.Loading -> {
+                                CheckerLoadingContent(state.progress, state.message)
+                            }
+                            is CheckerUiState.Success -> {
+                                CheckerSuccessContent(
+                                    result = state.result,
+                                    stats = state.simpleStats
+                                )
+                            }
+                            is CheckerUiState.Error -> {
+                                ErrorCard(
+                                    messageResId = state.messageResId,
+                                    actions = {
+                                        if (state.canRetry) {
+                                            ErrorActions(
+                                                onRetry = checkerViewModel::onCheckGameClicked,
+                                                retryText = stringResource(id = R.string.try_again)
+                                            )
+                                        }
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -121,64 +140,10 @@ fun CheckerScreen(checkerViewModel: CheckerViewModel =  hiltViewModel()) {
 }
 
 @Composable
-private fun CheckerResultSkeleton() {
-    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        repeat(3) {
-            AppCard(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.padding(AppCardDefaults.defaultPadding),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Box(Modifier.size(150.dp, 20.dp).clip(MaterialTheme.shapes.small).shimmer())
-                    Box(Modifier.fillMaxWidth().height(80.dp).clip(MaterialTheme.shapes.medium).shimmer())
-                }
-            }
-        }
-    }
-}
-
-
-@Composable
-private fun NumberSelectionCard(
+private fun NumberGridSection(
     selectedNumbers: Set<Int>,
-    onNumberClick: (Int) -> Unit
+    onNumberClicked: (Int) -> Unit
 ) {
-    AppCard(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = AppCardDefaults.elevation
-    ) {
-        Box(Modifier.padding(AppCardDefaults.defaultPadding)) {
-            val numberItems = remember(selectedNumbers) {
-                val selectionSize = selectedNumbers.size
-                (1..25).map { number ->
-                    val isSelected = number in selectedNumbers
-                    NumberBallItem(
-                        number = number,
-                        isSelected = isSelected,
-                        isDisabled = selectionSize >= LotofacilConstants.GAME_SIZE && !isSelected
-                    )
-                }
-            }
-            
-            NumberGrid(
-                items = numberItems,
-                onNumberClick = onNumberClick
-            )
-        }
-    }
-}
-
-@Composable
-private fun ResultSection(state: CheckerUiState.Success) {
-    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        CheckResultCard(state.result)
-        SimpleStatsCard(state.simpleStats)
-        BarChartCard(state.result)
-    }
-}
-
-@Composable
-private fun SimpleStatsCard(stats: ImmutableList<Pair<String, String>>) {
     AppCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = AppCardDefaults.elevation
@@ -187,48 +152,100 @@ private fun SimpleStatsCard(stats: ImmutableList<Pair<String, String>>) {
             modifier = Modifier.padding(AppCardDefaults.defaultPadding),
             verticalArrangement = Arrangement.spacedBy(AppCardDefaults.contentSpacing)
         ) {
-            Text(stringResource(id = R.string.game_stats_title), style = MaterialTheme.typography.titleMedium)
-            HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
-            GameStatsList(stats = stats)
+            Text(
+                text = stringResource(id = R.string.selected_numbers_progress, selectedNumbers.size),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+            val gridItems = remember(selectedNumbers) {
+                (1..25).map { num ->
+                    NumberBallItem(
+                        number = num,
+                        isSelected = selectedNumbers.contains(num),
+                        isDisabled = false
+                    )
+                }
+            }
+            NumberGrid(
+                items = gridItems,
+                onNumberClick = onNumberClicked
+            )
         }
     }
 }
 
 @Composable
-private fun BarChartCard(result: com.cebolao.lotofacil.data.CheckResult) {
-    AppCard(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = AppCardDefaults.elevation
-    ) {
+private fun CheckerLoadingContent(progress: Float, message: String) {
+    AppCard(modifier = Modifier.fillMaxWidth()) {
         Column(
-            Modifier.padding(AppCardDefaults.defaultPadding),
-            verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+            modifier = Modifier.padding(AppSpacing.lg),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
         ) {
-            RecentHitsChartContent(recentHits = result.recentHits)
+            Text(text = message, style = MaterialTheme.typography.bodyMedium)
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier.fillMaxWidth(),
+                strokeCap = StrokeCap.Round
+            )
+            CheckerResultSkeleton()
         }
     }
 }
 
 @Composable
-private fun SelectionProgress(count: Int) {
-    val progress = count / 15f
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        LinearProgressIndicator(
-            progress = { progress },
+private fun CheckerSuccessContent(
+    result: com.cebolao.lotofacil.domain.model.CheckResult,
+    stats: ImmutableList<Pair<String, String>>
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)) {
+        AnimateOnEntry {
+            CheckResultCard(result = result)
+        }
+
+        AnimateOnEntry(delayMillis = 100) {
+            AppCard(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier.padding(AppCardDefaults.defaultPadding),
+                    verticalArrangement = Arrangement.spacedBy(AppCardDefaults.contentSpacing)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.game_stats_title),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    GameStatsList(stats = stats)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+                    RecentHitsChartContent(recentHits = result.recentHits)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CheckerResultSkeleton() {
+    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.md)) {
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(6.dp)
-                .clip(MaterialTheme.shapes.small),
-            strokeCap = StrokeCap.Round
+                .height(100.dp)
+                .clip(MaterialTheme.shapes.medium)
+                .shimmer()
         )
-        Text(
-            stringResource(id = R.string.selected_numbers_progress, count),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+        ) {
+            repeat(3) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(60.dp)
+                        .clip(MaterialTheme.shapes.small)
+                        .shimmer()
+                )
+            }
+        }
     }
 }

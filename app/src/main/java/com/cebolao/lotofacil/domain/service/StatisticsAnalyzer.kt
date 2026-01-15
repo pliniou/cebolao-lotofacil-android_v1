@@ -1,8 +1,8 @@
 package com.cebolao.lotofacil.domain.service
 
-import com.cebolao.lotofacil.data.HistoricalDraw
-import com.cebolao.lotofacil.data.LotofacilConstants
-import com.cebolao.lotofacil.data.StatisticsReport
+import com.cebolao.lotofacil.domain.model.HistoricalDraw
+import com.cebolao.lotofacil.domain.model.LotofacilConstants
+import com.cebolao.lotofacil.domain.model.StatisticsReport
 import com.cebolao.lotofacil.di.DefaultDispatcher
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
@@ -29,16 +29,18 @@ class StatisticsAnalyzer @Inject constructor(
             val distributionsDeferred = async { calculateAllDistributions(draws) }
             val averageSumDeferred = async { calculateAverageSum(draws) }
 
+            val distributions = distributionsDeferred.await()
+
             StatisticsReport(
                 mostFrequentNumbers = mostFrequentDeferred.await(),
                 mostOverdueNumbers = mostOverdueDeferred.await(),
-                evenDistribution = distributionsDeferred.await().evenDistribution,
-                primeDistribution = distributionsDeferred.await().primeDistribution,
-                frameDistribution = distributionsDeferred.await().frameDistribution,
-                portraitDistribution = distributionsDeferred.await().portraitDistribution,
-                fibonacciDistribution = distributionsDeferred.await().fibonacciDistribution,
-                multiplesOf3Distribution = distributionsDeferred.await().multiplesOf3Distribution,
-                sumDistribution = distributionsDeferred.await().sumDistribution,
+                evenDistribution = distributions.evenDistribution,
+                primeDistribution = distributions.primeDistribution,
+                frameDistribution = distributions.frameDistribution,
+                portraitDistribution = distributions.portraitDistribution,
+                fibonacciDistribution = distributions.fibonacciDistribution,
+                multiplesOf3Distribution = distributions.multiplesOf3Distribution,
+                sumDistribution = distributions.sumDistribution,
                 averageSum = averageSumDeferred.await(),
                 totalDrawsAnalyzed = draws.size,
                 analysisDate = System.currentTimeMillis()
@@ -53,9 +55,11 @@ class StatisticsAnalyzer @Inject constructor(
                 if (number in 1..25) frequencies[number]++
             }
         }
-        return (1..25).map { number -> number to frequencies[number] }
+        return (1..25).asSequence()
+            .map { it to frequencies[it] }
             .sortedByDescending { it.second }
             .take(TOP_NUMBERS_COUNT)
+            .toList()
     }
 
     private fun calculateMostOverdue(draws: List<HistoricalDraw>): List<Pair<Int, Int>> {
@@ -72,44 +76,50 @@ class StatisticsAnalyzer @Inject constructor(
             }
         }
 
-        return (1..25).map { number ->
-            val lastSeen = lastSeenMap[number]
-            val overdue = if (lastSeen > 0) lastContestNumber - lastSeen else draws.size
-            number to overdue
-        }.sortedByDescending { it.second }.take(TOP_NUMBERS_COUNT)
+        return (1..25).asSequence()
+            .map { number ->
+                val lastSeen = lastSeenMap[number]
+                val overdue = if (lastSeen > 0) lastContestNumber - lastSeen else draws.size
+                number to overdue
+            }
+            .sortedByDescending { it.second }
+            .take(TOP_NUMBERS_COUNT)
+            .toList()
     }
 
-    private suspend fun calculateAllDistributions(draws: List<HistoricalDraw>): DistributionResults {
-        return coroutineScope {
-            val evenDeferred = async { calculateDistribution(draws) { it.count { num -> num % 2 == 0 } } }
-            val primeDeferred = async { calculateDistribution(draws) { it.count { num -> num in LotofacilConstants.PRIMOS } } }
-            val frameDeferred = async { calculateDistribution(draws) { it.count { num -> num in LotofacilConstants.MOLDURA } } }
-            val portraitDeferred = async { calculateDistribution(draws) { it.count { num -> num in LotofacilConstants.MIOLO } } }
-            val fibonacciDeferred = async { calculateDistribution(draws) { it.count { num -> num in LotofacilConstants.FIBONACCI } } }
-            val multiplesOf3Deferred = async { calculateDistribution(draws) { it.count { num -> num % 3 == 0 } } }
-            val sumDeferred = async { calculateDistribution(draws, 10) { it.sum() } }
+    private suspend fun calculateAllDistributions(draws: List<HistoricalDraw>): DistributionResults = coroutineScope {
+        val even = async { calculateDistribution(draws) { it.evens } }
+        val prime = async { calculateDistribution(draws) { it.primes } }
+        val frame = async { calculateDistribution(draws) { it.frame } }
+        val portrait = async { calculateDistribution(draws) { it.portrait } }
+        val fibonacci = async { calculateDistribution(draws) { it.fibonacci } }
+        val multiplesOf3 = async { calculateDistribution(draws) { it.multiplesOf3 } }
+        val sum = async { calculateDistribution(draws, 10) { it.sum } }
 
-            DistributionResults(
-                evenDistribution = evenDeferred.await(),
-                primeDistribution = primeDeferred.await(),
-                frameDistribution = frameDeferred.await(),
-                portraitDistribution = portraitDeferred.await(),
-                fibonacciDistribution = fibonacciDeferred.await(),
-                multiplesOf3Distribution = multiplesOf3Deferred.await(),
-                sumDistribution = sumDeferred.await()
-            )
-        }
+        DistributionResults(
+            evenDistribution = even.await(),
+            primeDistribution = prime.await(),
+            frameDistribution = frame.await(),
+            portraitDistribution = portrait.await(),
+            fibonacciDistribution = fibonacci.await(),
+            multiplesOf3Distribution = multiplesOf3.await(),
+            sumDistribution = sum.await()
+        )
     }
 
-    private fun calculateDistribution(draws: List<HistoricalDraw>, grouping: Int = 1, valueExtractor: (Set<Int>) -> Int): Map<Int, Int> {
+    private fun calculateDistribution(
+        draws: List<HistoricalDraw>,
+        grouping: Int = 1,
+        valueExtractor: (HistoricalDraw) -> Int
+    ): Map<Int, Int> {
         return draws.groupingBy { draw ->
-            (valueExtractor(draw.numbers) / grouping) * grouping
+            (valueExtractor(draw) / grouping) * grouping
         }.eachCount()
     }
 
     private fun calculateAverageSum(draws: List<HistoricalDraw>): Float {
         if (draws.isEmpty()) return 0f
-        return draws.map { it.numbers.sum() }.average().toFloat()
+        return draws.map { it.sum }.average().toFloat()
     }
 
     private data class DistributionResults(
@@ -122,3 +132,4 @@ class StatisticsAnalyzer @Inject constructor(
         val sumDistribution: Map<Int, Int>
     )
 }
+

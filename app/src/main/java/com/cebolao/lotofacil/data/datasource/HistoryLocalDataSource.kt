@@ -2,8 +2,8 @@ package com.cebolao.lotofacil.data.datasource
 
 import android.content.Context
 import android.util.Log
-import com.cebolao.lotofacil.data.HistoricalDraw
-import com.cebolao.lotofacil.data.LotofacilConstants
+import com.cebolao.lotofacil.domain.model.HistoricalDraw
+import com.cebolao.lotofacil.domain.model.LotofacilConstants
 import com.cebolao.lotofacil.domain.repository.UserPreferencesRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -125,3 +125,4 @@ class HistoryLocalDataSourceImpl @Inject constructor(
         }
     }
 }
+

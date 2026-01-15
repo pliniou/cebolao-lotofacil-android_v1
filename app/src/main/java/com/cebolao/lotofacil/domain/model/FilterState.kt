@@ -1,4 +1,4 @@
-package com.cebolao.lotofacil.data
+package com.cebolao.lotofacil.domain.model
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Immutable

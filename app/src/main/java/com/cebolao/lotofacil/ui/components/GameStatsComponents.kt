@@ -1,11 +1,15 @@
 package com.cebolao.lotofacil.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -55,9 +59,27 @@ fun RecentHitsChartContent(
     modifier: Modifier = Modifier,
     chartHeight: Dp = 180.dp
 ) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)) {
-        Text(stringResource(id = R.string.recent_hits_title), style = MaterialTheme.typography.titleMedium)
-        HorizontalDivider(modifier = Modifier.padding(vertical = AppSpacing.xs))
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                // Using a small dot or icon for chart header
+                Box(Modifier.size(8.dp).background(MaterialTheme.colorScheme.primary, CircleShape))
+            }
+            Text(stringResource(id = R.string.recent_hits_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        }
+        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.05f))
+        
         val chartData = remember(recentHits) {
             recentHits.map { it.first.toString().takeLast(4) to it.second }.toImmutableList()
         }
@@ -69,6 +91,7 @@ fun RecentHitsChartContent(
             maxValue = maxValue,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = AppSpacing.sm)
                 .height(chartHeight)
         )
     }

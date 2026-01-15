@@ -23,8 +23,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.FilterState
-import com.cebolao.lotofacil.data.RestrictivenessCategory
+import com.cebolao.lotofacil.domain.model.FilterState
+import com.cebolao.lotofacil.domain.model.RestrictivenessCategory
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
@@ -97,16 +97,16 @@ private fun FilterRestrictiveness(probability: Float) {
 }
 
 @Composable
-private fun FilterStatistics(filters: List<FilterState>) {
+private fun FilterStatistics(activeFilters: List<FilterState>) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        if (filters.isEmpty()) {
+        if (activeFilters.isEmpty()) {
             Text(
                 stringResource(id = R.string.no_active_filters),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         } else {
-            filters.filter { it.isEnabled }.forEach { filter ->
+            activeFilters.forEach { filter ->
                 FilterStatRow(filter)
             }
         }
@@ -147,3 +147,4 @@ private fun RestrictivenessChip(category: RestrictivenessCategory) {
         )
     }
 }
+

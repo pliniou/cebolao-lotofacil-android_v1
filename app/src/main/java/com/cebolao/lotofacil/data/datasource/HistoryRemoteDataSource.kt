@@ -1,7 +1,7 @@
 package com.cebolao.lotofacil.data.datasource
 
 import android.util.Log
-import com.cebolao.lotofacil.data.HistoricalDraw
+import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.data.network.ApiService
 import com.cebolao.lotofacil.data.network.LotofacilApiResult
 import kotlinx.coroutines.Dispatchers

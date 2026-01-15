@@ -2,6 +2,7 @@ package com.cebolao.lotofacil.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -35,10 +36,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.ClickableCard
@@ -100,30 +105,50 @@ fun AboutScreen() {
 
 @Composable
 private fun StudioHero() {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                bottom = dimensionResource(id = R.dimen.spacing_xxl), 
-                start = dimensionResource(id = R.dimen.spacing_lg), 
+                bottom = dimensionResource(id = R.dimen.spacing_xxl),
+                start = dimensionResource(id = R.dimen.spacing_lg),
                 end = dimensionResource(id = R.dimen.spacing_lg)
             ),
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentAlignment = Alignment.Center
     ) {
+        // Studio Hero as background/decorative element
         Image(
-            painter = painterResource(R.drawable.logo_cebola),
-            contentDescription = stringResource(id = R.string.studio_logo_description),
-            modifier = Modifier.size(dimensionResource(id = R.dimen.about_logo_size))
+            painter = painterResource(R.drawable.ic_studiohero),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(180.dp)
+                .alpha(0.15f),
+            contentScale = ContentScale.Crop
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_lg)))
-        Text(stringResource(R.string.studio_name), style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_sm)))
-        Text(
-            stringResource(R.string.studio_slogan),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_cebolalogo),
+                contentDescription = stringResource(id = R.string.studio_logo_description),
+                modifier = Modifier.size(dimensionResource(id = R.dimen.about_logo_size))
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_lg)))
+            Text(
+                stringResource(R.string.studio_name),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_sm)))
+            Text(
+                stringResource(R.string.studio_slogan),
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 

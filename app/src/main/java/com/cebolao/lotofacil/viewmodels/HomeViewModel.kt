@@ -3,7 +3,7 @@ package com.cebolao.lotofacil.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.data.HistoricalDraw
+import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.di.DefaultDispatcher
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.repository.SyncStatus
@@ -46,14 +46,12 @@ class HomeViewModel @Inject constructor(
     private val historyRepository: HistoryRepository,
     private val statisticsAnalyzer: StatisticsAnalyzer,
     @DefaultDispatcher private val dispatcher: CoroutineDispatcher
-) : BaseViewModel() {
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState = _uiState.asStateFlow()
+) : StateViewModel<HomeUiState>(HomeUiState()) {
 
     /**
      * Computed statistics chip values for UI display.
      */
-    val statChipValues: StateFlow<StatChipValues?> = _uiState.map { state ->
+    val statChipValues: StateFlow<StatChipValues?> = uiState.map { state ->
         state.lastDrawStats?.let { stats ->
             StatChipValues(
                 sum = stats.sum.toString(),
@@ -87,11 +85,11 @@ class HomeViewModel @Inject constructor(
     fun retryInitialLoad() = loadInitialData()
 
     private fun loadInitialData() = viewModelScope.launch(dispatcher) {
-        _uiState.update { it.copy(isScreenLoading = true, errorMessageResId = null) }
+        updateState { it.copy(isScreenLoading = true, errorMessageResId = null) }
         getHomeScreenDataUseCase().collect { result ->
             result.onSuccess { data ->
                 fullHistory = historyRepository.getHistory()
-                _uiState.update {
+                updateState {
                     it.copy(
                         isScreenLoading = false,
                         lastDrawStats = data.lastDrawStats,
@@ -99,7 +97,7 @@ class HomeViewModel @Inject constructor(
                     )
                 }
             }.onFailure {
-                _uiState.update {
+                updateState {
                     it.copy(
                         isScreenLoading = false,
                         errorMessageResId = R.string.error_load_data_failed
@@ -110,12 +108,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onTimeWindowSelected(window: Int) {
-        val currentState = _uiState.value
         if (currentState.selectedTimeWindow == window) return
         
         analysisJob?.cancel()
         analysisJob = viewModelScope.launch(dispatcher) {
-            _uiState.update { 
+            updateState { 
                 it.copy(
                     isStatsLoading = true, 
                     selectedTimeWindow = window,
@@ -131,7 +128,7 @@ class HomeViewModel @Inject constructor(
             val drawsToAnalyze = if (window > 0) fullHistory.take(window) else fullHistory
             val newStats = statisticsAnalyzer.analyze(drawsToAnalyze)
             
-            _uiState.update { 
+            updateState { 
                 it.copy(
                     statistics = newStats, 
                     isStatsLoading = false
@@ -141,9 +138,8 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onPatternSelected(pattern: StatisticPattern) {
-        val currentState = _uiState.value
         if (currentState.selectedPattern == pattern) return
-        
-        _uiState.update { it.copy(selectedPattern = pattern) }
+        updateState { it.copy(selectedPattern = pattern) }
     }
 }
+

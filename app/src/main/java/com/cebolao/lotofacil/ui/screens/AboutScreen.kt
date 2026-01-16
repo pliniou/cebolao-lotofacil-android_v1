@@ -87,16 +87,16 @@ fun AboutScreen() {
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.statusBars),
         contentPadding = PaddingValues(
-            top = dimensionResource(id = R.dimen.about_content_padding), 
-            bottom = dimensionResource(id = R.dimen.about_bottom_padding)
+            top = AppSpacing.lg, 
+            bottom = 120.dp
         ),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.about_card_spacing))
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
     ) {
         item {
             StudioHero()
         }
         items(items, key = { it.titleResId }) { info ->
-            AnimateOnEntry(Modifier.padding(horizontal = dimensionResource(id = R.dimen.about_horizontal_padding))) {
+            AnimateOnEntry(Modifier.padding(horizontal = AppSpacing.xl)) {
                 InfoCard(info) { dialogContent = info }
             }
         }
@@ -109,9 +109,9 @@ private fun StudioHero() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                bottom = dimensionResource(id = R.dimen.spacing_xxl),
-                start = dimensionResource(id = R.dimen.spacing_lg),
-                end = dimensionResource(id = R.dimen.spacing_lg)
+                bottom = AppSpacing.xxl,
+                start = AppSpacing.lg,
+                end = AppSpacing.lg
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -132,16 +132,16 @@ private fun StudioHero() {
             Image(
                 painter = painterResource(R.drawable.ic_cebolalogo),
                 contentDescription = stringResource(id = R.string.studio_logo_description),
-                modifier = Modifier.size(dimensionResource(id = R.dimen.about_logo_size))
+                modifier = Modifier.size(80.dp)
             )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_lg)))
+            Spacer(modifier = Modifier.height(AppSpacing.lg))
             Text(
                 stringResource(R.string.studio_name),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
             )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.spacing_sm)))
+            Spacer(modifier = Modifier.height(AppSpacing.sm))
             Text(
                 stringResource(R.string.studio_slogan),
                 style = MaterialTheme.typography.bodyLarge,

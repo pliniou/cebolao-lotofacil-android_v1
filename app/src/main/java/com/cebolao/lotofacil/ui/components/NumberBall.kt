@@ -5,7 +5,6 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -19,8 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -44,19 +41,6 @@ fun NumberBall(
     isDisabled: Boolean = false,
     variant: NumberBallVariant = NumberBallVariant.Primary
 ) {
-    val tonalElevation by animateDpAsState(
-        targetValue = when {
-            isSelected -> AppElevation.md
-            isHighlighted -> AppElevation.sm
-            else -> AppElevation.xs
-        },
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "elevation"
-    )
-
     val (containerColor, contentColor, borderColor) = getBallColors(
         isSelected = isSelected,
         isHighlighted = isHighlighted,
@@ -68,20 +52,9 @@ fun NumberBall(
     val animatedContentColor by animateColorAsState(contentColor, tween(250), label = "contentColor")
     val animatedBorderColor by animateColorAsState(borderColor, tween(250), label = "borderColor")
 
-    // Efeito de brilho externo (glow) para selecionados
-    val glowColor = if (isSelected) animatedContainerColor.copy(alpha = 0.4f) else Color.Transparent
-
     Surface(
         modifier = modifier
             .size(size)
-            .drawBehind {
-                if (isSelected) {
-                    drawCircle(
-                        color = glowColor,
-                        radius = size.toPx() * 0.65f
-                    )
-                }
-            }
             .clip(CircleShape)
             .border(
                 width = if (isHighlighted && !isSelected) 1.5.dp else 0.5.dp,
@@ -99,27 +72,18 @@ fun NumberBall(
             },
         shape = CircleShape,
         color = animatedContainerColor,
-        tonalElevation = tonalElevation
+        tonalElevation = if (isSelected) AppElevation.sm else AppElevation.none
     ) {
         val formattedNumber = remember(number) { "%02d".format(number) }
         
         Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.background(
-                Brush.radialGradient(
-                    colors = listOf(
-                        Color.White.copy(alpha = 0.15f),
-                        Color.Transparent
-                    ),
-                    center = androidx.compose.ui.geometry.Offset(x = size.value * 0.3f, y = size.value * 0.3f)
-                )
-            )
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = formattedNumber,
                 color = animatedContentColor,
                 style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = (size.value / 3.0).sp,
+                    fontSize = (size.value / 2.6).sp, // Slightly larger font for better legibility
                     fontWeight = FontWeight.Bold
                 )
             )

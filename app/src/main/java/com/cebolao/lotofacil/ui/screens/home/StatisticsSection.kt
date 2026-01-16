@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -252,7 +253,10 @@ private fun DistributionCharts(
                 StatisticPattern.MULTIPLES_OF_3 -> stats.multiplesOf3Distribution
             }.toList().sortedBy { it.first }.map { it.first.toString() to it.second }.toImmutableList()
         }
-        val max = remember(data) { (data.maxOfOrNull { it.second } ?: 1) }
+        // Optimize max calculation with derivedStateOf to avoid recalculating on every recomposition
+        val max by remember(data) { 
+            derivedStateOf { (data.maxOfOrNull { it.second } ?: 1) }
+        }
         AnimatedContent(targetState = data, label = "chart") { list ->
             if (list.isNotEmpty()) {
                 BarChart(

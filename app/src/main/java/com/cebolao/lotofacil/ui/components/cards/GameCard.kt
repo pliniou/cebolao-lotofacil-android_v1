@@ -27,7 +27,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -59,6 +61,12 @@ fun GameCard(
     analyzeIcon: ImageVector = Icons.Default.Analytics
 ) {
     val haptic = LocalHapticFeedback.current
+    
+    // Optimize expensive calculations with derivedStateOf
+    val sortedNumbers by remember(game.numbers) {
+        derivedStateOf { game.numbers.sorted() }
+    }
+    
     val isPinned = game.isPinned
 
     val elevation by animateDpAsState(
@@ -93,7 +101,7 @@ fun GameCard(
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                 maxItemsInEachRow = 5
             ) {
-                game.numbers.sorted().forEach { number ->
+                sortedNumbers.forEach { number ->
                     NumberBall(
                         number = number, 
                         size = 38.dp, 

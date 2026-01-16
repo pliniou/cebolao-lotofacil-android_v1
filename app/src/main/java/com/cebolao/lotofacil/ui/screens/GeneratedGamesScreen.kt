@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +56,14 @@ fun GeneratedGamesScreen(
 ) {
     val games by gameViewModel.generatedGames.collectAsStateWithLifecycle()
     val uiState by gameViewModel.uiState.collectAsStateWithLifecycle()
+    
+    // Optimize expensive calculations with derivedStateOf
+    val hasUnpinnedGames by remember {
+        derivedStateOf { games.any { !it.isPinned } }
+    }
+    val isGamesEmpty by remember {
+        derivedStateOf { games.isEmpty() }
+    }
 
     if (uiState.showClearGamesDialog) {
         AlertDialog(
@@ -138,7 +147,7 @@ fun GeneratedGamesScreen(
                     subtitle = stringResource(id = R.string.my_games_subtitle),
                     icon = Icons.AutoMirrored.Filled.ListAlt,
                     actions = {
-                        if (games.any { !it.isPinned }) {
+                        if (hasUnpinnedGames) {
                             IconButton(onClick = { gameViewModel.clearUnpinned() }) {
                                 Icon(
                                     Icons.Default.DeleteSweep, 
@@ -151,13 +160,17 @@ fun GeneratedGamesScreen(
                 )
             }
 
-            if (games.isEmpty()) {
+            if (isGamesEmpty) {
                 item {
                     EmptyState(messageResId = R.string.empty_games_message)
                 }
             } else {
                 itemsIndexed(games, key = { _, game -> game.id }) { index, game ->
-                    AnimateOnEntry(delayMillis = ((index * 60).coerceAtMost(500)).toLong()) {
+                    // Optimize animation delay calculation
+                    val animationDelay = remember(index) { 
+                        ((index * 60).coerceAtMost(500)).toLong() 
+                    }
+                    AnimateOnEntry(delayMillis = animationDelay) {
                         Box(Modifier.padding(horizontal = AppSpacing.lg)) {
                             GameCard(
                                 game = game,

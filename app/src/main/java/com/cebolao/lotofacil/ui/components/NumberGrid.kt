@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +40,12 @@ fun NumberGrid(
     onNumberClick: (Int) -> Unit
 ) {
     val haptic = LocalHapticFeedback.current
+    
+    // Optimize by caching the click handler
+    val handleClick = remember { { number: Int ->
+        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+        onNumberClick(number)
+    } }
 
     // Using FlowRow instead of LazyVerticalGrid to avoid nested scrolling issues
     // and infinite height constraints within LazyColumn.
@@ -57,10 +64,7 @@ fun NumberGrid(
                     .clip(CircleShape)
                     .clickable(
                         enabled = !item.isDisabled,
-                        onClick = {
-                            haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                            onNumberClick(item.number)
-                        }
+                        onClick = { handleClick(item.number) }
                     )
                     .padding(2.dp)
             ) {

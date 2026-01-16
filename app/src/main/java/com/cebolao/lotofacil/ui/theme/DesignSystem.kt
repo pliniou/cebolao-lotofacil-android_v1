@@ -37,60 +37,18 @@ data class CardDefaults(
 
 val AppCardDefaults = CardDefaults()
 
-// Composable helpers for dimension resources
+// Composable helpers for common sizes that might be used across the app
 @Composable
-fun spacingXs() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.spacing_xs)
+fun iconSmall() = 18.dp
 
 @Composable
-fun spacingSm() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.spacing_sm)
+fun iconMedium() = 24.dp
 
 @Composable
-fun spacingMd() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.spacing_md)
+fun iconLarge() = 32.dp
 
 @Composable
-fun spacingLg() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.spacing_lg)
+fun iconExtraLarge() = 48.dp
 
 @Composable
-fun spacingXl() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.spacing_xl)
-
-@Composable
-fun spacingXxl() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.spacing_xxl)
-
-@Composable
-fun spacingXxxl() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.spacing_xxxl)
-
-@Composable
-fun elevationNone() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.elevation_none)
-
-@Composable
-fun elevationXs() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.elevation_xs)
-
-@Composable
-fun elevationSm() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.elevation_sm)
-
-@Composable
-fun elevationMd() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.elevation_md)
-
-@Composable
-fun elevationLg() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.elevation_lg)
-
-@Composable
-fun elevationXl() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.elevation_xl)
-
-@Composable
-fun iconSmall() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.icon_small)
-
-@Composable
-fun iconMedium() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.icon_medium)
-
-@Composable
-fun iconLarge() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.icon_large)
-
-@Composable
-fun iconExtraLarge() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.icon_extra_large)
-
-@Composable
-fun iconButtonSize() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.icon_button_size)
-
-@Composable
-fun iconSizeInsideButton() = dimensionResource(id = com.cebolao.lotofacil.R.dimen.icon_size_inside_button)
+fun iconButtonSize() = 40.dp

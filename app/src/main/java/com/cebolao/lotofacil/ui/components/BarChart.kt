@@ -27,6 +27,12 @@ import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
 import kotlin.math.roundToInt
 
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
+import kotlin.math.exp
+import kotlin.math.pow
+import kotlin.math.sqrt
+
 @Composable
 fun BarChart(
     data: ImmutableList<Pair<String, Int>>,
@@ -51,6 +57,7 @@ fun BarChart(
     val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val outlineVariant = MaterialTheme.colorScheme.outlineVariant
+    val tertiaryColor = MaterialTheme.colorScheme.tertiary
 
     val density = LocalDensity.current
     val textPaint = remember(density, onSurfaceVariant) {
@@ -99,6 +106,18 @@ fun BarChart(
         val barSpacing = 10.dp.toPx()
         val totalSpacing = barSpacing * (data.size + 1)
         val barWidth = (chartAreaWidth - totalSpacing).coerceAtLeast(0f) / data.size
+
+        // Draw Gaussian Curve Backdrop
+        if (data.size > 2) {
+            drawGaussianCurve(
+                data = data,
+                yAxisLabelWidth = yAxisLabelWidth,
+                chartAreaHeight = chartAreaHeight,
+                topPadding = valueLabelHeight,
+                maxValue = maxValue,
+                color = tertiaryColor.copy(alpha = 0.3f)
+            )
+        }
 
         data.forEachIndexed { index, (label, value) ->
             val progressFactor = animatedProgress.value
@@ -162,6 +181,55 @@ fun BarChart(
             drawContext.canvas.nativeCanvas.restore()
         }
     }
+}
+
+private fun DrawScope.drawGaussianCurve(
+    data: ImmutableList<Pair<String, Int>>,
+    yAxisLabelWidth: Float,
+    chartAreaHeight: Float,
+    topPadding: Float,
+    maxValue: Int,
+    color: Color
+) {
+    val barSpacing = 10.dp.toPx()
+    val chartAreaWidth = size.width - yAxisLabelWidth
+    val barWidthWithSpacing = chartAreaWidth / data.size
+    
+    // Calculate mean and standard deviation of categories (indices)
+    // We assume the distribution follows the bars' values
+    val totalWeight = data.sumOf { it.second }.toFloat().coerceAtLeast(1f)
+    var mean = 0f
+    data.forEachIndexed { index, pair ->
+        mean += index * (pair.second / totalWeight)
+    }
+    
+    var variance = 0f
+    data.forEachIndexed { index, pair ->
+        variance += (index - mean).pow(2) * (pair.second / totalWeight)
+    }
+    val stdDev = sqrt(variance).coerceAtLeast(0.5f)
+
+    val path = Path()
+    val points = 50
+    for (i in 0..points) {
+        val xRelative = i.toFloat() / points * (data.size - 1)
+        val x = yAxisLabelWidth + barSpacing + (xRelative * barWidthWithSpacing) + (barWidthWithSpacing - barSpacing) / 2
+        
+        // Normal distribution formula
+        val exponent = -0.5f * ((xRelative - mean) / stdDev).pow(2)
+        val gaussianValue = exp(exponent)
+        
+        // Scale to fit chart height (using max observed value as peak reference)
+        val y = topPadding + chartAreaHeight - (gaussianValue * chartAreaHeight * (data.maxOf { it.second }.toFloat() / maxValue))
+        
+        if (i == 0) path.moveTo(x, y) else path.lineTo(x, y)
+    }
+
+    drawPath(
+        path = path,
+        color = color,
+        style = Stroke(width = 2.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f)))
+    )
 }
 
 private fun DrawScope.drawGrid(

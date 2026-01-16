@@ -40,7 +40,7 @@ import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.NumberBallVariant
-import com.cebolao.lotofacil.ui.components.OptimizedNumberBall
+import com.cebolao.lotofacil.ui.components.NumberBall
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
@@ -94,7 +94,7 @@ fun GameCard(
                 maxItemsInEachRow = 5
             ) {
                 game.numbers.sorted().forEach { number ->
-                    OptimizedNumberBall(
+                    NumberBall(
                         number = number, 
                         size = 38.dp, 
                         variant = NumberBallVariant.Secondary

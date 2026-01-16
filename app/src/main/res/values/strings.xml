@@ -67,9 +67,9 @@
     <string name="time_window_all">Todos</string>
     <string name="time_window_last">Últimos %d</string>
     <string name="statistics_explanation_delayed_prefix">• Dezenas atrasadas/sorteadas: </string>
-    <string name="statistics_explanation_delayed_body">Mostram as 5 dezenas mais "frias" (sem sair) e "quentes" (mais frequentes). O valor abaixo indica o atraso (em concursos) ou a frequência total.</string>
+    <string name="statistics_explanation_delayed_body">Identifica as dezenas de maior tendência no momento. Dezenas \"frias\" são as que não aparecem há mais tempo, enquanto as \"quentes\" possuem maior frequência histórica. O valor indica o atraso (em concursos) ou a recorrência total.</string>
     <string name="statistics_explanation_distribution_prefix">• Gráficos de distribuição: </string>
-    <string name="statistics_explanation_distribution_body">A barra mais alta indica a ocorrência mais comum de um padrão (ex.: 8 números pares). Use os filtros acima do gráfico para explorar diferentes estatísticas.</string>
+    <string name="statistics_explanation_distribution_body">A curva tracejada representa a distribuição normal esperada. As barras mostram a realidade dos sorteios. Quando uma barra está próxima ao pico da curva, ela representa o padrão mais provável estatisticamente.</string>
 
     <!-- GeneratedGamesScreen -->
     <string name="clear_games_title">Limpar jogos?</string>

@@ -41,7 +41,7 @@ import com.cebolao.lotofacil.domain.model.StatisticsReport
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.BarChart
 import com.cebolao.lotofacil.ui.components.ClickableCard
-import com.cebolao.lotofacil.ui.components.OptimizedNumberBall
+import com.cebolao.lotofacil.ui.components.NumberBall
 import com.cebolao.lotofacil.ui.components.shimmer
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
@@ -206,7 +206,7 @@ private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVec
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
                 ) {
-                    OptimizedNumberBall(num, size = 42.dp)
+                    NumberBall(num, size = 42.dp)
                     Text(
                         "$value$suffix", 
                         style = MaterialTheme.typography.labelSmall,

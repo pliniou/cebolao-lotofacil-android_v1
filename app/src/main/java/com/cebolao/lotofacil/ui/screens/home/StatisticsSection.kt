@@ -202,7 +202,7 @@ private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVec
             Modifier.fillMaxWidth(), 
             horizontalArrangement = Arrangement.spacedBy(AppSpacing.md, Alignment.CenterHorizontally)
         ) {
-            numbers.forEach { (num, value) ->
+            for ((num, value) in numbers) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
@@ -288,18 +288,18 @@ fun HomeScreenSkeleton() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    repeat(5) {
-                        Box(Modifier.size(40.dp).clip(CircleShape).shimmer())
-                    }
+                for (i in 0 until 5) {
+                    Box(Modifier.size(40.dp).clip(CircleShape).shimmer())
+                }
                 }
                 Box(Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.md, Alignment.CenterHorizontally)
                 ) {
-                    repeat(3) {
-                        Box(Modifier.size(60.dp, 30.dp).clip(MaterialTheme.shapes.small).shimmer())
-                    }
+                for (i in 0 until 3) {
+                    Box(Modifier.size(60.dp, 30.dp).clip(MaterialTheme.shapes.small).shimmer())
+                }
                 }
             }
         }
@@ -312,11 +312,11 @@ fun HomeScreenSkeleton() {
                     Modifier.padding(vertical = AppCardDefaults.defaultPadding),
                     verticalArrangement = Arrangement.spacedBy(AppCardDefaults.contentSpacing)
                 ) {
-                    repeat(2) {
+                    for (i in 0 until 2) {
                         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Box(Modifier.size(150.dp, 20.dp).clip(MaterialTheme.shapes.small).shimmer())
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                                repeat(5) {
+                                for (j in 0 until 5) {
                                     Box(Modifier.size(40.dp).clip(CircleShape).shimmer())
                                 }
                             }
@@ -337,7 +337,7 @@ fun StatsLoadingSkeleton() {
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Box(Modifier.size(150.dp, 20.dp).clip(MaterialTheme.shapes.small).shimmer())
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                repeat(5) {
+                for (i in 0 until 5) {
                     Box(Modifier.size(40.dp).clip(CircleShape).shimmer())
                 }
             }
@@ -345,7 +345,7 @@ fun StatsLoadingSkeleton() {
         HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
         Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                repeat(4) {
+                for (i in 0 until 4) {
                     Box(Modifier.size(80.dp, 32.dp).clip(MaterialTheme.shapes.medium).shimmer())
                 }
             }

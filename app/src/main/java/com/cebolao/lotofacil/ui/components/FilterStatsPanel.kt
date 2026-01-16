@@ -106,7 +106,7 @@ private fun FilterStatistics(activeFilters: List<FilterState>) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         } else {
-            activeFilters.forEach { filter ->
+            for (filter in activeFilters) {
                 FilterStatRow(filter)
             }
         }

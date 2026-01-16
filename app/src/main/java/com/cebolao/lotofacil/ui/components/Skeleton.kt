@@ -84,7 +84,7 @@ fun SkeletonRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(SkeletonDefaults.Spacing)
     ) {
-        repeat(itemCount) {
+        for (i in 0 until itemCount) {
             SkeletonCard(
                 modifier = Modifier.weight(1f),
                 height = itemHeight
@@ -102,7 +102,7 @@ fun SkeletonStatsRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(SkeletonDefaults.Spacing)
     ) {
-        repeat(itemCount) {
+        for (i in 0 until itemCount) {
             Column(
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally

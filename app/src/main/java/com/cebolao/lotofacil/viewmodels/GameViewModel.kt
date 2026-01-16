@@ -63,7 +63,7 @@ sealed interface GameAnalysisUiState {
 class GameViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     private val checkGameUseCase: CheckGameUseCase
-) : StateViewModel<GameScreenUiState>(GameScreenUiState()) {
+) : @Suppress("DEPRECATION") StateViewModel<GameScreenUiState>(GameScreenUiState()) {
 
     val generatedGames: StateFlow<ImmutableList<LotofacilGame>> = gameRepository.games
         .stateIn(
@@ -78,6 +78,7 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             gameRepository.clearUnpinnedGames()
             updateState { it.copy(showClearGamesDialog = false) }
+            showSnackbar(R.string.unpinned_games_cleared)
         }
     }
 
@@ -93,6 +94,7 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             gameRepository.deleteGame(game)
             updateState { it.copy(gameToDelete = null) }
+            showSnackbar(R.string.game_deleted_confirmation)
         }
     }
 

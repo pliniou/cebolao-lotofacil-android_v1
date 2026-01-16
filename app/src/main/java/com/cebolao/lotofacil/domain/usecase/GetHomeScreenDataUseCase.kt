@@ -57,7 +57,13 @@ class GetHomeScreenDataUseCase @Inject constructor(
             frame = lastDraw.frame,
             portrait = lastDraw.portrait,
             fibonacci = lastDraw.fibonacci,
-            multiplesOf3 = lastDraw.multiplesOf3
+            multiplesOf3 = lastDraw.multiplesOf3,
+            prizes = lastDraw.prizes,
+            winners = lastDraw.winners,
+            nextContest = lastDraw.nextContest,
+            nextDate = lastDraw.nextDate,
+            nextEstimate = lastDraw.nextEstimate,
+            accumulated = lastDraw.accumulated
         )
     }
 }

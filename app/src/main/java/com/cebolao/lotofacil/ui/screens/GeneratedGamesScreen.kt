@@ -20,6 +20,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -30,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,6 +59,22 @@ fun GeneratedGamesScreen(
 ) {
     val games by gameViewModel.generatedGames.collectAsStateWithLifecycle()
     val uiState by gameViewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        gameViewModel.uiEvent.collect { event ->
+            when (event) {
+                is com.cebolao.lotofacil.navigation.UiEvent.ShowSnackbar -> {
+                    val message = event.message ?: event.messageResId?.let(context::getString).orEmpty()
+                    if (message.isNotBlank()) {
+                        snackbarHostState.showSnackbar(message = message)
+                    }
+                }
+                else -> {}
+            }
+        }
+    }
     
     // Optimize expensive calculations with derivedStateOf
     val hasUnpinnedGames by remember {
@@ -129,36 +148,36 @@ fun GeneratedGamesScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            StandardScreenHeader(
+                title = stringResource(id = R.string.my_games),
+                subtitle = stringResource(id = R.string.my_games_subtitle),
+                icon = Icons.AutoMirrored.Filled.ListAlt,
+                actions = {
+                    if (hasUnpinnedGames) {
+                        IconButton(onClick = { gameViewModel.clearUnpinned() }) {
+                            Icon(
+                                Icons.Default.DeleteSweep,
+                                contentDescription = stringResource(id = R.string.clear_unpinned_games),
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+            )
+        }
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .windowInsetsPadding(WindowInsets.statusBars),
+                .padding(innerPadding),
             contentPadding = PaddingValues(
                 bottom = AppSpacing.xxxl
             ),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
         ) {
-            item {
-                StandardScreenHeader(
-                    title = stringResource(id = R.string.my_games),
-                    subtitle = stringResource(id = R.string.my_games_subtitle),
-                    icon = Icons.AutoMirrored.Filled.ListAlt,
-                    actions = {
-                        if (hasUnpinnedGames) {
-                            IconButton(onClick = { gameViewModel.clearUnpinned() }) {
-                                Icon(
-                                    Icons.Default.DeleteSweep, 
-                                    contentDescription = stringResource(id = R.string.clear_unpinned_games),
-                                    tint = MaterialTheme.colorScheme.error // Distinctive action
-                                )
-                            }
-                        }
-                    }
-                )
-            }
 
             if (isGamesEmpty) {
                 item {

@@ -101,7 +101,7 @@ fun GameCard(
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
                 maxItemsInEachRow = 5
             ) {
-                sortedNumbers.forEach { number ->
+                for (number in sortedNumbers) {
                     NumberBall(
                         number = number, 
                         size = 38.dp, 

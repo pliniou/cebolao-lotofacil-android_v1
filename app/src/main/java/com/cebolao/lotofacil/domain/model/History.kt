@@ -14,7 +14,13 @@ import kotlinx.serialization.Serializable
 data class HistoricalDraw(
     val contestNumber: Int,
     val numbers: Set<Int>,
-    val date: String? = null
+    val date: String? = null,
+    val prizes: List<PrizeTier> = emptyList(),
+    val winners: List<WinnerLocation> = emptyList(),
+    val nextContest: Int? = null,
+    val nextDate: String? = null,
+    val nextEstimate: Double? = null,
+    val accumulated: Boolean = false
 ) {
     val sum: Int by lazy { numbers.sum() }
     val evens: Int by lazy { numbers.count { it % 2 == 0 } }
@@ -27,6 +33,22 @@ data class HistoricalDraw(
 
     companion object
 }
+
+@Immutable
+@Serializable
+data class PrizeTier(
+    val description: String,
+    val winners: Int,
+    val prizeValue: Double
+)
+
+@Immutable
+@Serializable
+data class WinnerLocation(
+    val winnersCount: Int,
+    val city: String,
+    val state: String
+)
 
 @Immutable
 data class CheckResult(

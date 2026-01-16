@@ -94,23 +94,22 @@ fun FiltersScreen(
 
     androidx.compose.material3.Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            FiltersHeader(
+                onResetFilters = { filtersViewModel.requestResetAllFilters() }
+            )
+        },
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .windowInsetsPadding(WindowInsets.statusBars),
+                .padding(innerPadding),
             contentPadding = PaddingValues(
                 bottom = AppSpacing.xxxl
             ),
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(AppSpacing.xl)
         ) {
-            item {
-                FiltersHeader(
-                    onResetFilters = { filtersViewModel.requestResetAllFilters() }
-                )
-            }
 
             item {
                 ActiveFiltersPanel(

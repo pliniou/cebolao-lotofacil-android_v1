@@ -38,7 +38,9 @@ fun BarChart(
     data: ImmutableList<Pair<String, Int>>,
     modifier: Modifier = Modifier,
     chartHeight: Dp = 200.dp,
-    maxValue: Int
+    maxValue: Int,
+    showGaussCurve: Boolean = true,
+    highlightThreshold: Int? = null
 ) {
     val animatedProgress = remember { Animatable(0f) }
     LaunchedEffect(data) {
@@ -58,6 +60,7 @@ fun BarChart(
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
     val outlineVariant = MaterialTheme.colorScheme.outlineVariant
     val tertiaryColor = MaterialTheme.colorScheme.tertiary
+    val tertiaryContainer = MaterialTheme.colorScheme.tertiaryContainer
 
     val density = LocalDensity.current
     val textPaint = remember(density, onSurfaceVariant) {
@@ -108,7 +111,7 @@ fun BarChart(
         val barWidth = (chartAreaWidth - totalSpacing).coerceAtLeast(0f) / data.size
 
         // Draw Gaussian Curve Backdrop
-        if (data.size > 2) {
+        if (showGaussCurve && data.size > 2) {
             drawGaussianCurve(
                 data = data,
                 yAxisLabelWidth = yAxisLabelWidth,
@@ -135,9 +138,13 @@ fun BarChart(
 
             // Actual data bar with Gradient and Glow effect
             if (barHeight > 0) {
+                val isHighlighted = highlightThreshold != null && value >= highlightThreshold
+                val barColor1 = if (isHighlighted) tertiaryColor else primaryColor
+                val barColor2 = if (isHighlighted) tertiaryContainer else secondaryColor
+
                 // Subtle glow/shadow
                 drawRoundRect(
-                    color = primaryColor.copy(alpha = 0.15f),
+                    color = barColor1.copy(alpha = if (isHighlighted) 0.3f else 0.15f),
                     topLeft = Offset(left - 2.dp.toPx(), valueLabelHeight + chartAreaHeight - barHeight - 2.dp.toPx()),
                     size = Size(barWidth + 4.dp.toPx(), barHeight + 4.dp.toPx()),
                     cornerRadius = CornerRadius(x = barWidth / 2.5f, y = barWidth / 2.5f)
@@ -145,7 +152,7 @@ fun BarChart(
 
                 drawRoundRect(
                     brush = Brush.verticalGradient(
-                        colors = listOf(primaryColor, secondaryColor),
+                        colors = listOf(barColor1, barColor2),
                         startY = valueLabelHeight + chartAreaHeight - barHeight,
                         endY = valueLabelHeight + chartAreaHeight
                     ),

@@ -58,7 +58,7 @@ fun NumberGrid(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         maxItemsInEachRow = 5
     ) {
-        items.forEach { item ->
+        for (item in items) {
             Box(
                 modifier = Modifier
                     .clip(CircleShape)

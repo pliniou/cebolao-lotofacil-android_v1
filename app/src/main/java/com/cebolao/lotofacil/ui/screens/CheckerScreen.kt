@@ -237,7 +237,7 @@ private fun CheckerResultSkeleton() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
         ) {
-            repeat(3) {
+            for (i in 0 until 3) {
                 Box(
                     modifier = Modifier
                         .weight(1f)

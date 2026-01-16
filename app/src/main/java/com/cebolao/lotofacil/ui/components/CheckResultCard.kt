@@ -91,7 +91,7 @@ private fun ResultHeader(totalWins: Int, contestsChecked: Int) {
 @Composable
 private fun ScoreBreakdown(scoreCounts: ImmutableMap<Int, Int>) {
     Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
-        (15 downTo 11).forEach { score ->
+        for (score in 15 downTo 11) {
             scoreCounts[score]?.let { count ->
                 val animated by animateIntAsState(
                     targetValue = count,

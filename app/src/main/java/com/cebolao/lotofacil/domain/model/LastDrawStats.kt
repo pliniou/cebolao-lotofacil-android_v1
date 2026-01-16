@@ -19,5 +19,11 @@ data class LastDrawStats(
     val frame: Int,
     val portrait: Int,
     val fibonacci: Int,
-    val multiplesOf3: Int
+    val multiplesOf3: Int,
+    val prizes: List<PrizeTier> = emptyList(),
+    val winners: List<WinnerLocation> = emptyList(),
+    val nextContest: Int? = null,
+    val nextDate: String? = null,
+    val nextEstimate: Double? = null,
+    val accumulated: Boolean = false
 )

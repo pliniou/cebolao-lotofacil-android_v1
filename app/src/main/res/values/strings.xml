@@ -193,4 +193,14 @@
 
     <!-- Dialogs -->
     <string name="understood_button">Entendi</string>
+    <string name="game_deleted_confirmation">Jogo excluído com sucesso.</string>
+    <string name="unpinned_games_cleared">Jogos não fixados removidos.</string>
+    <string name="hide_prizes">Ocultar premiação</string>
+    <string name="show_prizes">Ver premiação detalhada</string>
+    <string name="main_winners_label">Ganhadores do prêmio principal:</string>
+    <string name="accumulated">ACUMULOU!</string>
+    <string name="prize_estimate">Estimativa de Prêmio</string>
+    <string name="next_draw_date">Sorteio em %s</string>
+    <string name="stats_guide_title">Guia de Filtros e Estatísticas</string>
+    <string name="how_filters_work">Como funcionam os filtros?</string>
 </resources>

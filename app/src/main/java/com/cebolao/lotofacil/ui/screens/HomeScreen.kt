@@ -77,25 +77,24 @@ fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
+        topBar = {
+            StandardScreenHeader(
+                title = stringResource(id = R.string.cebolao_title),
+                subtitle = stringResource(id = R.string.lotofacil_subtitle),
+                iconPainter = painterResource(id = R.drawable.ic_splashicon)
+            )
+        },
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .windowInsetsPadding(WindowInsets.statusBars),
+                .padding(innerPadding),
             contentPadding = PaddingValues(
                 bottom = AppSpacing.xxxl
             ),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.xl)
         ) {
-            item(key = "header") {
-                StandardScreenHeader(
-                    title = stringResource(id = R.string.cebolao_title),
-                    subtitle = stringResource(id = R.string.lotofacil_subtitle),
-                    iconPainter = painterResource(id = R.drawable.ic_splashicon)
-                )
-            }
             if (uiState.isScreenLoading) {
                 item(key = "skeleton") { HomeScreenSkeleton() }
             } else if (uiState.errorMessageResId != null) {

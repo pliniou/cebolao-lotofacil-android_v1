@@ -35,7 +35,7 @@ fun GameStatsList(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
-        stats.forEach { (label, value) ->
+        for ((label, value) in stats) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -89,6 +89,8 @@ fun RecentHitsChartContent(
         BarChart(
             data = chartData,
             maxValue = maxValue,
+            showGaussCurve = false,
+            highlightThreshold = 11,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = AppSpacing.sm)

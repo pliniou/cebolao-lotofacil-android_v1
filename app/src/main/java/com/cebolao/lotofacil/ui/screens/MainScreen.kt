@@ -52,7 +52,7 @@ fun MainScreen() {
                 exit = slideOutVertically { it }
             ) {
                 NavigationBar {
-                    bottomNavDestinations.forEach { destination ->
+                    for (destination in bottomNavDestinations) {
                         val isSelected = currentDestination?.hierarchy?.any { it.route?.startsWith(destination.baseRoute) == true } == true
                         NavigationBarItem(
                             selected = isSelected,

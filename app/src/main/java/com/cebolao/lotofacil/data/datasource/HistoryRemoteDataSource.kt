@@ -66,7 +66,17 @@ class HistoryRemoteDataSourceImpl @Inject constructor(
                 HistoricalDraw(
                     contestNumber = contest,
                     numbers = numbers,
-                    date = apiResult.dataApuracao
+                    date = apiResult.dataApuracao,
+                    prizes = apiResult.premiacoes?.map { 
+                        com.cebolao.lotofacil.domain.model.PrizeTier(it.descricao, it.ganhadores, it.valorPremio)
+                    } ?: emptyList(),
+                    winners = apiResult.localGanhadores?.map { 
+                        com.cebolao.lotofacil.domain.model.WinnerLocation(it.ganhadores, it.municipio ?: "", it.uf ?: "")
+                    } ?: emptyList(),
+                    nextContest = apiResult.proximoConcurso,
+                    nextDate = apiResult.dataProximoConcurso,
+                    nextEstimate = apiResult.valorEstimadoProximoConcurso,
+                    accumulated = apiResult.acumulou ?: false
                 )
             } else {
                 Log.w(TAG, "Invalid API result for contest $contest: insufficient numbers or missing data")

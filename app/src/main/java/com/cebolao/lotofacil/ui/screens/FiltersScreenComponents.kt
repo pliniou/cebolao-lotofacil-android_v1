@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.model.FilterState
 import com.cebolao.lotofacil.domain.model.FilterType
+import com.cebolao.lotofacil.ui.model.*
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.FilterCard
 import com.cebolao.lotofacil.ui.components.FilterStatsPanel

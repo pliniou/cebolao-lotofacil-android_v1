@@ -1,10 +1,10 @@
 plugins {
-    alias(deps.plugins.android.application)
-    alias(deps.plugins.kotlin.android)
-    alias(deps.plugins.kotlin.compose)
-    alias(deps.plugins.hilt)
-    alias(deps.plugins.ksp)
-    alias(deps.plugins.kotlin.serialization)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -75,56 +75,56 @@ android {
 
 dependencies {
     // Core Library Desugaring
-    coreLibraryDesugaring(deps.android.desugarJdkLibs)
+    coreLibraryDesugaring(libs.android.desugarJdkLibs)
 
     // AndroidX Core & Activity
-    implementation(deps.androidx.core.ktx)
-    implementation(deps.androidx.core.splashscreen)
-    implementation(deps.androidx.activity.compose)
-    implementation(deps.bundles.androidx.lifecycle)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.bundles.androidx.lifecycle)
 
     // WorkManager for background tasks
-    implementation(deps.androidx.work.runtime.ktx)
+    implementation(libs.androidx.work.runtime.ktx)
 
     // Compose BOM and dependencies
-    implementation(platform(deps.androidx.compose.bom))
-    implementation(deps.bundles.androidx.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.bundles.androidx.compose)
 
     // Collections & Serialization
-    implementation(deps.kotlinx.collections.immutable)
-    implementation(deps.kotlinx.serialization.json)
-    implementation(deps.kotlinx.coroutines.android)
+    implementation(libs.kotlinx.collections.immutable)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.android)
 
     // DataStore for persistence
-    implementation(deps.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.preferences)
 
     // Hilt for dependency injection
-    implementation(deps.hilt.android)
-    ksp(deps.hilt.compiler)
-    implementation(deps.hilt.navigation.compose)
-    implementation(deps.hilt.work)
-    ksp(deps.hilt.compiler.androidx)
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.hilt.work)
+    ksp(libs.hilt.compiler.androidx)
 
     // Networking
-    implementation(deps.bundles.networking)
+    implementation(libs.bundles.networking)
 
     // Utilities
-    implementation(deps.androidx.interpolator)
-    implementation(deps.androidx.navigation.compose)
+    implementation(libs.androidx.interpolator)
+    implementation(libs.androidx.navigation.compose)
 
     // Testing - Unit Tests
-    testImplementation(deps.bundles.testing.unit)
-    kspTest(deps.hilt.compiler)
+    testImplementation(libs.bundles.testing.unit)
+    kspTest(libs.hilt.compiler)
 
     // Testing - Android Tests
-    androidTestImplementation(platform(deps.androidx.compose.bom))
-    androidTestImplementation(deps.bundles.testing.android)
-    androidTestImplementation(deps.hilt.android.testing)
-    kspAndroidTest(deps.hilt.compiler)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.bundles.testing.android)
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
 
     // Debug Tools
-    debugImplementation(deps.androidx.ui.tooling)
-    debugImplementation(deps.androidx.ui.test.manifest)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 }
 java {
     toolchain {

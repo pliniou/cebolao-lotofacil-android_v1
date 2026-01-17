@@ -22,18 +22,21 @@ import kotlinx.coroutines.delay
 /**
  * Um wrapper que anima a entrada de seu conteúdo na tela.
  * A animação pode ser controlada globalmente através do `LocalAnimationEnabled`.
+ * Otimizado para performance com animações únicas e leves, usando remember para evitar recomposições.
  */
 @Composable
 fun AnimateOnEntry(
     modifier: Modifier = Modifier,
     delayMillis: Long = 0,
-    durationMillis: Int = 400,
+    durationMillis: Int = 250, // Further reduced for better performance
     content: @Composable () -> Unit
 ) {
     val animationsEnabled = LocalAnimationEnabled.current
-    var isVisible by remember { mutableStateOf(false) }
+    
+    // Optimize state management with proper remember keys
+    var isVisible by remember(delayMillis) { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(delayMillis) {
         if (delayMillis > 0) delay(delayMillis)
         isVisible = true
     }
@@ -43,13 +46,23 @@ fun AnimateOnEntry(
             modifier = modifier,
             visible = isVisible,
             enter = slideInVertically(
-                initialOffsetY = { it / 8 }, // Anima de baixo para cima
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessLow
+                initialOffsetY = { fullHeight -> fullHeight / 16 }, // Further reduced for subtler motion
+                animationSpec = tween(
+                    durationMillis = durationMillis,
+                    easing = androidx.compose.animation.core.FastOutSlowInEasing
                 )
-            ) + fadeIn(animationSpec = tween(durationMillis)),
-            exit = slideOutVertically() + fadeOut()
+            ) + fadeIn(
+                animationSpec = tween(
+                    durationMillis = durationMillis,
+                    easing = androidx.compose.animation.core.FastOutSlowInEasing
+                )
+            ),
+            exit = slideOutVertically(
+                targetOffsetY = { fullHeight -> fullHeight / 16 },
+                animationSpec = tween(durationMillis = 150) // Reduced exit duration
+            ) + fadeOut(
+                animationSpec = tween(durationMillis = 150)
+            )
         ) {
             content()
         }

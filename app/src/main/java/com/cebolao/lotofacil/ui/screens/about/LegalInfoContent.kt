@@ -25,9 +25,9 @@ fun LegalInfoContent(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(stringResource(R.string.about_legal_desc_header), style = MaterialTheme.typography.titleMedium)
-        InfoListItem(icon = Icons.Default.Gavel, text = stringResource(R.string.about_legal_item1))
-        InfoListItem(icon = Icons.Default.Gavel, text = stringResource(R.string.about_legal_item2))
-        InfoListItem(icon = Icons.Default.Gavel, text = stringResource(R.string.about_legal_item3))
+        InfoListItem(icon = Icons.Default.Gavel, text = stringResource(R.string.about_legal_item1), iconContentDescription = stringResource(R.string.icon_gavel_description))
+        InfoListItem(icon = Icons.Default.Gavel, text = stringResource(R.string.about_legal_item2), iconContentDescription = stringResource(R.string.icon_gavel_description))
+        InfoListItem(icon = Icons.Default.Gavel, text = stringResource(R.string.about_legal_item3), iconContentDescription = stringResource(R.string.icon_gavel_description))
         Spacer(Modifier.height(8.dp))
         FormattedText(text = stringResource(R.string.about_legal_footer), style = SpanStyle(fontWeight = FontWeight.Bold))
     }

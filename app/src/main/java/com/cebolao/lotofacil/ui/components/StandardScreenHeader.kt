@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.LocalAppColors
 
 @Composable
 fun StandardScreenHeader(
@@ -32,9 +33,11 @@ fun StandardScreenHeader(
     iconPainter: Painter? = null,
     actions: (@Composable RowScope.() -> Unit)? = null
 ) {
+    val colors = LocalAppColors.current
+    
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.background,
+        color = colors.background,
         tonalElevation = 0.dp
     ) {
         Column(
@@ -57,12 +60,12 @@ fun StandardScreenHeader(
                             modifier = Modifier
                                 .size(48.dp)
                                 .background(
-                                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+                                    colors.surface2,
                                     CircleShape
                                 )
                                 .border(
                                     width = 1.dp,
-                                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    color = colors.outline,
                                     shape = CircleShape
                                 ),
                             contentAlignment = Alignment.Center
@@ -71,14 +74,14 @@ fun StandardScreenHeader(
                                 androidx.compose.material3.Icon(
                                     imageVector = icon,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
+                                    tint = colors.brandPrimary,
                                     modifier = Modifier.size(24.dp)
                                 )
                             } else if (iconPainter != null) {
                                 androidx.compose.material3.Icon(
                                     painter = iconPainter,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
+                                    tint = colors.brandPrimary,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -90,13 +93,13 @@ fun StandardScreenHeader(
                             text = title,
                             style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = colors.textPrimary
                         )
                         subtitle?.let {
                             Text(
                                 text = it,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                color = colors.textSecondary
                             )
                         }
                     }

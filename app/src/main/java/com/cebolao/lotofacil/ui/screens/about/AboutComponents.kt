@@ -72,7 +72,8 @@ fun InfoListItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     text: String,
     description: String? = null,
-    iconTint: Color = MaterialTheme.colorScheme.primary
+    iconTint: Color = MaterialTheme.colorScheme.primary,
+    iconContentDescription: String? = null
 ) {
     Row(
         verticalAlignment = if (description == null) Alignment.CenterVertically else Alignment.Top,
@@ -80,7 +81,7 @@ fun InfoListItem(
     ) {
         Icon(
             imageVector = icon,
-            contentDescription = null,
+            contentDescription = iconContentDescription,
             tint = iconTint,
             modifier = Modifier.padding(top = if (description == null) 0.dp else 4.dp)
         )

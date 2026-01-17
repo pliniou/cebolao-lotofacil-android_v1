@@ -9,6 +9,7 @@ import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.repository.SyncStatus
 import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer
 import com.cebolao.lotofacil.domain.usecase.GetHomeScreenDataUseCase
+import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.viewmodels.HomeUiState
 import androidx.compose.runtime.Stable
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -83,6 +84,40 @@ class HomeViewModel @Inject constructor(
     }
 
     fun retryInitialLoad() = loadInitialData()
+
+    fun refreshData() {
+        viewModelScope.launch(dispatcher) {
+            updateState { it.copy(isScreenLoading = true, errorMessageResId = null) }
+            getHomeScreenDataUseCase().collect { result ->
+                result.onSuccess { data ->
+                    fullHistory = historyRepository.getHistory()
+                    val lastHistoryDate = try {
+                        historyRepository.getHistory().firstOrNull()?.date
+                    } catch (e: Exception) {
+                        null
+                    }
+                    updateState {
+                        it.copy(
+                            isScreenLoading = false,
+                            lastDrawStats = data.lastDrawStats,
+                            statistics = data.initialStats,
+                            lastUpdateTime = lastHistoryDate
+                        )
+                    }
+                    showSnackbar(R.string.refresh_success)
+                }
+                result.onFailure {
+                    updateState {
+                        it.copy(
+                            isScreenLoading = false,
+                            errorMessageResId = R.string.refresh_error
+                        )
+                    }
+                    showSnackbar(R.string.refresh_error)
+                }
+            }
+        }
+    }
 
     private fun loadInitialData() = viewModelScope.launch(dispatcher) {
         updateState { it.copy(isScreenLoading = true, errorMessageResId = null) }

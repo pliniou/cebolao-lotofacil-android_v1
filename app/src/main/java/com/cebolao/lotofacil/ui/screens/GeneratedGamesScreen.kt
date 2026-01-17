@@ -13,9 +13,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.DeleteSweep
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -40,6 +37,7 @@ import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.CheckResultCard
+import com.cebolao.lotofacil.ui.components.ConfirmationDialog
 import com.cebolao.lotofacil.ui.components.EmptyState
 import com.cebolao.lotofacil.ui.components.GameStatsList
 import com.cebolao.lotofacil.ui.components.InfoDialog
@@ -85,38 +83,24 @@ fun GeneratedGamesScreen(
     }
 
     if (uiState.showClearGamesDialog) {
-        AlertDialog(
-            onDismissRequest = { gameViewModel.dismissClearDialog() },
-            title = { Text(stringResource(id = R.string.clear_games_title)) },
-            text = { Text(stringResource(id = R.string.clear_games_message)) },
-            confirmButton = {
-                Button(onClick = { gameViewModel.confirmClearUnpinned() }) { 
-                    Text(stringResource(id = R.string.clear_button)) 
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { gameViewModel.dismissClearDialog() }) { 
-                    Text(stringResource(id = R.string.cancel_button)) 
-                }
-            }
+        ConfirmationDialog(
+            title = stringResource(id = R.string.clear_games_title),
+            message = stringResource(id = R.string.clear_games_message),
+            confirmText = stringResource(id = R.string.clear_button),
+            dismissText = stringResource(id = R.string.cancel_button),
+            onConfirm = { gameViewModel.confirmClearUnpinned() },
+            onDismiss = { gameViewModel.dismissClearDialog() }
         )
     }
 
     uiState.gameToDelete?.let { game ->
-        AlertDialog(
-            onDismissRequest = { gameViewModel.dismissDeleteDialog() },
-            title = { Text(stringResource(id = R.string.delete_game_title)) },
-            text = { Text(stringResource(id = R.string.delete_game_message)) },
-            confirmButton = {
-                Button(onClick = { gameViewModel.confirmDeleteGame(game) }) { 
-                    Text(stringResource(id = R.string.delete_button)) 
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { gameViewModel.dismissDeleteDialog() }) { 
-                    Text(stringResource(id = R.string.cancel_button)) 
-                }
-            }
+        ConfirmationDialog(
+            title = stringResource(id = R.string.delete_game_title),
+            message = stringResource(id = R.string.delete_game_message),
+            confirmText = stringResource(id = R.string.delete_button),
+            dismissText = stringResource(id = R.string.cancel_button),
+            onConfirm = { gameViewModel.confirmDeleteGame(game) },
+            onDismiss = { gameViewModel.dismissDeleteDialog() }
         )
     }
 
@@ -133,15 +117,13 @@ fun GeneratedGamesScreen(
             LoadingDialog(text = stringResource(id = R.string.analyzing_game))
         }
         is GameAnalysisUiState.Error -> {
-            AlertDialog(
-                onDismissRequest = { gameViewModel.dismissAnalysisDialog() },
-                title = { Text(stringResource(id = R.string.analysis_error_title)) },
-                text = { Text(stringResource(id = state.messageResId)) },
-                confirmButton = {
-                    TextButton(onClick = { gameViewModel.dismissAnalysisDialog() }) {
-                        Text(stringResource(id = R.string.close_button))
-                    }
-                }
+            ConfirmationDialog(
+                title = stringResource(id = R.string.analysis_error_title),
+                message = stringResource(id = state.messageResId),
+                confirmText = stringResource(id = R.string.close_button),
+                dismissText = "",
+                onConfirm = { gameViewModel.dismissAnalysisDialog() },
+                onDismiss = { gameViewModel.dismissAnalysisDialog() }
             )
         }
         is GameAnalysisUiState.Idle -> {}
@@ -160,7 +142,7 @@ fun GeneratedGamesScreen(
                         IconButton(onClick = { gameViewModel.clearUnpinned() }) {
                             Icon(
                                 Icons.Default.DeleteSweep,
-                                contentDescription = stringResource(id = R.string.clear_unpinned_games),
+                                contentDescription = stringResource(id = R.string.cd_clear_games),
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }

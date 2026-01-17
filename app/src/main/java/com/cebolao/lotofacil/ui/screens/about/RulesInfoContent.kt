@@ -21,8 +21,8 @@ fun RulesInfoContent(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(stringResource(R.string.about_rules_desc_header), style = MaterialTheme.typography.titleMedium)
-        InfoListItem(icon = Icons.AutoMirrored.Filled.Rule, text = stringResource(R.string.about_rules_item1))
-        InfoListItem(icon = Icons.AutoMirrored.Filled.Rule, text = stringResource(R.string.about_rules_item2))
-        InfoListItem(icon = Icons.AutoMirrored.Filled.Rule, text = stringResource(R.string.about_rules_item3))
+        InfoListItem(icon = Icons.AutoMirrored.Filled.Rule, text = stringResource(R.string.about_rules_item1), iconContentDescription = stringResource(R.string.icon_rule_description))
+        InfoListItem(icon = Icons.AutoMirrored.Filled.Rule, text = stringResource(R.string.about_rules_item2), iconContentDescription = stringResource(R.string.icon_rule_description))
+        InfoListItem(icon = Icons.AutoMirrored.Filled.Rule, text = stringResource(R.string.about_rules_item3), iconContentDescription = stringResource(R.string.icon_rule_description))
     }
 }

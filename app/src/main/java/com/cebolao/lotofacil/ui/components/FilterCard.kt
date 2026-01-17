@@ -96,8 +96,6 @@ fun FilterCard(
     }
 }
 
-
-
 @Composable
 private fun FilterHeader(
     filterState: FilterState,
@@ -106,38 +104,58 @@ private fun FilterHeader(
     onToggle: () -> Unit
 ) {
     Row(
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
         Icon(
             imageVector = filterState.type.icon,
-            contentDescription = null,
+            contentDescription = stringResource(
+                id = R.string.filter_icon_content_description,
+                stringResource(filterState.type.titleRes)
+            ),
             tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(24.dp)
         )
-        Column(modifier = Modifier.weight(1f)) {
-            Text(stringResource(filterState.type.titleRes), style = MaterialTheme.typography.titleSmall)
+        
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = stringResource(filterState.type.titleRes), 
+                style = MaterialTheme.typography.titleSmall,
+                maxLines = 1
+            )
             if (!dataAvailable) {
                 Text(
-                    stringResource(id = R.string.data_unavailable),
+                    text = stringResource(id = R.string.data_unavailable),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.error,
+                    maxLines = 1
                 )
             }
         }
-        IconButton(onClick = onInfoClick) {
+        
+        IconButton(
+            onClick = onInfoClick,
+            modifier = Modifier.size(40.dp)
+        ) {
             Icon(
-                Icons.Outlined.Info,
+                imageVector = Icons.Outlined.Info,
                 contentDescription = stringResource(
                     id = R.string.filter_info_content_description,
                     stringResource(filterState.type.titleRes)
-                )
+                ),
+                modifier = Modifier.size(20.dp)
             )
         }
+        
         Switch(
             checked = filterState.isEnabled,
             onCheckedChange = { onToggle() },
-            enabled = dataAvailable
+            enabled = dataAvailable,
+            modifier = Modifier.size(40.dp)
         )
     }
 }

@@ -9,21 +9,27 @@ import com.cebolao.lotofacil.domain.model.CheckResult
 import com.cebolao.lotofacil.domain.model.LotofacilConstants
 import com.cebolao.lotofacil.domain.usecase.CheckGameUseCase
 import com.cebolao.lotofacil.navigation.Destination
+import com.cebolao.lotofacil.navigation.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @Stable
 data class CheckerScreenState(
     val uiState: CheckerUiState = CheckerUiState.Idle,
-    val selectedNumbers: Set<Int> = emptySet()
+    val selectedNumbers: Set<Int> = emptySet(),
+    val showClearConfirmation: Boolean = false,
+    val showClearResultsConfirmation: Boolean = false
 )
 
 @Stable
@@ -44,6 +50,8 @@ class CheckerViewModel @Inject constructor(
 ) : StateViewModel<CheckerScreenState>(CheckerScreenState()) {
 
     private var checkJob: Job? = null
+    private val _uiEvents = MutableSharedFlow<UiEvent>()
+    val uiEvents = _uiEvents.asSharedFlow()
 
     init {
         savedStateHandle.get<String?>(Destination.Checker.NUMBERS_ARG)?.let { arg ->
@@ -77,25 +85,65 @@ class CheckerViewModel @Inject constructor(
     fun onCheckGameClicked() {
         val selection = currentState.selectedNumbers
         if (selection.size != LotofacilConstants.GAME_SIZE) {
-            updateState { it.copy(uiState = CheckerUiState.Error(R.string.error_incomplete_selection, canRetry = false)) }
+            updateState { it.copy(uiState = CheckerUiState.Error(R.string.checker_incomplete_selection, canRetry = false)) }
             return
         }
-        checkGame(selection)
+        
+        // Show confirmation if there are existing results
+        if (currentState.uiState is CheckerUiState.Success) {
+            updateState { it.copy(showClearResultsConfirmation = true) }
+        } else {
+            checkGame(selection)
+        }
+    }
+
+    fun confirmClearResults() {
+        updateState { it.copy(showClearResultsConfirmation = false) }
+        checkGame(currentState.selectedNumbers)
+    }
+
+    fun dismissClearResultsConfirmation() {
+        updateState { it.copy(showClearResultsConfirmation = false) }
     }
 
     private fun checkGame(numbers: Set<Int>) {
         checkJob?.cancel()
         checkJob = checkGameUseCase(numbers)
-            .onEach { state -> updateState { it.copy(uiState = state) } }
+            .onEach { state -> 
+                updateState { it.copy(uiState = state) }
+                when (state) {
+                    is CheckerUiState.Success -> {
+                        _uiEvents.emit(UiEvent.ShowSnackbar(messageResId = R.string.checker_checking_success))
+                    }
+                    is CheckerUiState.Error -> {
+                        _uiEvents.emit(UiEvent.ShowSnackbar(messageResId = R.string.checker_checking_error))
+                    }
+                    else -> { /* No feedback for loading states */ }
+                }
+            }
             .catch { _ ->
                 updateState { it.copy(uiState = CheckerUiState.Error(R.string.error_unknown, canRetry = true)) }
+                _uiEvents.emit(UiEvent.ShowSnackbar(messageResId = R.string.checker_checking_error))
             }
             .launchIn(viewModelScope)
     }
 
-    fun clearSelection() {
+    fun onClearSelectionClicked() {
+        if (currentState.selectedNumbers.isNotEmpty()) {
+            updateState { it.copy(showClearConfirmation = true) }
+        }
+    }
+
+    fun confirmClearSelection() {
         checkJob?.cancel()
         updateState { CheckerScreenState() }
+        viewModelScope.launch {
+            _uiEvents.emit(UiEvent.ShowSnackbar(messageResId = R.string.checker_clear_confirmation))
+        }
+    }
+
+    fun dismissClearConfirmation() {
+        updateState { it.copy(showClearConfirmation = false) }
     }
 }
 

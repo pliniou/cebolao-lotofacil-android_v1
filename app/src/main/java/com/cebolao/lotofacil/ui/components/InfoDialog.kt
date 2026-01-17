@@ -1,6 +1,7 @@
 package com.cebolao.lotofacil.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -22,6 +24,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -39,57 +43,90 @@ fun InfoDialog(
     dismissButtonText: String = "",
     content: @Composable ColumnScope.() -> Unit
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
     val resolvedDismissText = if (dismissButtonText.isBlank()) {
         stringResource(id = R.string.understood_button)
     } else {
         dismissButtonText
     }
+    
     Dialog(
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = {
+            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+            onDismissRequest()
+        },
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        AppCard(
+        Box(
             modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = AppSpacing.xl, vertical = AppSpacing.xxxl),
-            elevation = AppCardDefaults.elevation
+                .widthIn(max = 480.dp)
+                .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.xl)
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(top = 24.dp, start = 24.dp, end = 24.dp, bottom = 16.dp)
+            AppCard(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = AppCardDefaults.elevation
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(28.dp)
-                    )
-                    Text(dialogTitle, style = MaterialTheme.typography.headlineSmall)
-                }
-
-                Spacer(Modifier.height(16.dp))
-                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
-                Spacer(Modifier.height(16.dp))
-
                 Column(
-                    modifier = Modifier
-                        .weight(1f, fill = false)
-                        .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    content = content
-                )
-
-                Spacer(Modifier.height(24.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    modifier = Modifier.padding(
+                        top = AppSpacing.lg,
+                        start = AppSpacing.lg,
+                        end = AppSpacing.lg,
+                        bottom = AppSpacing.md
+                    )
                 ) {
-                    TextButton(onClick = onDismissRequest) { Text(resolvedDismissText) }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = stringResource(R.string.info_dialog_icon_description),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Text(
+                            text = dialogTitle,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    Spacer(Modifier.height(AppSpacing.md))
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f),
+                        thickness = 1.dp
+                    )
+                    Spacer(Modifier.height(AppSpacing.md))
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f, fill = false)
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+                            content = content
+                        )
+                    }
+
+                    Spacer(Modifier.height(AppSpacing.lg))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        TextButton(
+                            onClick = {
+                                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                                onDismissRequest()
+                            }
+                        ) {
+                            Text(
+                                text = resolvedDismissText,
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
+                    }
                 }
             }
         }

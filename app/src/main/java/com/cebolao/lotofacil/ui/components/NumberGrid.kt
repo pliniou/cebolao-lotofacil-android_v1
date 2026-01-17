@@ -11,12 +11,15 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 
 @Stable
@@ -41,8 +44,8 @@ fun NumberGrid(
 ) {
     val haptic = LocalHapticFeedback.current
     
-    // Optimize by caching the click handler
-    val handleClick = remember { { number: Int ->
+    // Optimize by caching the click handler and using stable keys
+    val handleClick = remember(onNumberClick) { { number: Int ->
         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
         onNumberClick(number)
     } }
@@ -67,6 +70,9 @@ fun NumberGrid(
                         onClick = { handleClick(item.number) }
                     )
                     .padding(2.dp)
+                    .semantics {
+                        contentDescription = "Número ${item.number}${if (item.isSelected) " selecionado" else ""}${if (item.isDisabled) " desabilitado" else ""}"
+                    }
             ) {
                 NumberBall(
                     number = item.number,

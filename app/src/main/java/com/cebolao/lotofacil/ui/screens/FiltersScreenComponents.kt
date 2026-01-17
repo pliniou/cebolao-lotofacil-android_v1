@@ -1,15 +1,17 @@
 package com.cebolao.lotofacil.ui.screens
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.cebolao.lotofacil.R
@@ -75,22 +77,55 @@ fun LazyListScope.filterList(
     onInfoClick: (FilterType) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    itemsIndexed(filterStates, key = { _, filter -> filter.type.name }) { index, filter ->
-        AnimateOnEntry(
-            delayMillis = (100 + (index * 50)).toLong()
-        ) {
-            Box(
-                modifier = modifier.padding(horizontal = AppSpacing.lg)
-            ) {
-                FilterCard(
-                    filterState = filter,
-                    onEnabledChange = { onFilterToggle(filter.type, it) },
-                    onRangeChange = { onRangeChange(filter.type, it) },
-                    onInfoClick = { onInfoClick(filter.type) },
-                    lastDrawNumbers = lastDraw
-                )
-            }
+    // Use stable keys for better performance
+    items(
+        count = filterStates.size,
+        key = { index -> filterStates[index].type.name }
+    ) { index ->
+        val filter = filterStates[index]
+        FilterRowItem(
+            filterState = filter,
+            lastDrawNumbers = lastDraw,
+            onFilterToggle = onFilterToggle,
+            onRangeChange = onRangeChange,
+            onInfoClick = onInfoClick,
+            modifier = modifier.padding(horizontal = AppSpacing.lg)
+        )
+    }
+}
+
+@Composable
+private fun FilterRowItem(
+    filterState: FilterState,
+    lastDrawNumbers: Set<Int>?,
+    onFilterToggle: (FilterType, Boolean) -> Unit,
+    onRangeChange: (FilterType, kotlin.ranges.ClosedFloatingPointRange<Float>) -> Unit,
+    onInfoClick: (FilterType) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // Stable lambdas for better performance
+    val onToggle = remember(filterState.type) {
+        { enabled: Boolean -> onFilterToggle(filterState.type, enabled) }
+    }
+    
+    val onRangeChange = remember(filterState.type) {
+        { range: kotlin.ranges.ClosedFloatingPointRange<Float> -> 
+            onRangeChange(filterState.type, range) 
         }
+    }
+    
+    val onInfoClick = remember(filterState.type) {
+        { onInfoClick(filterState.type) }
+    }
+
+    Box(modifier = modifier) {
+        FilterCard(
+            filterState = filterState,
+            onEnabledChange = onToggle,
+            onRangeChange = onRangeChange,
+            onInfoClick = onInfoClick,
+            lastDrawNumbers = lastDrawNumbers
+        )
     }
 }
 

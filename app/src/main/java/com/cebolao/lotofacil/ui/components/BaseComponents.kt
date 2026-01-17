@@ -23,28 +23,33 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
+import com.cebolao.lotofacil.ui.theme.LocalAppColors
 
 @Composable
 fun AppCard(
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.large,
-    backgroundColor: Color = MaterialTheme.colorScheme.surface,
-    contentColor: Color = contentColorFor(backgroundColor),
+    backgroundColor: Color? = null,
+    contentColor: Color? = null,
     border: BorderStroke? = null,
     elevation: Dp = AppCardDefaults.elevation,
     content: @Composable () -> Unit
 ) {
+    val colors = LocalAppColors.current
+    val cardBackgroundColor = backgroundColor ?: colors.surface1
+    val cardContentColor = contentColor ?: colors.textPrimary
+    
     val defaultBorder = BorderStroke(
         width = 1.dp,
-        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+        color = colors.outline.copy(alpha = 0.3f)
     )
 
     Card(
         modifier = modifier,
         shape = shape,
         colors = CardDefaults.cardColors(
-            containerColor = backgroundColor,
-            contentColor = contentColor
+            containerColor = cardBackgroundColor,
+            contentColor = cardContentColor
         ),
         border = border ?: defaultBorder,
         elevation = CardDefaults.cardElevation(elevation)
@@ -58,13 +63,22 @@ fun ClickableCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     shape: Shape = MaterialTheme.shapes.large,
-    backgroundColor: Color = MaterialTheme.colorScheme.surface,
-    contentColor: Color = contentColorFor(backgroundColor),
-    border: BorderStroke? = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+    backgroundColor: Color? = null,
+    contentColor: Color? = null,
+    border: BorderStroke? = null,
     elevation: Dp = AppCardDefaults.elevation,
     enabled: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    val colors = LocalAppColors.current
+    val cardBackgroundColor = backgroundColor ?: colors.surface1
+    val cardContentColor = contentColor ?: colors.textPrimary
+    
+    val defaultBorder = BorderStroke(
+        width = 0.5.dp,
+        color = colors.outline.copy(alpha = 0.5f)
+    )
+    
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     
@@ -92,10 +106,10 @@ fun ClickableCard(
             ),
         shape = shape,
         colors = CardDefaults.cardColors(
-            containerColor = backgroundColor,
-            contentColor = contentColor
+            containerColor = cardBackgroundColor,
+            contentColor = cardContentColor
         ),
-        border = border,
+        border = border ?: defaultBorder,
         elevation = CardDefaults.cardElevation(if (isPressed) elevation / 2 else elevation)
     ) {
         content()
@@ -109,11 +123,13 @@ fun SurfaceCard(
     shape: Shape = MaterialTheme.shapes.medium,
     content: @Composable () -> Unit
 ) {
+    val colors = LocalAppColors.current
+    
     androidx.compose.material3.Surface(
         modifier = modifier,
         shape = shape,
         tonalElevation = tonalElevation,
-        color = MaterialTheme.colorScheme.surface
+        color = colors.surface2
     ) {
         content()
     }

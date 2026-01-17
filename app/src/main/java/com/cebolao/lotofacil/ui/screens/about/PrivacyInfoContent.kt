@@ -24,8 +24,8 @@ fun PrivacyInfoContent(modifier: Modifier = Modifier) {
         Text(stringResource(R.string.about_privacy_desc_header), style = MaterialTheme.typography.titleMedium)
         FormattedText(text = stringResource(R.string.about_privacy_desc_body))
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-        InfoListItem(icon = Icons.Default.Shield, text = stringResource(R.string.about_privacy_item1), iconTint = MaterialTheme.colorScheme.tertiary)
-        InfoListItem(icon = Icons.Default.Shield, text = stringResource(R.string.about_privacy_item2), iconTint = MaterialTheme.colorScheme.tertiary)
-        InfoListItem(icon = Icons.Default.Shield, text = stringResource(R.string.about_privacy_item3), iconTint = MaterialTheme.colorScheme.tertiary)
+        InfoListItem(icon = Icons.Default.Shield, text = stringResource(R.string.about_privacy_item1), iconTint = MaterialTheme.colorScheme.tertiary, iconContentDescription = stringResource(R.string.icon_shield_description))
+        InfoListItem(icon = Icons.Default.Shield, text = stringResource(R.string.about_privacy_item2), iconTint = MaterialTheme.colorScheme.tertiary, iconContentDescription = stringResource(R.string.icon_shield_description))
+        InfoListItem(icon = Icons.Default.Shield, text = stringResource(R.string.about_privacy_item3), iconTint = MaterialTheme.colorScheme.tertiary, iconContentDescription = stringResource(R.string.icon_shield_description))
     }
 }

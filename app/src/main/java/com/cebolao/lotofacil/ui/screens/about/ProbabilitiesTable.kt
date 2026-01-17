@@ -12,20 +12,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.cebolao.lotofacil.R
 
 @Composable
 fun ProbabilitiesTable(modifier: Modifier = Modifier) {
-    val data = remember {
-        listOf(
-            "15 acertos" to "1 em 3.268.760",
-            "14 acertos" to "1 em 21.792",
-            "13 acertos" to "1 em 692",
-            "12 acertos" to "1 em 60",
-            "11 acertos" to "1 em 11"
-        )
-    }
+    val data = listOf(
+        stringResource(R.string.probability_15_hits) to stringResource(R.string.probability_15_hits_value),
+        stringResource(R.string.probability_14_hits) to stringResource(R.string.probability_14_hits_value),
+        stringResource(R.string.probability_13_hits) to stringResource(R.string.probability_13_hits_value),
+        stringResource(R.string.probability_12_hits) to stringResource(R.string.probability_12_hits_value),
+        stringResource(R.string.probability_11_hits) to stringResource(R.string.probability_11_hits_value)
+    )
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -49,8 +49,16 @@ private fun TableHeader() {
             .padding(vertical = 10.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text("Prêmio", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-        Text("Probabilidade", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+        Text(
+            text = stringResource(R.string.probability_table_header_prize), 
+            style = MaterialTheme.typography.titleSmall, 
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = stringResource(R.string.probability_table_header_probability), 
+            style = MaterialTheme.typography.titleSmall, 
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 

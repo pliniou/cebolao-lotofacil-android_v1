@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cebolao.lotofacil.ui.theme.AppElevation
+import com.cebolao.lotofacil.ui.theme.LocalAppColors
 
 enum class NumberBallVariant {
     Primary, Secondary, Lotofacil
@@ -98,45 +99,28 @@ private fun getBallColors(
     isDisabled: Boolean,
     variant: NumberBallVariant
 ): Triple<Color, Color, Color> {
+    val colors = LocalAppColors.current
+    
     return when {
         isDisabled -> Triple(
-            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
-            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-            MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+            colors.disabledContainer,
+            colors.disabledContent,
+            colors.outline.copy(alpha = 0.3f)
         )
-        isSelected -> {
-            val primaryColor = when (variant) {
-                NumberBallVariant.Primary -> MaterialTheme.colorScheme.primary
-                NumberBallVariant.Secondary -> MaterialTheme.colorScheme.secondary
-                NumberBallVariant.Lotofacil -> MaterialTheme.colorScheme.primary
-            }
-            Triple(
-                primaryColor,
-                MaterialTheme.colorScheme.onPrimary,
-                primaryColor.copy(alpha = 0.3f)
-            )
-        }
+        isSelected -> Triple(
+            colors.brandPrimary,
+            colors.background,
+            colors.brandPrimary.copy(alpha = 0.3f)
+        )
         isHighlighted -> Triple(
-            MaterialTheme.colorScheme.primaryContainer,
-            MaterialTheme.colorScheme.onPrimaryContainer,
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+            colors.brandSubtle,
+            colors.brandPrimary,
+            colors.brandPrimary.copy(alpha = 0.7f)
         )
-        else -> {
-            val surfaceColor = when (variant) {
-                NumberBallVariant.Primary -> MaterialTheme.colorScheme.surfaceVariant
-                NumberBallVariant.Secondary -> MaterialTheme.colorScheme.secondaryContainer
-                NumberBallVariant.Lotofacil -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-            }
-            val onSurfaceColor = when (variant) {
-                NumberBallVariant.Primary -> MaterialTheme.colorScheme.onSurfaceVariant
-                NumberBallVariant.Secondary -> MaterialTheme.colorScheme.onSecondaryContainer
-                NumberBallVariant.Lotofacil -> MaterialTheme.colorScheme.onPrimaryContainer
-            }
-            Triple(
-                surfaceColor,
-                onSurfaceColor,
-                MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-            )
-        }
+        else -> Triple(
+            colors.surface2,
+            colors.textPrimary,
+            colors.outline.copy(alpha = 0.2f)
+        )
     }
 }

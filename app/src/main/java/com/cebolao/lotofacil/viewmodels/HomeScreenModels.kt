@@ -43,7 +43,8 @@ data class HomeUiState(
     val lastDrawStats: LastDrawStats? = null,
     val statistics: StatisticsReport? = null,
     val selectedPattern: StatisticPattern = StatisticPattern.SUM,
-    val selectedTimeWindow: Int = 0
+    val selectedTimeWindow: Int = 0,
+    val lastUpdateTime: String? = null
 ) {
     /**
      * Computed property to check if any data is available

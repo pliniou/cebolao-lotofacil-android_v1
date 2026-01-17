@@ -3,6 +3,9 @@ package com.cebolao.lotofacil.ui.screens.home
 import androidx.compose.animation.*
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
@@ -83,11 +86,13 @@ fun LastDrawSection(stats: LastDrawStats) {
                         ) {
                             Icon(
                                 if (showPrizes) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                contentDescription = null,
+                                contentDescription = stringResource(
+                                    id = if (showPrizes) R.string.prize_details_collapse else R.string.prize_details_expand
+                                ),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Text(
-                                text = if (showPrizes) stringResource(id = R.string.hide_prizes) else stringResource(id = R.string.show_prizes),
+                                text = stringResource(id = R.string.prize_details_title),
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold
@@ -101,23 +106,25 @@ fun LastDrawSection(stats: LastDrawStats) {
                         ) {
                             Column(
                                 modifier = Modifier.fillMaxWidth().padding(top = AppSpacing.sm),
-                                verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
+                                verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
                             ) {
-                                for (prize in stats.prizes) {
-                                    PrizeRow(prize, currencyFormat)
+                                // Enhanced prize tiers section
+                                for ((index, prize) in stats.prizes.withIndex()) {
+                                    EnhancedPrizeTierRow(prize, index + 1, currencyFormat)
                                 }
-                                
+                               
                                 if (stats.winners.isNotEmpty()) {
                                     Spacer(modifier = Modifier.height(AppSpacing.md))
+                                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+                                    
                                     Text(
-                                        text = stringResource(id = R.string.main_winners_label),
+                                        text = stringResource(id = R.string.winners_by_state),
                                         style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.padding(bottom = AppSpacing.xs)
+                                        modifier = Modifier.padding(bottom = AppSpacing.sm)
                                     )
-                                    for (winner in stats.winners) {
-                                        WinnerRow(winner)
-                                    }
+                                    
+                                    WinnersByStateGrid(winners = stats.winners)
                                 }
                             }
                         }
@@ -128,7 +135,7 @@ fun LastDrawSection(stats: LastDrawStats) {
 
         // Card do Próximo Concurso
         stats.nextContest?.let { 
-            NextContestCard(
+            NextDrawCard(
                 contest = it,
                 date = stats.nextDate ?: "",
                 estimate = stats.nextEstimate ?: 0.0,
@@ -189,7 +196,94 @@ private fun WinnerRow(winner: WinnerLocation) {
 }
 
 @Composable
-private fun NextContestCard(
+private fun EnhancedPrizeTierRow(prize: PrizeTier, tier: Int, format: NumberFormat) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppSpacing.md, vertical = AppSpacing.xs),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(AppSpacing.md),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = prize.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = stringResource(id = R.string.prize_tier_format, tier),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                )
+            }
+            
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "${prize.winners} ganhador(es)",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = format.format(prize.prizeValue),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun WinnersByStateGrid(winners: List<WinnerLocation>) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+        contentPadding = PaddingValues(horizontal = AppSpacing.md)
+    ) {
+        items(winners.take(5)) { winner ->
+            Card(
+                modifier = Modifier.size(width = 80.dp, height = 40.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(AppSpacing.xs),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = winner.state,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
+                    Text(
+                        text = "${winner.winnersCount}",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onTertiaryContainer
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NextDrawCard(
     contest: Int,
     date: String,
     estimate: Double,
@@ -197,7 +291,7 @@ private fun NextContestCard(
     currencyFormat: NumberFormat
 ) {
     StatCard(
-        title = "Próximo Concurso: #$contest",
+        title = stringResource(id = R.string.next_contest_format, contest),
         content = {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(AppSpacing.md),

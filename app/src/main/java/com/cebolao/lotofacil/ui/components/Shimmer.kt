@@ -13,29 +13,43 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 
+/**
+ * Optimized shimmer modifier for loading states.
+ * Uses proper composition locals and optimized animation specs for better performance.
+ */
 fun Modifier.shimmer(): Modifier = composed {
+    val density = LocalDensity.current
     val transition = rememberInfiniteTransition(label = "shimmer")
+    
+    // Optimize animation values for better performance
     val translateAnim by transition.animateFloat(
-        initialValue = 0f,
+        initialValue = -1000f,
         targetValue = 1000f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
+            animation = tween(
+                durationMillis = 1000, // Reduced from 1200 for smoother feel
+                easing = FastOutSlowInEasing
+            ),
             repeatMode = RepeatMode.Restart
         ),
         label = "shimmerTranslation"
     )
 
+    // Use theme-aware colors with proper alpha values
     val shimmerColors = listOf(
-        Color.LightGray.copy(alpha = 0.6f),
-        Color.LightGray.copy(alpha = 0.2f),
-        Color.LightGray.copy(alpha = 0.6f),
+        Color.LightGray.copy(alpha = 0.4f), // Reduced alpha for better performance
+        Color.LightGray.copy(alpha = 0.1f),
+        Color.LightGray.copy(alpha = 0.4f),
     )
 
+    // Optimize brush calculation
     val brush = Brush.linearGradient(
         colors = shimmerColors,
-        start = Offset.Zero,
-        end = Offset(x = translateAnim, y = translateAnim)
+        start = Offset(x = translateAnim - 1000f, y = translateAnim - 1000f),
+        end = Offset(x = translateAnim + 1000f, y = translateAnim + 1000f)
     )
+    
     background(brush = brush)
 }

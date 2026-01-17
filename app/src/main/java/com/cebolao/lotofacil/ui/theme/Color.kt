@@ -2,8 +2,34 @@ package com.cebolao.lotofacil.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+// Semantic Color Palette - Dark Theme Focus
+// Base Colors
+val BaseBackground = Color(0xFF0B0F12)
+val Surface1 = Color(0xFF10171C) // Primary cards/sheets
+val Surface2 = Color(0xFF141E25) // Elevated/secondary surfaces  
+val Surface3 = Color(0xFF18242D) // Emphasized containers (dialogs, expanded panels)
+val OutlineStroke = Color(0xFF24323D) // Dividers and card borders
 
-// Tema Claro (Deep Professional Teal)
+// Text Colors
+val TextPrimary = Color(0xFFE7EEF5) // Main text
+val TextSecondary = Color(0xFFB7C6D3) // Subtitles/labels
+val TextTertiary = Color(0xFF7F93A3) // Hints and helper text
+
+// Brand Colors (Teal)
+val BrandPrimary = Color(0xFF39D3CF) // Primary actions, selected states, active toggles, highlights
+val BrandSecondary = Color(0xFF2BB6B2) // Pressed/hover states, secondary accents
+val BrandSubtle = Color(0xFF12363A) // Tinted backgrounds behind important chips/badges
+
+// Status Colors
+val Success = Color(0xFF39D98A) // Positive feedback
+val Warning = Color(0xFFF7C948) // Cautions
+val Error = Color(0xFFFF5A6A) // Destructive actions and error states
+
+// Disabled States
+val DisabledContainer = Color(0xFF0F1418)
+val DisabledContent = Color(0xFF5B6B78)
+
+// Material 3 Light Theme (Minimal - for completeness)
 val LightPrimary = Color(0xFF006A6A)
 val LightOnPrimary = Color(0xFFFFFFFF)
 val LightPrimaryContainer = Color(0xFF6FF5F5)
@@ -28,33 +54,29 @@ val LightSurfaceVariant = Color(0xFFDAE5E3)
 val LightOnSurfaceVariant = Color(0xFF3F4948)
 val LightOutline = Color(0xFF6F7978)
 val LightOutlineVariant = Color(0xFFBECBCA)
-val LightSurfaceGlass = Color(0xCCF4FBF9)
-val LightPrimaryGlow = Color(0x40006A6A)
 
-// Tema Escuro (Rich Dark Slate)
-val DarkPrimary = Color(0xFF4DDADA)
-val DarkOnPrimary = Color(0xFF003737)
-val DarkPrimaryContainer = Color(0xFF004F4F)
-val DarkOnPrimaryContainer = Color(0xFF6FF5F5)
-val DarkSecondary = Color(0xFFB0CCCC)
-val DarkOnSecondary = Color(0xFF1C3434)
-val DarkSecondaryContainer = Color(0xFF324B4B)
-val DarkOnSecondaryContainer = Color(0xFFCCE8E7)
-val DarkTertiary = Color(0xFFB2C8E8)
-val DarkOnTertiary = Color(0xFF1B314B)
-val DarkTertiaryContainer = Color(0xFF334863)
-val DarkOnTertiaryContainer = Color(0xFFD3E4FF)
-val DarkError = Color(0xFFFFB4AB)
-val DarkErrorContainer = Color(0xFF93000A)
-val DarkOnError = Color(0xFF690005)
-val DarkOnErrorContainer = Color(0xFFFFDAD6)
-val DarkBackground = Color(0xFF0E1414)
-val DarkOnBackground = Color(0xFFDEE3E2)
-val DarkSurface = Color(0xFF0E1414)
-val DarkOnSurface = Color(0xFFDEE3E2)
-val DarkSurfaceVariant = Color(0xFF3F4948)
-val DarkOnSurfaceVariant = Color(0xFFBECBCA)
-val DarkOutline = Color(0xFF899392)
-val DarkOutlineVariant = Color(0xFF3F4948)
-val DarkSurfaceGlass = Color(0xCC0E1414)
-val DarkPrimaryGlow = Color(0x604DDADA)
+// Legacy Dark Colors (for reference during migration)
+val DarkPrimary = BrandPrimary
+val DarkOnPrimary = BaseBackground
+val DarkPrimaryContainer = BrandSubtle
+val DarkOnPrimaryContainer = BrandPrimary
+val DarkSecondary = TextSecondary
+val DarkOnSecondary = BaseBackground
+val DarkSecondaryContainer = Surface2
+val DarkOnSecondaryContainer = TextSecondary
+val DarkTertiary = TextSecondary
+val DarkOnTertiary = BaseBackground
+val DarkTertiaryContainer = Surface2
+val DarkOnTertiaryContainer = TextSecondary
+val DarkError = Error
+val DarkErrorContainer = Color(0xFF4A1015)
+val DarkOnError = BaseBackground
+val DarkOnErrorContainer = Error
+val DarkBackground = BaseBackground
+val DarkOnBackground = TextPrimary
+val DarkSurface = Surface1
+val DarkOnSurface = TextPrimary
+val DarkSurfaceVariant = Surface2
+val DarkOnSurfaceVariant = TextSecondary
+val DarkOutline = OutlineStroke
+val DarkOutlineVariant = Surface2

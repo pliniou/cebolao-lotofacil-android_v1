@@ -37,7 +37,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -62,10 +64,14 @@ import com.cebolao.lotofacil.ui.theme.iconLarge
 @Composable
 fun AboutScreen() {
     var dialogContent by remember { mutableStateOf<InfoItem?>(null) }
+    val hapticFeedback = LocalHapticFeedback.current
 
     dialogContent?.let { item ->
         InfoDialog(
-            onDismissRequest = { dialogContent = null },
+            onDismissRequest = { 
+                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                dialogContent = null 
+            },
             dialogTitle = stringResource(id = item.titleResId),
             icon = item.icon
         ) { item.content() }
@@ -97,7 +103,10 @@ fun AboutScreen() {
         }
         items(items, key = { it.titleResId }) { info ->
             AnimateOnEntry(Modifier.padding(horizontal = AppSpacing.xl)) {
-                InfoCard(info) { dialogContent = info }
+                InfoCard(info) { 
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    dialogContent = info 
+                }
             }
         }
     }

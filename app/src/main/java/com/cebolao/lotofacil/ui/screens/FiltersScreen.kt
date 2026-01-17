@@ -1,5 +1,8 @@
 package com.cebolao.lotofacil.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,12 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,6 +30,8 @@ import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.model.FilterType
 import com.cebolao.lotofacil.ui.model.*
 import com.cebolao.lotofacil.navigation.UiEvent
+import com.cebolao.lotofacil.ui.components.AnimateOnEntry
+import com.cebolao.lotofacil.ui.components.ConfirmationDialog
 import com.cebolao.lotofacil.ui.components.InfoDialog
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.viewmodels.FiltersViewModel
@@ -65,6 +67,7 @@ fun FiltersScreen(
         }
     }
 
+    // Filter info dialog
     showDialogFor?.let { type ->
         InfoDialog(
             onDismissRequest = { showDialogFor = null },
@@ -75,21 +78,19 @@ fun FiltersScreen(
         }
     }
 
+    // Reset confirmation dialog
     if (showResetConfirmation) {
-        AlertDialog(
-            onDismissRequest = { showResetConfirmation = false },
-            title = { Text(stringResource(id = R.string.reset_filters_title)) },
-            text = { Text(stringResource(id = R.string.reset_filters_message)) },
-            confirmButton = {
-                Button(onClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    filtersViewModel.confirmResetAllFilters()
-                    showResetConfirmation = false
-                }) { Text(stringResource(id = R.string.reset_button)) }
+        ConfirmationDialog(
+            title = stringResource(id = R.string.reset_filters_title),
+            message = stringResource(id = R.string.reset_filters_message),
+            confirmText = stringResource(id = R.string.reset_button),
+            dismissText = stringResource(id = R.string.cancel_button),
+            onConfirm = {
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                filtersViewModel.confirmResetAllFilters()
+                showResetConfirmation = false
             },
-            dismissButton = {
-                TextButton(onClick = { showResetConfirmation = false }) { Text(stringResource(id = R.string.cancel_button)) }
-            }
+            onDismiss = { showResetConfirmation = false }
         )
     }
 
@@ -119,6 +120,18 @@ fun FiltersScreen(
                 )
             }
 
+            // Apply single animation to filter items
+            item {
+                AnimateOnEntry(delayMillis = 200L) {
+                    Column(
+                        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(AppSpacing.lg)
+                    ) {
+                        // Filter items will be added here
+                    }
+                }
+            }
+
+            // Add filter items with animation
             filterList(
                 filterStates = uiState.filterStates,
                 lastDraw = uiState.lastDraw,

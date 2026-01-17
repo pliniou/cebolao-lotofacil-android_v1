@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,6 +23,7 @@ import com.cebolao.lotofacil.ui.theme.AppSpacing
 /**
  * Reusable skeleton components for loading states.
  * Provides consistent placeholder UI across the app.
+ * Optimized for performance with stable composition and minimal recompositions.
  */
 object SkeletonDefaults {
     val Color: Color
@@ -84,11 +86,14 @@ fun SkeletonRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(SkeletonDefaults.Spacing)
     ) {
-        for (i in 0 until itemCount) {
-            SkeletonCard(
-                modifier = Modifier.weight(1f),
-                height = itemHeight
-            )
+        // Optimize with stable keys and minimal recompositions
+        repeat(itemCount) { index ->
+            key(index) {
+                SkeletonCard(
+                    modifier = Modifier.weight(1f),
+                    height = itemHeight
+                )
+            }
         }
     }
 }
@@ -102,20 +107,23 @@ fun SkeletonStatsRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(SkeletonDefaults.Spacing)
     ) {
-        for (i in 0 until itemCount) {
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                SkeletonText(
-                    width = 60.dp,
-                    height = 20.dp
-                )
-                Spacer(modifier = Modifier.height(SkeletonDefaults.Spacing))
-                SkeletonText(
-                    width = 40.dp,
-                    height = 16.dp
-                )
+        // Optimize with stable keys and minimal recompositions
+        repeat(itemCount) { index ->
+            key(index) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    SkeletonText(
+                        width = 60.dp,
+                        height = 20.dp
+                    )
+                    Spacer(modifier = Modifier.height(SkeletonDefaults.Spacing))
+                    SkeletonText(
+                        width = 40.dp,
+                        height = 16.dp
+                    )
+                }
             }
         }
     }

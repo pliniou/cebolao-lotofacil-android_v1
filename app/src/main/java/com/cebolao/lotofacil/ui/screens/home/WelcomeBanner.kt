@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -26,6 +25,9 @@ import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.AppElevation
+import com.cebolao.lotofacil.ui.theme.LocalAppColors
+import com.cebolao.lotofacil.ui.theme.iconMedium
 
 @Composable
 fun WelcomeBanner(
@@ -34,6 +36,8 @@ fun WelcomeBanner(
     onExploreFilters: () -> Unit = {},
     onOpenChecker: () -> Unit = {}
 ) {
+    val colors = LocalAppColors.current
+    
     AnimateOnEntry(
         delayMillis = 50L,
         modifier = modifier.fillMaxWidth()
@@ -43,9 +47,9 @@ fun WelcomeBanner(
                 .fillMaxWidth()
                 .padding(horizontal = AppSpacing.lg),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.1f)
+                containerColor = colors.brandSubtle
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            elevation = CardDefaults.cardElevation(defaultElevation = AppElevation.none)
         ) {
             Column(
                 modifier = Modifier.padding(AppSpacing.lg),
@@ -59,13 +63,13 @@ fun WelcomeBanner(
                     Icon(
                         imageVector = Icons.Default.Lightbulb,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp)
+                        tint = colors.brandPrimary,
+                        modifier = Modifier.size(iconMedium())
                     )
                     Text(
                         text = stringResource(id = R.string.emoji_lightbulb),
                         style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary,
+                        color = colors.brandPrimary,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -73,21 +77,21 @@ fun WelcomeBanner(
                 Text(
                     text = stringResource(id = R.string.welcome_banner_title),
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = colors.textPrimary,
                     fontWeight = FontWeight.Bold
                 )
                 
                 Text(
                     text = stringResource(id = R.string.welcome_banner_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = colors.textSecondary
                 )
                 
                 lastUpdateTime?.let { time ->
                     Text(
                         text = stringResource(id = R.string.last_update_status, time),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        color = colors.textTertiary
                     )
                 }
                 
@@ -120,6 +124,8 @@ private fun QuickActionChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalAppColors.current
+    
     androidx.compose.material3.AssistChip(
         onClick = onClick,
         modifier = modifier,
@@ -127,23 +133,26 @@ private fun QuickActionChip(
             Text(
                 text = text,
                 style = MaterialTheme.typography.labelSmall,
-                maxLines = 1
+                maxLines = 1,
+                color = colors.textPrimary
             )
         },
         leadingIcon = {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(iconMedium()),
+                tint = colors.brandPrimary
             )
         },
         colors = androidx.compose.material3.AssistChipDefaults.assistChipColors(
-            labelColor = MaterialTheme.colorScheme.primary,
-            leadingIconContentColor = MaterialTheme.colorScheme.primary
+            containerColor = colors.surface1,
+            labelColor = colors.textPrimary,
+            leadingIconContentColor = colors.brandPrimary
         ),
         border = androidx.compose.foundation.BorderStroke(
             width = 1.dp,
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+            color = colors.outline
         )
     )
 }

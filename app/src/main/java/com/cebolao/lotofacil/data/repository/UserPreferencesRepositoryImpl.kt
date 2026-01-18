@@ -2,6 +2,7 @@ package com.cebolao.lotofacil.data.repository
 
 import android.content.Context
 import android.util.Log
+import com.cebolao.lotofacil.BuildConfig
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -52,7 +53,9 @@ class UserPreferencesRepositoryImpl @Inject constructor(
                 context.dataStore.edit { preferences ->
                     preferences[PINNED_GAMES_KEY] = games
                 }
-                Log.d(TAG, "Saved ${games.size} pinned games")
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "Saved ${games.size} pinned games")
+                }
             } catch (e: IOException) {
                 handleError(e, "saving pinned games")
             }
@@ -84,7 +87,9 @@ class UserPreferencesRepositoryImpl @Inject constructor(
 
                     if (validEntries.isNotEmpty()) {
                         preferences[DYNAMIC_HISTORY_KEY] = currentHistory + validEntries
-                        Log.d(TAG, "Added ${validEntries.size} valid history entries")
+                        if (BuildConfig.DEBUG) {
+                            Log.d(TAG, "Added ${validEntries.size} valid history entries")
+                        }
                     }
                 }
             } catch (e: IOException) {
@@ -115,6 +120,8 @@ class UserPreferencesRepositoryImpl @Inject constructor(
     }
 
     private fun handleError(exception: Throwable, contextMessage: String) {
-        Log.e(TAG, "Error $contextMessage", exception)
+        if (BuildConfig.DEBUG) {
+            Log.e(TAG, "Error $contextMessage", exception)
+        }
     }
 }

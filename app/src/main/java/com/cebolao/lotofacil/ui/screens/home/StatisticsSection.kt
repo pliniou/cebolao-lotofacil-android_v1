@@ -46,6 +46,10 @@ import com.cebolao.lotofacil.ui.components.NumberBall
 import com.cebolao.lotofacil.ui.components.shimmer
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.AppElevation
+import com.cebolao.lotofacil.ui.theme.LocalAppColors
+import com.cebolao.lotofacil.ui.theme.iconMedium
+import com.cebolao.lotofacil.ui.theme.iconSmall
 import com.cebolao.lotofacil.viewmodels.StatisticPattern
 import kotlinx.collections.immutable.toImmutableList
 
@@ -59,13 +63,17 @@ fun StatisticsSection(
     onPatternSelected: (StatisticPattern) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalAppColors.current
+    
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppCardDefaults.contentSpacing)
     ) {
         Text(
             text = stringResource(id = R.string.statistics_center),
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall,
+            color = colors.textPrimary,
+            fontWeight = FontWeight.Bold
         )
         stats?.let {
             AppCard(
@@ -82,7 +90,7 @@ fun StatisticsSection(
                         icon = Icons.Default.HourglassEmpty,
                         suffix = stringResource(id = R.string.delayed_suffix)
                     )
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+                    HorizontalDivider(color = colors.outline.copy(alpha = 0.1f))
                     
                     TimeWindowSelector(selectedTimeWindow, onTimeWindowSelected)
                     
@@ -97,7 +105,7 @@ fun StatisticsSection(
                                     icon = Icons.Default.LocalFireDepartment,
                                     suffix = stringResource(id = R.string.frequency_suffix)
                                 )
-                                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+                                HorizontalDivider(color = colors.outline.copy(alpha = 0.1f))
                                 DistributionCharts(it, selectedPattern, onPatternSelected)
                             }
                         }
@@ -110,14 +118,18 @@ fun StatisticsSection(
 
 @Composable
 private fun TimeWindowSelector(selected: Int, onSelect: (Int) -> Unit) {
+    val colors = LocalAppColors.current
     val windows = listOf(0, 500, 250, 100, 50, 10)
+    
     Column(
         modifier = Modifier.padding(horizontal = AppSpacing.lg),
         verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
     ) {
         Text(
             text = stringResource(id = R.string.analysis_period_title),
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            color = colors.textPrimary,
+            fontWeight = FontWeight.Medium
         )
         LazyRow(horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)) {
             items(windows, key = { it }) { window ->
@@ -137,18 +149,20 @@ private fun TimeWindowSelector(selected: Int, onSelect: (Int) -> Unit) {
 
 @Composable
 private fun TimeWindowChip(isSelected: Boolean, onClick: () -> Unit, label: String) {
+    val colors = LocalAppColors.current
+    
     val container by animateColorAsState(
-        targetValue = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.08f) else MaterialTheme.colorScheme.surface,
+        targetValue = if (isSelected) colors.brandSubtle else colors.surface1,
         animationSpec = tween(250),
         label = "chipContainer"
     )
     val content by animateColorAsState(
-        targetValue = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+        targetValue = if (isSelected) colors.brandPrimary else colors.textPrimary,
         animationSpec = tween(250),
         label = "chipContent"
     )
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.3f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.15f),
+        targetValue = if (isSelected) colors.brandPrimary.copy(alpha = 0.3f) else colors.outline.copy(alpha = 0.15f),
         animationSpec = tween(250),
         label = "chipBorder"
     )
@@ -158,7 +172,7 @@ private fun TimeWindowChip(isSelected: Boolean, onClick: () -> Unit, label: Stri
         shape = MaterialTheme.shapes.medium,
         backgroundColor = container,
         border = BorderStroke(1.dp, borderColor),
-        elevation = if (isSelected) 2.dp else 0.dp
+        elevation = if (isSelected) AppElevation.xs else AppElevation.none
     ) {
         Text(
             text = label,
@@ -172,6 +186,8 @@ private fun TimeWindowChip(isSelected: Boolean, onClick: () -> Unit, label: Stri
 
 @Composable
 private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVector, suffix: String) {
+    val colors = LocalAppColors.current
+    
     Column(
         modifier = Modifier.padding(horizontal = AppSpacing.lg),
         verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
@@ -182,9 +198,9 @@ private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVec
         ) {
             Box(
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(iconMedium())
                     .background(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                        colors.brandSubtle,
                         CircleShape
                     ),
                 contentAlignment = Alignment.Center
@@ -192,11 +208,16 @@ private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVec
                 Icon(
                     icon, 
                     null, 
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(18.dp)
+                    tint = colors.brandPrimary,
+                    modifier = Modifier.size(iconSmall())
                 )
             }
-            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text(
+                text = title, 
+                style = MaterialTheme.typography.titleMedium, 
+                fontWeight = FontWeight.Bold,
+                color = colors.textPrimary
+            )
         }
         Row(
             Modifier.fillMaxWidth(), 
@@ -209,9 +230,9 @@ private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVec
                 ) {
                     NumberBall(num, size = 42.dp)
                     Text(
-                        "$value$suffix", 
+                        text = "$value$suffix", 
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = colors.textSecondary,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -226,7 +247,9 @@ private fun DistributionCharts(
     selected: StatisticPattern,
     onSelect: (StatisticPattern) -> Unit
 ) {
+    val colors = LocalAppColors.current
     val patterns = remember { StatisticPattern.entries.toTypedArray() }
+    
     Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.md)) {
         LazyRow(
             contentPadding = PaddingValues(horizontal = AppSpacing.lg),
@@ -237,8 +260,25 @@ private fun DistributionCharts(
                 FilterChip(
                     selected = selectedPattern,
                     onClick = { onSelect(pattern) },
-                    label = { Text(stringResource(id = pattern.titleRes)) },
-                    leadingIcon = { Icon(pattern.icon, null, Modifier.size(FilterChipDefaults.IconSize)) }
+                    label = { 
+                        Text(
+                            text = stringResource(id = pattern.titleRes),
+                            color = if (selectedPattern) colors.background else colors.textPrimary
+                        )
+                    },
+                    leadingIcon = { 
+                        Icon(
+                            pattern.icon, 
+                            null, 
+                            modifier = Modifier.size(iconSmall()),
+                            tint = if (selectedPattern) colors.background else colors.brandPrimary
+                        ) 
+                    },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = colors.brandPrimary,
+                        selectedLabelColor = colors.background,
+                        selectedLeadingIconColor = colors.background
+                    )
                 )
             }
         }
@@ -264,7 +304,7 @@ private fun DistributionCharts(
                     maxValue = max,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = AppSpacing.md)
                 )
             }
         }
@@ -273,6 +313,8 @@ private fun DistributionCharts(
 
 @Composable
 fun HomeScreenSkeleton() {
+    val colors = LocalAppColors.current
+    
     Column(
         modifier = Modifier.padding(horizontal = AppSpacing.lg),
         verticalArrangement = Arrangement.spacedBy(AppSpacing.xxl)
@@ -288,18 +330,18 @@ fun HomeScreenSkeleton() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                for (i in 0 until 5) {
-                    Box(Modifier.size(40.dp).clip(CircleShape).shimmer())
+                    for (i in 0 until 5) {
+                        Box(Modifier.size(40.dp).clip(CircleShape).shimmer())
+                    }
                 }
-                }
-                Box(Modifier.fillMaxWidth().height(1.dp).background(MaterialTheme.colorScheme.outline.copy(alpha = 0.1f)))
+                Box(Modifier.fillMaxWidth().height(1.dp).background(colors.outline.copy(alpha = 0.1f)))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.md, Alignment.CenterHorizontally)
                 ) {
-                for (i in 0 until 3) {
-                    Box(Modifier.size(60.dp, 30.dp).clip(MaterialTheme.shapes.small).shimmer())
-                }
+                    for (i in 0 until 3) {
+                        Box(Modifier.size(60.dp, 30.dp).clip(MaterialTheme.shapes.small).shimmer())
+                    }
                 }
             }
         }
@@ -313,7 +355,7 @@ fun HomeScreenSkeleton() {
                     verticalArrangement = Arrangement.spacedBy(AppCardDefaults.contentSpacing)
                 ) {
                     for (i in 0 until 2) {
-                        Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Column(Modifier.padding(horizontal = AppSpacing.md), verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
                             Box(Modifier.size(150.dp, 20.dp).clip(MaterialTheme.shapes.small).shimmer())
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                                 for (j in 0 until 5) {
@@ -330,11 +372,13 @@ fun HomeScreenSkeleton() {
 
 @Composable
 fun StatsLoadingSkeleton() {
+    val colors = LocalAppColors.current
+    
     Column(
         modifier = Modifier.padding(vertical = AppSpacing.sm),
         verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
     ) {
-        Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(Modifier.padding(horizontal = AppSpacing.md), verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
             Box(Modifier.size(150.dp, 20.dp).clip(MaterialTheme.shapes.small).shimmer())
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 for (i in 0 until 5) {
@@ -342,9 +386,9 @@ fun StatsLoadingSkeleton() {
                 }
             }
         }
-        HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
-        Column(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        HorizontalDivider(color = colors.outline.copy(alpha = 0.1f))
+        Column(Modifier.padding(horizontal = AppSpacing.md), verticalArrangement = Arrangement.spacedBy(AppSpacing.md)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
                 for (i in 0 until 4) {
                     Box(Modifier.size(80.dp, 32.dp).clip(MaterialTheme.shapes.medium).shimmer())
                 }

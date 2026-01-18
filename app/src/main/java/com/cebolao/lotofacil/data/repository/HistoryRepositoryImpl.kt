@@ -1,5 +1,6 @@
 package com.cebolao.lotofacil.data.repository
 
+import com.cebolao.lotofacil.BuildConfig
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.data.datasource.HistoryLocalDataSource
 import com.cebolao.lotofacil.data.datasource.HistoryRemoteDataSource
@@ -49,17 +50,19 @@ class HistoryRepositoryImpl @Inject constructor(
 
     override suspend fun getLastDraw(): HistoricalDraw? {
         return try {
-            remoteDataSource.getLatestDraw()?.also { lastRemote ->
+            val lastRemote: HistoricalDraw? = remoteDataSource.getLatestDraw()
+            lastRemote?.let { remote: HistoricalDraw ->
                 cacheMutex.withLock {
-                    if (historyCache[lastRemote.contestNumber] == null) {
-                        historyCache[lastRemote.contestNumber] = lastRemote
+                    if (historyCache[remote.contestNumber] == null) {
+                        historyCache[remote.contestNumber] = remote
                         sortedHistoryCache = null
                     }
                 }
-                localDataSource.saveNewContests(listOf(lastRemote))
-            } ?: historyCache.values.maxByOrNull { it.contestNumber }
+                localDataSource.saveNewContests(listOf(remote))
+                remote
+            } ?: historyCache.values.maxByOrNull { draw: HistoricalDraw -> draw.contestNumber }
         } catch (e: Exception) {
-            historyCache.values.maxByOrNull { it.contestNumber }
+            historyCache.values.maxByOrNull { draw: HistoricalDraw -> draw.contestNumber }
         }
     }
 
@@ -67,15 +70,15 @@ class HistoryRepositoryImpl @Inject constructor(
         if (_syncStatus.value == SyncStatus.Syncing) return@launch
         _syncStatus.value = SyncStatus.Syncing
         try {
-            val latestRemote = remoteDataSource.getLatestDraw()
-            val latestLocal = historyCache.values.maxByOrNull { it.contestNumber }?.contestNumber ?: 0
+            val latestRemote: HistoricalDraw? = remoteDataSource.getLatestDraw()
+            val latestLocal: Int = historyCache.values.maxByOrNull { draw: HistoricalDraw -> draw.contestNumber }?.contestNumber ?: 0
             
             if (latestRemote != null && latestRemote.contestNumber > latestLocal) {
-                val rangeToFetch = (latestLocal + 1)..latestRemote.contestNumber
-                val newDraws = remoteDataSource.getDrawsInRange(rangeToFetch)
+                val rangeToFetch: IntRange = (latestLocal + 1)..latestRemote.contestNumber
+                val newDraws: List<HistoricalDraw> = remoteDataSource.getDrawsInRange(rangeToFetch)
                 if (newDraws.isNotEmpty()) {
                     cacheMutex.withLock {
-                        historyCache.putAll(newDraws.associateBy { it.contestNumber })
+                        historyCache.putAll(newDraws.associateBy { draw: HistoricalDraw -> draw.contestNumber })
                         sortedHistoryCache = null
                     }
                     localDataSource.saveNewContests(newDraws)
@@ -98,11 +101,11 @@ class HistoryRepositoryImpl @Inject constructor(
 
     private suspend fun loadInitialHistory() {
         try {
-            val localHistory = localDataSource.getLocalHistory()
+            val localHistory: List<HistoricalDraw> = localDataSource.getLocalHistory()
             if (localHistory.isNotEmpty()) {
                 cacheMutex.withLock {
                     historyCache.clear()
-                    historyCache.putAll(localHistory.associateBy { it.contestNumber })
+                    historyCache.putAll(localHistory.associateBy { draw: HistoricalDraw -> draw.contestNumber })
                     sortedHistoryCache = null
                 }
             }

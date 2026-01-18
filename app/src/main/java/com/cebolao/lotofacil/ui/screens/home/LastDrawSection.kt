@@ -24,11 +24,17 @@ import com.cebolao.lotofacil.ui.components.NumberBall
 import com.cebolao.lotofacil.ui.components.NumberBallVariant
 import com.cebolao.lotofacil.ui.components.cards.StatCard
 import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.AppElevation
+import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+import com.cebolao.lotofacil.ui.theme.LocalAppColors
+import com.cebolao.lotofacil.ui.theme.iconMedium
+import com.cebolao.lotofacil.ui.theme.iconSmall
 import java.text.NumberFormat
 import java.util.Locale
 
 @Composable
 fun LastDrawSection(stats: LastDrawStats) {
+    val colors = LocalAppColors.current
     var showPrizes by remember { mutableStateOf(false) }
     val currencyFormat = remember { NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR")) }
 
@@ -58,7 +64,7 @@ fun LastDrawSection(stats: LastDrawStats) {
                     }
 
                     Spacer(modifier = Modifier.height(AppSpacing.lg))
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                    HorizontalDivider(color = colors.outline.copy(alpha = 0.5f))
                     Spacer(modifier = Modifier.height(AppSpacing.md))
 
                     Row(
@@ -74,7 +80,7 @@ fun LastDrawSection(stats: LastDrawStats) {
 
                     if (stats.prizes.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(AppSpacing.lg))
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+                        HorizontalDivider(color = colors.outline.copy(alpha = 0.3f))
                         
                         Row(
                             modifier = Modifier
@@ -85,16 +91,18 @@ fun LastDrawSection(stats: LastDrawStats) {
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Icon(
-                                if (showPrizes) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                imageVector = if (showPrizes) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                                 contentDescription = stringResource(
                                     id = if (showPrizes) R.string.prize_details_collapse else R.string.prize_details_expand
                                 ),
-                                tint = MaterialTheme.colorScheme.primary
+                                tint = colors.brandPrimary,
+                                modifier = Modifier.size(iconSmall())
                             )
+                            Spacer(modifier = Modifier.width(AppSpacing.xs))
                             Text(
                                 text = stringResource(id = R.string.prize_details_title),
                                 style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = colors.brandPrimary,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -115,11 +123,12 @@ fun LastDrawSection(stats: LastDrawStats) {
                                
                                 if (stats.winners.isNotEmpty()) {
                                     Spacer(modifier = Modifier.height(AppSpacing.md))
-                                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+                                    HorizontalDivider(color = colors.outline.copy(alpha = 0.2f))
                                     
                                     Text(
                                         text = stringResource(id = R.string.winners_by_state),
                                         style = MaterialTheme.typography.labelMedium,
+                                        color = colors.textPrimary,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.padding(bottom = AppSpacing.sm)
                                     )
@@ -148,6 +157,8 @@ fun LastDrawSection(stats: LastDrawStats) {
 
 @Composable
 private fun PrizeRow(prize: PrizeTier, format: NumberFormat) {
+    val colors = LocalAppColors.current
+    
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -160,22 +171,28 @@ private fun PrizeRow(prize: PrizeTier, format: NumberFormat) {
             Icon(
                 Icons.Default.EmojiEvents, 
                 contentDescription = null, 
-                modifier = Modifier.size(14.dp), 
-                tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
+                modifier = Modifier.size(iconSmall()), 
+                tint = colors.brandSecondary
             )
-            Text(prize.description, style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = prize.description, 
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.textSecondary
+            )
         }
         Text(
             "${prize.winners} ganhadores • ${format.format(prize.prizeValue)}",
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = colors.textPrimary
         )
     }
 }
 
 @Composable
 private fun WinnerRow(winner: WinnerLocation) {
+    val colors = LocalAppColors.current
+    
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs),
@@ -184,27 +201,29 @@ private fun WinnerRow(winner: WinnerLocation) {
         Icon(
             Icons.Default.LocationOn, 
             contentDescription = null, 
-            modifier = Modifier.size(14.dp), 
-            tint = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f)
+            modifier = Modifier.size(iconSmall()), 
+            tint = colors.textTertiary
         )
         Text(
             "${winner.winnersCount} ganhador(es) em ${winner.city}/${winner.state}",
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = colors.textSecondary
         )
     }
 }
 
 @Composable
 private fun EnhancedPrizeTierRow(prize: PrizeTier, tier: Int, format: NumberFormat) {
+    val colors = LocalAppColors.current
+    
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = AppSpacing.md, vertical = AppSpacing.xs),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+            containerColor = colors.surface2
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = AppElevation.xs)
     ) {
         Row(
             modifier = Modifier
@@ -217,13 +236,13 @@ private fun EnhancedPrizeTierRow(prize: PrizeTier, tier: Int, format: NumberForm
                 Text(
                     text = prize.description,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = colors.textPrimary,
                     fontWeight = FontWeight.Medium
                 )
                 Text(
                     text = stringResource(id = R.string.prize_tier_format, tier),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    color = colors.textTertiary
                 )
             }
             
@@ -231,13 +250,13 @@ private fun EnhancedPrizeTierRow(prize: PrizeTier, tier: Int, format: NumberForm
                 Text(
                     text = "${prize.winners} ganhador(es)",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    color = colors.brandPrimary
                 )
                 Text(
                     text = format.format(prize.prizeValue),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = colors.brandPrimary
                 )
             }
         }
@@ -246,6 +265,8 @@ private fun EnhancedPrizeTierRow(prize: PrizeTier, tier: Int, format: NumberForm
 
 @Composable
 private fun WinnersByStateGrid(winners: List<WinnerLocation>) {
+    val colors = LocalAppColors.current
+    
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
@@ -255,8 +276,9 @@ private fun WinnersByStateGrid(winners: List<WinnerLocation>) {
             Card(
                 modifier = Modifier.size(width = 80.dp, height = 40.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
-                )
+                    containerColor = colors.surface3
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = AppElevation.none)
             ) {
                 Column(
                     modifier = Modifier
@@ -269,12 +291,12 @@ private fun WinnersByStateGrid(winners: List<WinnerLocation>) {
                         text = winner.state,
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onTertiaryContainer
+                        color = colors.textPrimary
                     )
                     Text(
                         text = "${winner.winnersCount}",
                         style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onTertiaryContainer
+                        color = colors.brandPrimary
                     )
                 }
             }
@@ -290,6 +312,8 @@ private fun NextDrawCard(
     accumulated: Boolean,
     currencyFormat: NumberFormat
 ) {
+    val colors = LocalAppColors.current
+    
     StatCard(
         title = stringResource(id = R.string.next_contest_format, contest),
         content = {
@@ -304,13 +328,14 @@ private fun NextDrawCard(
                     Icon(
                         Icons.AutoMirrored.Filled.TrendingUp,
                         contentDescription = null,
-                        tint = if (accumulated) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                        modifier = Modifier.size(iconMedium()),
+                        tint = if (accumulated) colors.error else colors.brandPrimary
                     )
                     Text(
                         text = if (accumulated) stringResource(id = R.string.accumulated) else stringResource(id = R.string.prize_estimate),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.ExtraBold,
-                        color = if (accumulated) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+                        color = if (accumulated) colors.error else colors.brandPrimary
                     )
                 }
                 
@@ -318,13 +343,13 @@ private fun NextDrawCard(
                     text = currencyFormat.format(estimate),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Black,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = colors.textPrimary
                 )
                 
                 Text(
                     text = stringResource(id = R.string.next_draw_date, date),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = colors.textSecondary
                 )
             }
         }
@@ -333,17 +358,22 @@ private fun NextDrawCard(
 
 @Composable
 private fun StatItem(label: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+    val colors = LocalAppColors.current
+    
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
+    ) {
         Text(
             text = value,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = colors.brandPrimary
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall,
+            color = colors.textSecondary
         )
     }
 }

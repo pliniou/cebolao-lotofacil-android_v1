@@ -63,7 +63,7 @@ sealed interface GameAnalysisUiState {
 class GameViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     private val checkGameUseCase: CheckGameUseCase
-) : @Suppress("DEPRECATION") StateViewModel<GameScreenUiState>(GameScreenUiState()) {
+) : StateViewModel<GameScreenUiState>(GameScreenUiState()) {
 
     val generatedGames: StateFlow<ImmutableList<LotofacilGame>> = gameRepository.games
         .stateIn(

@@ -1,9 +1,10 @@
 package com.cebolao.lotofacil.data.datasource
 
 import android.util.Log
-import com.cebolao.lotofacil.domain.model.HistoricalDraw
+import com.cebolao.lotofacil.BuildConfig
 import com.cebolao.lotofacil.data.network.ApiService
 import com.cebolao.lotofacil.data.network.LotofacilApiResult
+import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -32,7 +33,9 @@ class HistoryRemoteDataSourceImpl @Inject constructor(
             val result = apiService.getLatestResult()
             parseApiResult(result)
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to fetch latest draw", e)
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "Failed to fetch latest draw", e)
+            }
             null
         }
     }
@@ -48,7 +51,9 @@ class HistoryRemoteDataSourceImpl @Inject constructor(
                             val result = apiService.getResultByContest(contestNumber)
                             parseApiResult(result)
                         } catch (e: Exception) {
-                            Log.w(TAG, "Failed to fetch contest $contestNumber", e)
+                            if (BuildConfig.DEBUG) {
+                                Log.w(TAG, "Failed to fetch contest $contestNumber", e)
+                            }
                             null
                         }
                     }
@@ -79,11 +84,15 @@ class HistoryRemoteDataSourceImpl @Inject constructor(
                     accumulated = apiResult.acumulou ?: false
                 )
             } else {
-                Log.w(TAG, "Invalid API result for contest $contest: insufficient numbers or missing data")
+                if (BuildConfig.DEBUG) {
+                    Log.w(TAG, "Invalid API result for contest $contest: insufficient numbers or missing data")
+                }
                 null
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to parse API result", e)
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "Failed to parse API result", e)
+            }
             null
         }
     }

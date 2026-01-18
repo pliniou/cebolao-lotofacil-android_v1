@@ -2,6 +2,7 @@ package com.cebolao.lotofacil.data.datasource
 
 import android.content.Context
 import android.util.Log
+import com.cebolao.lotofacil.BuildConfig
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.domain.model.LotofacilConstants
 import com.cebolao.lotofacil.domain.repository.UserPreferencesRepository
@@ -61,17 +62,21 @@ class HistoryLocalDataSourceImpl @Inject constructor(
         }.toSet()
 
         userPreferencesRepository.addDynamicHistoryEntries(newHistoryEntries)
-        Log.d(TAG, "Persisted ${newDraws.size} new contests locally.")
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Persisted ${newDraws.size} new contests locally.")
+        }
     }
 
     private fun mergeHistory(
         assetHistory: List<HistoricalDraw>,
         savedHistory: List<HistoricalDraw>
     ): List<HistoricalDraw> {
-        Log.d(
-            TAG,
-            "Loaded ${assetHistory.size} contests from assets and ${savedHistory.size} from DataStore"
-        )
+        if (BuildConfig.DEBUG) {
+            Log.d(
+                TAG,
+                "Loaded ${assetHistory.size} contests from assets and ${savedHistory.size} from DataStore"
+            )
+        }
         return (assetHistory + savedHistory)
             .groupBy { it.contestNumber }
             .mapValues { (_, draws) -> draws.maxByOrNull { it.date?.isNotEmpty() ?: false } ?: draws.first() }
@@ -88,7 +93,9 @@ class HistoryLocalDataSourceImpl @Inject constructor(
                     .toList()
             }
         } catch (e: IOException) {
-            Log.e(TAG, "Failed to read history file from assets: $historyFileName", e)
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "Failed to read history file from assets: $historyFileName", e)
+            }
             emptyList()
         }
     }
@@ -97,7 +104,9 @@ class HistoryLocalDataSourceImpl @Inject constructor(
         return try {
             val parts = line.split(" - ", limit = 2)
             if (parts.size != 2) {
-                Log.w(TAG, "Invalid line format (missing ' - ' separator): $line")
+                if (BuildConfig.DEBUG) {
+                    Log.w(TAG, "Invalid line format (missing ' - ' separator): $line")
+                }
                 return null
             }
 
@@ -110,17 +119,23 @@ class HistoryLocalDataSourceImpl @Inject constructor(
             if (contestNumber > 0 && validNumbers.size == LotofacilConstants.GAME_SIZE) {
                 HistoricalDraw(contestNumber, validNumbers)
             } else {
-                Log.w(
-                    TAG,
-                    "Parsed line with invalid data: contest=$contestNumber, uniqueNumbers=${validNumbers.size}, values=${numbers}"
-                )
+                if (BuildConfig.DEBUG) {
+                    Log.w(
+                        TAG,
+                        "Parsed line with invalid data: contest=$contestNumber, uniqueNumbers=${validNumbers.size}, values=${numbers}"
+                    )
+                }
                 null
             }
         } catch (e: NumberFormatException) {
-            Log.w(TAG, "Failed to parse numbers in line: $line", e)
+            if (BuildConfig.DEBUG) {
+                Log.w(TAG, "Failed to parse numbers in line: $line", e)
+            }
             null
         } catch (e: Exception) {
-            Log.e(TAG, "An unexpected error occurred while parsing line: $line", e)
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, "An unexpected error occurred while parsing line: $line", e)
+            }
             null
         }
     }

@@ -36,7 +36,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.R
@@ -52,8 +54,11 @@ import com.cebolao.lotofacil.ui.screens.home.StatisticsSection
 import com.cebolao.lotofacil.ui.screens.home.WelcomeBanner
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-import com.cebolao.lotofacil.ui.theme.iconExtraLarge
+import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.LocalAppColors
+import com.cebolao.lotofacil.ui.theme.iconExtraLarge
+import com.cebolao.lotofacil.ui.theme.iconMedium
+import com.cebolao.lotofacil.ui.theme.iconButtonSize
 import com.cebolao.lotofacil.viewmodels.HomeViewModel
 
 @Composable
@@ -91,11 +96,15 @@ fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
                 subtitle = stringResource(id = R.string.lotofacil_subtitle),
                 iconPainter = painterResource(id = R.drawable.logo_cebola),
                 actions = {
-                    IconButton(onClick = { showRefreshConfirmation = true }) {
+                    IconButton(
+                        onClick = { showRefreshConfirmation = true },
+                        modifier = Modifier.size(iconButtonSize())
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = stringResource(id = R.string.cd_refresh_data),
-                            tint = colors.brandPrimary
+                            tint = colors.brandPrimary,
+                            modifier = Modifier.size(iconMedium())
                         )
                     }
                 }
@@ -116,10 +125,13 @@ fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
                 item(key = "skeleton") { HomeScreenSkeleton() }
             } else if (uiState.errorMessageResId != null) {
                 item(key = "error") {
-                    ErrorState(
-                        messageResId = uiState.errorMessageResId!!,
-                        onRetry = { homeViewModel.retryInitialLoad() }
-                    )
+                    val errorMessageResId = uiState.errorMessageResId
+                    if (errorMessageResId != null) {
+                        ErrorState(
+                            messageResId = errorMessageResId,
+                            onRetry = { homeViewModel.retryInitialLoad() }
+                        )
+                    }
                 }
             } else {
                 item(key = "welcome_banner") {
@@ -181,7 +193,7 @@ private fun ErrorState(messageResId: Int, onRetry: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = AppSpacing.lg),
-        backgroundColor = colors.error
+        backgroundColor = colors.surface1
     ) {
         Column(
             modifier = Modifier.padding(AppCardDefaults.defaultPadding),
@@ -190,25 +202,31 @@ private fun ErrorState(messageResId: Int, onRetry: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.CloudOff,
-                contentDescription = stringResource(id = R.string.cd_error_state),
-                modifier = Modifier.size(iconExtraLarge()),
-                tint = colors.background
+                contentDescription = null,
+                tint = colors.error,
+                modifier = Modifier.size(iconExtraLarge())
             )
+            
             Text(
-                text = stringResource(id = R.string.error_load_title),
-                style = MaterialTheme.typography.titleLarge,
-                color = colors.background
-            )
-            Text(
-                text = stringResource(messageResId),
+                text = stringResource(id = messageResId),
                 style = MaterialTheme.typography.bodyMedium,
-                color = colors.background,
+                color = colors.textPrimary,
                 textAlign = TextAlign.Center
             )
-            Button(onClick = onRetry) {
-                Icon(Icons.Default.Refresh, contentDescription = stringResource(id = R.string.try_again))
-                Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-                Text(stringResource(id = R.string.try_again))
+            
+            Button(
+                onClick = onRetry,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colors.brandPrimary,
+                    contentColor = colors.background
+                ),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = AppElevation.sm)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.try_again),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Medium
+                )
             }
         }
     }

@@ -4,7 +4,6 @@
     <string name="error_no_history">Não foi possível carregar o histórico.</string>
     <string name="error_load_data_failed">Falha ao carregar dados.</string>
     <string name="error_analysis_failed">Falha na análise.</string>
-    <string name="error_incomplete_selection">Selecione 15 números.</string>
     <string name="error_unknown">Erro desconhecido.</string>
     <string name="error_load_title">Falha ao carregar dados</string>
     <string name="try_again">Tentar novamente</string>
@@ -13,7 +12,6 @@
     <string name="studio_slogan">Sorte e estatística.</string>
     <string name="studio_logo_description">Logo Cebola Studios</string>
 
-    <string name="about_purpose_desc_header">Finalidade</string>
     <string name="about_purpose_desc_body">Este app ajuda a analisar jogos da Lotofácil.</string>
     <string name="about_purpose_desc_footer">Use com responsabilidade.</string>
     <string name="about_purpose_item1_title">Análise</string>
@@ -40,7 +38,6 @@
     <string name="about_rules_item2">Ganha com 11, 12, 13, 14 ou 15 acertos.</string>
     <string name="about_rules_item3">Sorteios diários, exceto domingos.</string>
 
-    <string name="about_bolao_desc_header">Bolão</string>
     <string name="about_bolao_desc_body">Aumente suas chances com jogo em grupo.</string>
     <string name="about_bolao_desc_footer">Consulte as regras oficiais.</string>
 
@@ -70,12 +67,10 @@
     <string name="refresh_confirmation_message">Isso irá baixar os dados mais recentes da Caixa. Deseja continuar?</string>
     <string name="refresh_success">Dados atualizados com sucesso!</string>
     <string name="refresh_error">Falha ao atualizar dados. Tente novamente.</string>
-    <string name="app_logo_content_description">Logo do Cebolão Lotofácil</string>
     <string name="prize_details_title">Detalhes do prêmio</string>
     <string name="prize_details_expand">Ver detalhes</string>
     <string name="prize_details_collapse">Ocultar detalhes</string>
     <string name="winners_by_state">Ganhadores por estado</string>
-    <string name="next_draw_info">Próximo sorteio: %s</string>
 
     <string name="cebolao_title">Cebolão</string>
     <string name="lotofacil_subtitle">Gerador Lotofácil</string>
@@ -92,16 +87,9 @@
     <string name="delayed_suffix"> atrás</string>
     <string name="most_drawn_numbers">Dezenas mais sorteadas</string>
     <string name="frequency_suffix">x</string>
-    <string name="understanding_statistics">Entendendo as estatísticas</string>
-    <string name="how_to_read_data">Como ler os dados</string>
     <string name="analysis_period_title">Período de análise</string>
     <string name="time_window_all">Todos</string>
     <string name="time_window_last">Últimos %d</string>
-    <string name="statistics_explanation_delayed_prefix">• Dezenas atrasadas/sorteadas: </string>
-    <string name="statistics_explanation_delayed_body">Identifica as dezenas de maior tendência no momento. Dezenas \"frias\" são as que não aparecem há mais tempo, enquanto as \"quentes\" possuem maior frequência histórica. O valor indica o atraso (em concursos) ou a recorrência total.</string>
-    <string name="statistics_explanation_distribution_prefix">• Gráficos de distribuição: </string>
-    <string name="statistics_explanation_distribution_body">A curva tracejada representa a distribuição normal esperada. As barras mostram a realidade dos sorteios. Quando uma barra está próxima ao pico da curva, ela representa o padrão mais provável estatisticamente.</string>
-
     <!-- GeneratedGamesScreen -->
     <string name="clear_games_title">Limpar jogos?</string>
     <string name="clear_games_message">Isso removerá todos os jogos não fixados. Deseja continuar?</string>
@@ -114,7 +102,6 @@
     <string name="analysis_error_title">Erro na análise</string>
     <string name="my_games">Meus jogos</string>
     <string name="my_games_subtitle">Visualize, analise e gerencie seus jogos</string>
-    <string name="clear_unpinned_games">Limpar jogos não fixados</string>
     <string name="empty_games_message">Nenhum jogo gerado ainda.\nVá para a tela de Gerador para começar!</string>
     <string name="game_analysis_title">Análise do jogo</string>
     <string name="close_button">Fechar</string>
@@ -137,9 +124,6 @@
     <string name="checker_incomplete_selection">Selecione exatos 15 números para conferir.</string>
     <string name="checker_results_cleared_title">Limpar resultados?</string>
     <string name="checker_results_cleared_message">Isso removerá os resultados da conferência atual. Deseja continuar?</string>
-    <string name="checker_results_cleared_confirmation">Resultados limpos com sucesso.</string>
-    <string name="checker_action_check_description">Conferir jogo selecionado</string>
-    <string name="checker_action_clear_description">Limpar números selecionados</string>
 
     <!-- FiltersScreen -->
     <string name="filters_header_title">Gerador inteligente</string>
@@ -156,7 +140,6 @@
 
     <!-- Common Actions -->
     <string name="confirm_button">Confirmar</string>
-    <string name="continue_button">Continuar</string>
     <string name="reset_button">Resetar</string>
 
     <!-- FilterCard -->
@@ -165,24 +148,12 @@
     <string name="filter_icon_content_description">Ícone do filtro %1$s</string>
 
     <!-- Filter Actions -->
-    <string name="filter_toggle_confirmation_title">Ativar filtro %1$s?</string>
-    <string name="filter_toggle_confirmation_message">Este filtro pode reduzir significativamente o número de jogos gerados. Deseja continuar?</string>
-    <string name="filter_deactivate_confirmation_title">Desativar filtro %1$s?</string>
-    <string name="filter_deactivate_confirmation_message">Isso aumentará o número de jogos possíveis. Deseja continuar?</string>
+    
     
     <!-- FilterRangeSlider -->
-    <string name="filter_range_slider_description">Controle deslizante para ajustar faixa de valores do filtro</string>
-    <string name="filter_range_min_value">Valor mínimo: %d</string>
-    <string name="filter_range_max_value">Valor máximo: %d</string>
+    
 
     <!-- Generation Actions -->
-    <string name="generation_restricted_title">Filtros muito restritivos</string>
-    <string name="generation_restricted_message">Os filtros ativos são muito restritivos e podem não gerar jogos suficientes. Deseja continuar mesmo assim?</string>
-    <string name="generation_no_results_title">Nenhum jogo gerado</string>
-    <string name="generation_no_results_message">Não foi possível gerar jogos com os filtros atuais. Tente ajustar os filtros para serem menos restritivos.</string>
-    <string name="generation_success_title">Jogos gerados com sucesso</string>
-    <string name="generation_success_message">%1$d jogo(s) gerado(s) com sucesso.</string>
-
     <string name="min_value">Mínimo</string>
     <string name="max_value">Máximo</string>
 
@@ -209,7 +180,10 @@
         <item quantity="one">%d acerto</item>
         <item quantity="other">%d acertos</item>
     </plurals>
-    <string name="last_award">Último prêmio no concurso %1$d com %2$d acertos.</string>
+    <plurals name="last_award">
+        <item quantity="one">Último prêmio no concurso %1$d com %2$d acerto.</item>
+        <item quantity="other">Último prêmio no concurso %1$d com %2$d acertos.</item>
+    </plurals>
     <string name="no_awards_found">Nenhum prêmio encontrado.</string>
 
     <!-- GenerationActionsPanel -->
@@ -266,9 +240,6 @@
     <string name="icon_rule_description">Ícone de regra</string>
     <string name="game_deleted_confirmation">Jogo excluído com sucesso.</string>
     <string name="unpinned_games_cleared">Jogos não fixados removidos.</string>
-    <string name="hide_prizes">Ocultar premiação</string>
-    <string name="show_prizes">Ver premiação detalhada</string>
-    <string name="main_winners_label">Ganhadores do prêmio principal:</string>
     <string name="accumulated">ACUMULOU!</string>
     <string name="prize_estimate">Estimativa de Prêmio</string>
     <string name="next_draw_date">Sorteio em %s</string>
@@ -278,41 +249,7 @@
     <!-- Content Descriptions -->
     <string name="cd_refresh_data">Atualizar dados</string>
     <string name="cd_clear_games">Limpar jogos não fixados</string>
-    <string name="cd_delete_game">Excluir jogo</string>
-    <string name="cd_pin_game">Fixar jogo</string>
-    <string name="cd_unpin_game">Desafixar jogo</string>
-    <string name="cd_analyze_game">Analisar jogo</string>
-    <string name="cd_filter_info">Informações do filtro</string>
-    <string name="cd_reset_filters">Resetar filtros</string>
-    <string name="cd_clear_selection">Limpar seleção</string>
-    <string name="cd_check_game">Conferir jogo</string>
-    <string name="cd_number_ball">Número da loteria</string>
-    <string name="cd_selected_number">Número selecionado</string>
     <string name="cd_error_state">Estado de erro</string>
-    <string name="cd_loading_state">Estado de carregamento</string>
-    <string name="cd_empty_state">Estado vazio</string>
-    <string name="cd_close_dialog">Fechar diálogo</string>
-    <string name="cd_confirm_action">Confirmar ação</string>
-    <string name="cd_dismiss_action">Cancelar ação</string>
-    <string name="cd_navigate_back">Voltar</string>
-    <string name="cd_navigate_up">Subir</string>
-    <string name="cd_menu">Menu</string>
-    <string name="cd_settings">Configurações</string>
-    <string name="cd_info">Informações</string>
-    <string name="cd_help">Ajuda</string>
-    <string name="cd_search">Pesquisar</string>
-    <string name="cd_filter">Filtrar</string>
-    <string name="cd_sort">Ordenar</string>
-    <string name="cd_expand">Expandir</string>
-    <string name="cd_collapse">Recolher</string>
-    <string name="cd_add">Adicionar</string>
-    <string name="cd_remove">Remover</string>
-    <string name="cd_edit">Editar</string>
-    <string name="cd_save">Salvar</string>
-    <string name="cd_copy">Copiar</string>
-    <string name="cd_share">Compartilhar</string>
-    <string name="cd_favorite">Favoritar</string>
-    <string name="cd_unfavorite">Desfavoritar</string>
     <string name="emoji_lightbulb">💡</string>
     <string name="next_contest_format">Próximo Concurso: #%d</string>
     <string name="prize_tier_format">Faixa %d</string>

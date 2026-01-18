@@ -69,7 +69,13 @@ android {
         abortOnError = false
         warningsAsErrors = false
         checkReleaseBuilds = true
-        disable += listOf("MissingTranslation", "ExtraTranslation")
+        lintConfig = file("lint.xml")
+        disable += listOf(
+            "MissingTranslation",
+            "ExtraTranslation",
+            "AndroidGradlePluginVersion",
+            "NewerVersionAvailable",
+        )
     }
 }
 

@@ -7,8 +7,6 @@ import androidx.compose.material3.SnackbarHost as MaterialSnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 
 /**
  * Consistent SnackbarHost component with standardized styling.
@@ -16,7 +14,7 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun SnackbarHost(
-    hostState: SnackbarHostState = SnackbarHostState(),
+    hostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
     MaterialSnackbarHost(

@@ -122,6 +122,8 @@ private fun ScoreBreakdown(scoreCounts: ImmutableMap<Int, Int>) {
 
 @Composable
 private fun LastHitInfo(result: CheckResult) {
+    val lastHitContest = result.lastHitContest
+    val lastHitScore = result.lastHitScore
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs)
@@ -133,11 +135,12 @@ private fun LastHitInfo(result: CheckResult) {
             modifier = Modifier.size(18.dp)
         )
         Text(
-            text = if (result.lastHitContest != null && result.lastHitScore != null) {
-                stringResource(
-                    id = R.string.last_award,
-                    result.lastHitContest,
-                    result.lastHitScore
+            text = if (lastHitContest != null && lastHitScore != null) {
+                pluralStringResource(
+                    id = R.plurals.last_award,
+                    count = lastHitScore,
+                    lastHitContest,
+                    lastHitScore
                 )
             } else {
                 stringResource(id = R.string.no_awards_found)
@@ -171,4 +174,3 @@ private fun NoWinsMessage() {
         )
     }
 }
-

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
 
     <style name="Theme.CebolaoLotofacil" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@color/background</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:windowLightStatusBar">true</item>
     </style>
 
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">

@@ -22,11 +22,11 @@ import com.cebolao.lotofacil.R
 fun FilterRangeSlider(
     value: ClosedFloatingPointRange<Float>,
     onValueChange: (ClosedFloatingPointRange<Float>) -> Unit,
-    onValueChangeFinished: (() -> Unit)? = null,
     valueRange: ClosedFloatingPointRange<Float>,
-    steps: Int = 0,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    steps: Int = 0,
+    onValueChangeFinished: (() -> Unit)? = null,
     @StringRes minLabelResId: Int = R.string.min_value,
     @StringRes maxLabelResId: Int = R.string.max_value
 ) {

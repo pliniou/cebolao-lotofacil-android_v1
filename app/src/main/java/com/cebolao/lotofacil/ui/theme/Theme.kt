@@ -122,8 +122,10 @@ fun CebolaoLotofacilTheme(
         }
     }
 
+    val appColors = AppColors.fromColorScheme(colorScheme)
+
     CompositionLocalProvider(
-        LocalAppColors provides if (darkTheme) DarkAppColors else LightAppColors,
+        LocalAppColors provides appColors,
         LocalAnimationEnabled provides true
     ) {
         MaterialTheme(

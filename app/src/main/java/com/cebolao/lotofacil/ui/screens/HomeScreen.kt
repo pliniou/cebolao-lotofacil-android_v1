@@ -62,7 +62,11 @@ import com.cebolao.lotofacil.ui.theme.iconButtonSize
 import com.cebolao.lotofacil.viewmodels.HomeViewModel
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
+fun HomeScreen(
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    onExploreFilters: () -> Unit = {},
+    onOpenChecker: () -> Unit = {}
+) {
     val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
     val context = LocalContext.current
@@ -137,8 +141,8 @@ fun HomeScreen(homeViewModel: HomeViewModel = hiltViewModel()) {
                 item(key = "welcome_banner") {
                     WelcomeBanner(
                         lastUpdateTime = uiState.lastUpdateTime,
-                        onExploreFilters = { /* Navigate to filters */ },
-                        onOpenChecker = { /* Navigate to checker */ }
+                        onExploreFilters = onExploreFilters,
+                        onOpenChecker = onOpenChecker
                     )
                 }
                 item(key = "last_draw") {

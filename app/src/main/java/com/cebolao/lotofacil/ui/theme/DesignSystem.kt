@@ -1,8 +1,8 @@
 package com.cebolao.lotofacil.ui.theme
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 
 data class AppColors(
@@ -31,28 +31,37 @@ data class AppColors(
     // Disabled States
     val disabledContainer: androidx.compose.ui.graphics.Color,
     val disabledContent: androidx.compose.ui.graphics.Color
-)
+) {
+    companion object {
+        fun fromColorScheme(
+            colorScheme: ColorScheme,
+            surface3Alpha: Float = 0.94f
+        ): AppColors {
+            val safeAlpha = surface3Alpha.coerceIn(0f, 1f)
+            val surface3Color = colorScheme.surface.copy(alpha = safeAlpha)
+            return AppColors(
+                background = colorScheme.background,
+                surface1 = colorScheme.surface,
+                surface2 = colorScheme.surfaceVariant,
+                surface3 = surface3Color,
+                outline = colorScheme.outline,
+                textPrimary = colorScheme.onBackground,
+                textSecondary = colorScheme.onSurfaceVariant,
+                textTertiary = colorScheme.outlineVariant,
+                brandPrimary = colorScheme.primary,
+                brandSecondary = colorScheme.secondary,
+                brandSubtle = colorScheme.primaryContainer,
+                success = Success,
+                warning = Warning,
+                error = colorScheme.error,
+                disabledContainer = colorScheme.surfaceVariant.copy(alpha = 0.84f),
+                disabledContent = colorScheme.onSurfaceVariant.copy(alpha = 0.68f)
+            )
+        }
+    }
+}
 
-val LightAppColors = AppColors(
-    background = LightBackground,
-    surface1 = LightSurface,
-    surface2 = LightSurfaceVariant,
-    surface3 = LightSurfaceVariant,
-    outline = LightOutline,
-    textPrimary = LightOnBackground,
-    textSecondary = LightOnSurfaceVariant,
-    textTertiary = LightOutline,
-    brandPrimary = LightPrimary,
-    brandSecondary = LightSecondary,
-    brandSubtle = LightPrimaryContainer,
-    success = Success,
-    warning = Warning,
-    error = LightError,
-    disabledContainer = LightSurfaceVariant,
-    disabledContent = LightOutline
-)
-
-val DarkAppColors = AppColors(
+private val DefaultAppColors = AppColors(
     background = BaseBackground,
     surface1 = Surface1,
     surface2 = Surface2,
@@ -71,7 +80,7 @@ val DarkAppColors = AppColors(
     disabledContent = DisabledContent
 )
 
-val LocalAppColors = staticCompositionLocalOf { DarkAppColors }
+val LocalAppColors = staticCompositionLocalOf { DefaultAppColors }
 
 data class Spacing(
     val xs: androidx.compose.ui.unit.Dp = 4.dp,

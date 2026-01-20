@@ -90,12 +90,8 @@ class HomeViewModel @Inject constructor(
             updateState { it.copy(isScreenLoading = true, errorMessageResId = null) }
             getHomeScreenDataUseCase().collect { result ->
                 result.onSuccess { data ->
-                    fullHistory = historyRepository.getHistory()
-                    val lastHistoryDate = try {
-                        historyRepository.getHistory().firstOrNull()?.date
-                    } catch (e: Exception) {
-                        null
-                    }
+                    fullHistory = data.history
+                    val lastHistoryDate = data.history.firstOrNull()?.date
                     updateState {
                         it.copy(
                             isScreenLoading = false,
@@ -123,12 +119,13 @@ class HomeViewModel @Inject constructor(
         updateState { it.copy(isScreenLoading = true, errorMessageResId = null) }
         getHomeScreenDataUseCase().collect { result ->
             result.onSuccess { data ->
-                fullHistory = historyRepository.getHistory()
+                fullHistory = data.history
                 updateState {
                     it.copy(
                         isScreenLoading = false,
                         lastDrawStats = data.lastDrawStats,
-                        statistics = data.initialStats
+                        statistics = data.initialStats,
+                        lastUpdateTime = data.history.firstOrNull()?.date
                     )
                 }
             }.onFailure {
@@ -177,4 +174,3 @@ class HomeViewModel @Inject constructor(
         updateState { it.copy(selectedPattern = pattern) }
     }
 }
-

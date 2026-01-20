@@ -17,7 +17,8 @@ import javax.inject.Inject
 
 data class HomeScreenData(
     val lastDrawStats: LastDrawStats?,
-    val initialStats: StatisticsReport
+    val initialStats: StatisticsReport,
+    val history: List<HistoricalDraw>
 )
 
 class GetHomeScreenDataUseCase @Inject constructor(
@@ -29,7 +30,11 @@ class GetHomeScreenDataUseCase @Inject constructor(
         // Sync is triggered by repository init, just ensure data is loaded
         val history = historyRepository.getHistory()
         if (history.isEmpty()) {
-            emit(Result.failure(Exception("Nenhum histórico de sorteio encontrado. Verifique a conexão e tente novamente.")))
+            emit(
+                Result.failure(
+                    Exception("Nenhum histórico de sorteio disponível. Verifique a conexão e tente novamente.")
+                )
+            )
             return@flow
         }
 
@@ -40,7 +45,8 @@ class GetHomeScreenDataUseCase @Inject constructor(
 
             HomeScreenData(
                 lastDrawStats = lastDrawStatsDeferred.await(),
-                initialStats = initialStatsDeferred.await()
+                initialStats = initialStatsDeferred.await(),
+                history = history
             )
         }
         emit(Result.success(result))

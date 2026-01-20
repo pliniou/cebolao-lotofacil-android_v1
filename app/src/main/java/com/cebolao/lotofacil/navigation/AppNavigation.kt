@@ -14,33 +14,31 @@ import com.cebolao.lotofacil.ui.screens.HomeScreen
 /**
  * Navigation utilities for type-safe navigation.
  */
-object NavigationUtils {
-    fun NavController.navigateToDestination(destination: Destination) {
-        when (destination) {
-            is Destination.Home -> navigate(destination.route) {
-                popUpTo(graph.startDestinationId) {
-                    saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
+fun NavController.navigateToDestination(destination: Destination) {
+    when (destination) {
+        is Destination.Home -> navigate(destination.route) {
+            popUpTo(graph.startDestinationId) {
+                saveState = true
             }
-            is Destination.Filters -> navigate(destination.route) {
-                popUpTo(graph.startDestinationId) {
-                    saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
-            }
-            is Destination.GeneratedGames -> navigate(destination.route) {
-                popUpTo(graph.startDestinationId) {
-                    saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
-            }
-            is Destination.Checker -> navigate(destination.route)
-            is Destination.About -> navigate(destination.route)
+            launchSingleTop = true
+            restoreState = true
         }
+        is Destination.Filters -> navigate(destination.route) {
+            popUpTo(graph.startDestinationId) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+        is Destination.GeneratedGames -> navigate(destination.route) {
+            popUpTo(graph.startDestinationId) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+        is Destination.Checker -> navigate(destination.route)
+        is Destination.About -> navigate(destination.route)
     }
 }
 
@@ -61,7 +59,14 @@ fun AppNavigation(
         modifier = modifier
     ) {
         composable(Destination.Home.route) {
-            HomeScreen()
+            HomeScreen(
+                onExploreFilters = {
+                    navController.navigateToDestination(Destination.Filters)
+                },
+                onOpenChecker = {
+                    navController.navigateToDestination(Destination.Checker)
+                }
+            )
         }
         
         composable(Destination.Filters.route) {

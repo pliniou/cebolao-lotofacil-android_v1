@@ -111,6 +111,9 @@ class GameViewModel @Inject constructor(
                     .first { it is GameCheckState.Success || it is GameCheckState.Failure }
 
                 when (checkState) {
+                    is GameCheckState.InProgress -> {
+                        // Still processing, continue waiting
+                    }
                     is GameCheckState.Success -> {
                         val result = GameAnalysisResult(
                             game = game,

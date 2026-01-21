@@ -61,6 +61,7 @@ import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.viewmodels.CheckerUiState
 import com.cebolao.lotofacil.viewmodels.CheckerViewModel
+import com.cebolao.lotofacil.domain.model.GameStatistic
 import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.domain.usecase.GameCheckPhase
 import kotlinx.collections.immutable.ImmutableList
@@ -269,7 +270,7 @@ private fun CheckerLoadingContent(progress: Float, message: String) {
 @Composable
 private fun CheckerSuccessContent(
     result: com.cebolao.lotofacil.domain.model.CheckResult,
-    stats: ImmutableList<Pair<String, String>>
+    stats: ImmutableList<GameStatistic>
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)) {
         AnimateOnEntry {

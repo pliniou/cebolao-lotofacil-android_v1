@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import kotlinx.collections.immutable.toImmutableList
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -96,8 +97,8 @@ fun RecentHitsChartContent(
         }
         HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.05f))
         
-        val chartData = remember(recentHits) {
-            recentHits.map { it.first.toString().takeLast(4) to it.second }.toImmutableList()
+        val chartData: ImmutableList<Pair<String, Int>> = remember(recentHits) {
+            recentHits.map { Pair(it.first.toString().takeLast(4), it.second) }.toImmutableList()
         }
         val maxValue = remember(chartData) {
             (chartData.maxOfOrNull { it.second }?.coerceAtLeast(10) ?: 10)

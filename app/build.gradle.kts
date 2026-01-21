@@ -21,8 +21,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        @Suppress("DEPRECATION")
-        resourceConfigurations += setOf("pt", "en")
     }
 
     buildTypes {
@@ -55,6 +53,10 @@ android {
 
     buildFeatures {
         buildConfig = true
+    }
+
+    androidResources {
+        localeFilters += listOf("pt", "en")
     }
 
     packaging {

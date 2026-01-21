@@ -10,10 +10,9 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.cebolao.lotofacil.di.IoDispatcher
+import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
 import com.cebolao.lotofacil.domain.repository.UserPreferencesRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
@@ -28,7 +27,7 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 @Singleton
 class UserPreferencesRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    private val dispatchersProvider: DispatchersProvider
 ) : UserPreferencesRepository {
 
     companion object {
@@ -48,7 +47,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         }
 
     override suspend fun savePinnedGames(games: Set<String>) {
-        withContext(ioDispatcher) {
+        withContext(dispatchersProvider.io) {
             try {
                 context.dataStore.edit { preferences ->
                     preferences[PINNED_GAMES_KEY] = games
@@ -62,7 +61,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getHistory(): Set<String> = withContext(ioDispatcher) {
+    override suspend fun getHistory(): Set<String> = withContext(dispatchersProvider.io) {
         try {
             context.dataStore.data
                 .map { preferences ->
@@ -76,7 +75,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addDynamicHistoryEntries(newHistoryEntries: Set<String>) {
-        withContext(ioDispatcher) {
+        withContext(dispatchersProvider.io) {
             if (newHistoryEntries.isEmpty()) return@withContext
             try {
                 context.dataStore.edit { preferences ->
@@ -108,7 +107,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         }
 
     override suspend fun setThemeMode(mode: String) {
-        withContext(ioDispatcher) {
+        withContext(dispatchersProvider.io) {
             try {
                 context.dataStore.edit { preferences ->
                     preferences[THEME_MODE_KEY] = mode

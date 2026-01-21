@@ -22,28 +22,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.domain.model.GameStatistic
+import com.cebolao.lotofacil.domain.model.GameStatisticType
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun GameStatsList(
-    stats: ImmutableList<Pair<String, String>>,
+    stats: ImmutableList<GameStatistic>,
     modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
-        for ((label, value) in stats) {
+        for (stat in stats) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(label, style = MaterialTheme.typography.bodyMedium)
+                Text(stat.type.label(), style = MaterialTheme.typography.bodyMedium)
                 Text(
-                    value,
+                    stat.value.toString(),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -51,6 +52,21 @@ fun GameStatsList(
             }
         }
     }
+}
+
+@Composable
+private fun GameStatisticType.label(): String {
+    val labelRes = when (this) {
+        GameStatisticType.SUM -> R.string.sum_label
+        GameStatisticType.EVENS -> R.string.even_label
+        GameStatisticType.ODDS -> R.string.odd_label
+        GameStatisticType.PRIMES -> R.string.prime_label
+        GameStatisticType.FIBONACCI -> R.string.fibonacci_label
+        GameStatisticType.FRAME -> R.string.frame_label
+        GameStatisticType.PORTRAIT -> R.string.portrait_label
+        GameStatisticType.MULTIPLES_OF_3 -> R.string.multiples_of_3_label
+    }
+    return stringResource(id = labelRes)
 }
 
 @Composable

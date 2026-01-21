@@ -2,18 +2,21 @@ package com.cebolao.lotofacil.viewmodels
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Stable
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.core.error.AppError
+import com.cebolao.lotofacil.core.error.EmptyHistoryError
 import com.cebolao.lotofacil.domain.model.CheckResult
+import com.cebolao.lotofacil.domain.model.GameStatistic
 import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.domain.repository.GameRepository
 import com.cebolao.lotofacil.domain.usecase.CheckGameUseCase
+import com.cebolao.lotofacil.domain.usecase.GameCheckState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,10 +24,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import com.cebolao.lotofacil.viewmodels.CheckerUiState
 
 sealed interface GameUiEvent {
     data object ShowClearGamesDialog : GameUiEvent
@@ -47,7 +48,7 @@ data class GameScreenUiState(
 @Stable
 data class GameAnalysisResult(
     val game: LotofacilGame,
-    val simpleStats: ImmutableList<Pair<String, String>>,
+    val simpleStats: ImmutableList<GameStatistic>,
     val checkResult: CheckResult
 )
 
@@ -106,26 +107,36 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { it.copy(analysisState = GameAnalysisUiState.Loading) }
             try {
-                val checkUiState = checkGameUseCase(game.numbers)
-                    .first { it is CheckerUiState.Success || it is CheckerUiState.Error }
+                val checkState = checkGameUseCase(game.numbers)
+                    .first { it is GameCheckState.Success || it is GameCheckState.Failure }
 
-                if (checkUiState is CheckerUiState.Success) {
-                    val result = GameAnalysisResult(
-                        game = game,
-                        simpleStats = checkUiState.simpleStats,
-                        checkResult = checkUiState.result
-                    )
-                    updateState { it.copy(
-                        analysisState = GameAnalysisUiState.Success(result),
-                        analysisResult = result
-                    ) }
-                } else {
-                    val errorResId = (checkUiState as? CheckerUiState.Error)?.messageResId ?: R.string.error_analysis_failed
-                    updateState { it.copy(analysisState = GameAnalysisUiState.Error(errorResId)) }
+                when (checkState) {
+                    is GameCheckState.Success -> {
+                        val result = GameAnalysisResult(
+                            game = game,
+                            simpleStats = checkState.stats.toImmutableList(),
+                            checkResult = checkState.result
+                        )
+                        updateState { it.copy(
+                            analysisState = GameAnalysisUiState.Success(result),
+                            analysisResult = result
+                        ) }
+                    }
+                    is GameCheckState.Failure -> {
+                        val errorResId = mapErrorToMessageRes(checkState.error)
+                        updateState { it.copy(analysisState = GameAnalysisUiState.Error(errorResId)) }
+                    }
                 }
             } catch (_: Exception) {
                 updateState { it.copy(analysisState = GameAnalysisUiState.Error(R.string.error_analysis_failed)) }
             }
+        }
+    }
+
+    private fun mapErrorToMessageRes(error: AppError): Int {
+        return when (error) {
+            is EmptyHistoryError -> R.string.error_no_history
+            else -> R.string.error_analysis_failed
         }
     }
 
@@ -136,4 +147,3 @@ class GameViewModel @Inject constructor(
         )
     }
 }
-

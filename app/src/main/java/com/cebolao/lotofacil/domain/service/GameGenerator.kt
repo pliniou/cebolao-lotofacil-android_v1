@@ -1,10 +1,9 @@
 package com.cebolao.lotofacil.domain.service
 
+import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
 import com.cebolao.lotofacil.domain.model.FilterState
 import com.cebolao.lotofacil.domain.model.FilterType
 import com.cebolao.lotofacil.domain.model.LotofacilGame
-import com.cebolao.lotofacil.di.DefaultDispatcher
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import java.util.Random
 import javax.inject.Inject
@@ -14,7 +13,7 @@ class GameGenerationException(message: String) : Exception(message)
 
 @Singleton
 class GameGenerator @Inject constructor(
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
+    private val dispatchersProvider: DispatchersProvider,
     private val random: Random = Random()
 ) {
     private val allNumbers = (1..25).toList()
@@ -24,7 +23,7 @@ class GameGenerator @Inject constructor(
         count: Int,
         lastDraw: Set<Int>? = null,
         maxAttempts: Int = 250_000
-    ): List<LotofacilGame> = withContext(defaultDispatcher) {
+    ): List<LotofacilGame> = withContext(dispatchersProvider.default) {
         val uniqueGames = mutableSetOf<Set<Int>>()
         val resultList = mutableListOf<LotofacilGame>()
         var attempts = 0
@@ -80,4 +79,3 @@ class GameGenerator @Inject constructor(
         }
     }
 }
-

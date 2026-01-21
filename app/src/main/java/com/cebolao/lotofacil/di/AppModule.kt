@@ -1,5 +1,7 @@
 package com.cebolao.lotofacil.di
 
+import com.cebolao.lotofacil.core.coroutine.DefaultDispatchersProvider
+import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
 import com.cebolao.lotofacil.domain.service.GameGenerator
 import com.cebolao.lotofacil.domain.service.GameStatsAnalyzer
 import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer
@@ -7,24 +9,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import javax.inject.Qualifier
 import javax.inject.Singleton
-
-@Retention(AnnotationRetention.BINARY)
-@Qualifier
-annotation class IoDispatcher
-
-@Retention(AnnotationRetention.BINARY)
-@Qualifier
-annotation class DefaultDispatcher
-
-@Retention(AnnotationRetention.BINARY)
-@Qualifier
-annotation class ApplicationScope
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -32,38 +19,25 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGameGenerator(@DefaultDispatcher dispatcher: CoroutineDispatcher): GameGenerator {
-        return GameGenerator(dispatcher)
-    }
+    fun providesDispatchersProvider(): DispatchersProvider = DefaultDispatchersProvider()
 
     @Provides
     @Singleton
-    fun provideStatisticsAnalyzer(@DefaultDispatcher dispatcher: CoroutineDispatcher): StatisticsAnalyzer {
-        return StatisticsAnalyzer(dispatcher)
-    }
+    fun provideGameGenerator(dispatchersProvider: DispatchersProvider): GameGenerator =
+        GameGenerator(dispatchersProvider)
 
     @Provides
     @Singleton
-    fun provideGameStatsAnalyzer(): GameStatsAnalyzer {
-        return GameStatsAnalyzer()
-    }
+    fun provideStatisticsAnalyzer(dispatchersProvider: DispatchersProvider): StatisticsAnalyzer =
+        StatisticsAnalyzer(dispatchersProvider)
 
-    @IoDispatcher
     @Provides
     @Singleton
-    fun providesIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+    fun provideGameStatsAnalyzer(dispatchersProvider: DispatchersProvider): GameStatsAnalyzer =
+        GameStatsAnalyzer(dispatchersProvider)
 
-    @DefaultDispatcher
     @Provides
     @Singleton
-    fun providesDefaultDispatcher(): CoroutineDispatcher = Dispatchers.Default
-
-    @ApplicationScope
-    @Provides
-    @Singleton
-    fun providesApplicationScope(
-        @DefaultDispatcher defaultDispatcher: CoroutineDispatcher
-    ): CoroutineScope {
-        return CoroutineScope(SupervisorJob() + defaultDispatcher)
-    }
+    fun provideApplicationScope(dispatchersProvider: DispatchersProvider): CoroutineScope =
+        CoroutineScope(SupervisorJob() + dispatchersProvider.default)
 }

@@ -1,22 +1,25 @@
 package com.cebolao.lotofacil.domain.service
 
+import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
+import com.cebolao.lotofacil.domain.model.GameStatistic
+import com.cebolao.lotofacil.domain.model.GameStatisticType
 import com.cebolao.lotofacil.domain.model.LotofacilGame
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class GameStatsAnalyzer @Inject constructor() {
+class GameStatsAnalyzer @Inject constructor(private val dispatchersProvider: DispatchersProvider) {
 
-    suspend fun analyze(game: LotofacilGame): List<Pair<String, String>> = withContext(Dispatchers.Default) {
-        listOf(
-            "Soma das Dezenas" to game.sum.toString(),
-            "Números Pares" to game.evens.toString(),
-            "Números Ímpares" to game.odds.toString(),
-            "Números Primos" to game.primes.toString(),
-            "Sequência Fibonacci" to game.fibonacci.toString(),
-            "Na Moldura" to game.frame.toString(),
-            "No Retrato (Miolo)" to game.portrait.toString(),
-            "Múltiplos de 3" to game.multiplesOf3.toString()
-        )
-    }
+    suspend fun analyze(game: LotofacilGame): List<GameStatistic> =
+        withContext(dispatchersProvider.default) {
+            listOf(
+                GameStatistic(GameStatisticType.SUM, game.sum),
+                GameStatistic(GameStatisticType.EVENS, game.evens),
+                GameStatistic(GameStatisticType.ODDS, game.odds),
+                GameStatistic(GameStatisticType.PRIMES, game.primes),
+                GameStatistic(GameStatisticType.FIBONACCI, game.fibonacci),
+                GameStatistic(GameStatisticType.FRAME, game.frame),
+                GameStatistic(GameStatisticType.PORTRAIT, game.portrait),
+                GameStatistic(GameStatisticType.MULTIPLES_OF_3, game.multiplesOf3)
+            )
+        }
 }

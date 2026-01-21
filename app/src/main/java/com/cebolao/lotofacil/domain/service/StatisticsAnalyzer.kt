@@ -3,8 +3,7 @@ package com.cebolao.lotofacil.domain.service
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.domain.model.LotofacilConstants
 import com.cebolao.lotofacil.domain.model.StatisticsReport
-import com.cebolao.lotofacil.di.DefaultDispatcher
-import kotlinx.coroutines.CoroutineDispatcher
+import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
@@ -13,14 +12,15 @@ import javax.inject.Singleton
 
 @Singleton
 class StatisticsAnalyzer @Inject constructor(
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+    private val dispatchersProvider: DispatchersProvider
 ) {
 
     companion object {
         private const val TOP_NUMBERS_COUNT = 5
     }
 
-    suspend fun analyze(draws: List<HistoricalDraw>): StatisticsReport = withContext(defaultDispatcher) {
+    suspend fun analyze(draws: List<HistoricalDraw>): StatisticsReport =
+        withContext(dispatchersProvider.default) {
         if (draws.isEmpty()) return@withContext StatisticsReport()
 
         coroutineScope {
@@ -132,4 +132,3 @@ class StatisticsAnalyzer @Inject constructor(
         val sumDistribution: Map<Int, Int>
     )
 }
-

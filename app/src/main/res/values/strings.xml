@@ -77,6 +77,7 @@
     <string name="last_contest">Último concurso</string>
     <string name="sum_label">Soma</string>
     <string name="even_label">Pares</string>
+    <string name="odd_label">Impares</string>
     <string name="prime_label">Primos</string>
     <string name="frame_label">Moldura</string>
     <string name="portrait_label">Miolo</string>
@@ -124,6 +125,9 @@
     <string name="checker_incomplete_selection">Selecione exatos 15 números para conferir.</string>
     <string name="checker_results_cleared_title">Limpar resultados?</string>
     <string name="checker_results_cleared_message">Isso removerá os resultados da conferência atual. Deseja continuar?</string>
+    <string name="checker_loading_history">Carregando historico...</string>
+    <string name="checker_calculating_results">Calculando resultados...</string>
+    <string name="checker_analyzing_stats">Analisando estatisticas...</string>
 
     <!-- FiltersScreen -->
     <string name="filters_header_title">Gerador inteligente</string>

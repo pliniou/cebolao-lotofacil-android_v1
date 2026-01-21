@@ -1,13 +1,12 @@
 package com.cebolao.lotofacil.domain.usecase
 
+import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.domain.model.StatisticsReport
-import com.cebolao.lotofacil.di.DefaultDispatcher
 import com.cebolao.lotofacil.domain.model.LastDrawStats
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer
 import kotlinx.collections.immutable.toImmutableSet
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +23,7 @@ data class HomeScreenData(
 class GetHomeScreenDataUseCase @Inject constructor(
     private val historyRepository: HistoryRepository,
     private val statisticsAnalyzer: StatisticsAnalyzer,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+    private val dispatchersProvider: DispatchersProvider
 ) {
     operator fun invoke(): Flow<Result<HomeScreenData>> = flow {
         // Sync is triggered by repository init, just ensure data is loaded
@@ -32,7 +31,7 @@ class GetHomeScreenDataUseCase @Inject constructor(
         if (history.isEmpty()) {
             emit(
                 Result.failure(
-                    Exception("Nenhum histórico de sorteio disponível. Verifique a conexão e tente novamente.")
+                    Exception("Nenhum historico de sorteio disponivel. Verifique a conexao e tente novamente.")
                 )
             )
             return@flow
@@ -50,7 +49,7 @@ class GetHomeScreenDataUseCase @Inject constructor(
             )
         }
         emit(Result.success(result))
-    }.flowOn(defaultDispatcher)
+    }.flowOn(dispatchersProvider.default)
 
     private fun calculateLastDrawStats(lastDraw: HistoricalDraw): LastDrawStats {
         return LastDrawStats(

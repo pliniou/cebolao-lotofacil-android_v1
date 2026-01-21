@@ -3,15 +3,17 @@ package com.cebolao.lotofacil.data.datasource
 import android.content.Context
 import android.util.Log
 import com.cebolao.lotofacil.BuildConfig
+import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.domain.model.LotofacilConstants
 import com.cebolao.lotofacil.domain.repository.UserPreferencesRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,7 +25,8 @@ interface HistoryLocalDataSource {
 @Singleton
 class HistoryLocalDataSourceImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val dispatchersProvider: DispatchersProvider
 ) : HistoryLocalDataSource {
 
     private val lineRegex = """^\d+\s*-\s*[\d, ]+$""".toRegex()
@@ -35,7 +38,8 @@ class HistoryLocalDataSourceImpl @Inject constructor(
         private const val TAG = "HistoryLocalDataSource"
     }
 
-    override suspend fun getLocalHistory(): List<HistoricalDraw> = withContext(Dispatchers.IO) {
+    override suspend fun getLocalHistory(): List<HistoricalDraw> =
+        withContext(dispatchersProvider.io) {
         cachedHistory?.let { return@withContext it }
 
         val assetHistory = parseHistoryFromAssets()
@@ -79,9 +83,28 @@ class HistoryLocalDataSourceImpl @Inject constructor(
         }
         return (assetHistory + savedHistory)
             .groupBy { it.contestNumber }
-            .mapValues { (_, draws) -> draws.maxByOrNull { it.date?.isNotEmpty() ?: false } ?: draws.first() }
+            .mapValues { (_, draws) ->
+                draws.maxWithOrNull(
+                    compareByDescending<HistoricalDraw> { it.dateEpoch() }
+                        .thenByDescending { it.prizes.size }
+                        .thenByDescending { it.winners.size }
+                ) ?: draws.first()
+            }
             .values
             .sortedByDescending { it.contestNumber }
+    }
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+    private fun HistoricalDraw.dateEpoch(): Long = date.toEpoch()
+
+    private fun String?.toEpoch(): Long {
+        if (this.isNullOrBlank()) return 0L
+        return try {
+            LocalDate.parse(this, dateFormatter).toEpochDay()
+        } catch (_: Exception) {
+            0L
+        }
     }
 
     private fun parseHistoryFromAssets(): List<HistoricalDraw> {
@@ -140,4 +163,3 @@ class HistoryLocalDataSourceImpl @Inject constructor(
         }
     }
 }
-

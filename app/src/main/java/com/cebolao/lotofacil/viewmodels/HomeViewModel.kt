@@ -1,10 +1,9 @@
 package com.cebolao.lotofacil.viewmodels
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
-import com.cebolao.lotofacil.di.DefaultDispatcher
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.repository.SyncStatus
 import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer
@@ -13,7 +12,6 @@ import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.viewmodels.HomeUiState
 import androidx.compose.runtime.Stable
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -46,7 +44,7 @@ class HomeViewModel @Inject constructor(
     private val getHomeScreenDataUseCase: GetHomeScreenDataUseCase,
     private val historyRepository: HistoryRepository,
     private val statisticsAnalyzer: StatisticsAnalyzer,
-    @DefaultDispatcher private val dispatcher: CoroutineDispatcher
+    private val dispatchersProvider: DispatchersProvider
 ) : StateViewModel<HomeUiState>(HomeUiState()) {
 
     /**
@@ -74,7 +72,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun observeSyncStatus() {
-        viewModelScope.launch(dispatcher) {
+        viewModelScope.launch(dispatchersProvider.default) {
             historyRepository.syncStatus.collect { status ->
                 if (status is SyncStatus.Failed) {
                     showSnackbar(R.string.sync_failed_message)
@@ -86,7 +84,7 @@ class HomeViewModel @Inject constructor(
     fun retryInitialLoad() = loadInitialData()
 
     fun refreshData() {
-        viewModelScope.launch(dispatcher) {
+        viewModelScope.launch(dispatchersProvider.default) {
             updateState { it.copy(isScreenLoading = true, errorMessageResId = null) }
             getHomeScreenDataUseCase().collect { result ->
                 result.onSuccess { data ->
@@ -115,7 +113,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun loadInitialData() = viewModelScope.launch(dispatcher) {
+    private fun loadInitialData() = viewModelScope.launch(dispatchersProvider.default) {
         updateState { it.copy(isScreenLoading = true, errorMessageResId = null) }
         getHomeScreenDataUseCase().collect { result ->
             result.onSuccess { data ->
@@ -143,7 +141,7 @@ class HomeViewModel @Inject constructor(
         if (currentState.selectedTimeWindow == window) return
         
         analysisJob?.cancel()
-        analysisJob = viewModelScope.launch(dispatcher) {
+        analysisJob = viewModelScope.launch(dispatchersProvider.default) {
             updateState { 
                 it.copy(
                     isStatsLoading = true, 

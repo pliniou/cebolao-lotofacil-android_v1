@@ -1,17 +1,19 @@
 package com.cebolao.lotofacil.domain.usecase
 
-import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
+import com.cebolao.lotofacil.core.error.AppError
+import com.cebolao.lotofacil.core.error.EmptyHistoryError
+import com.cebolao.lotofacil.core.error.UnknownError
 import com.cebolao.lotofacil.domain.model.CheckResult
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.domain.model.LotofacilGame
-import com.cebolao.lotofacil.di.DefaultDispatcher
+import com.cebolao.lotofacil.domain.model.GameStatistic
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.service.GameStatsAnalyzer
-import com.cebolao.lotofacil.viewmodels.CheckerUiState
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
@@ -19,28 +21,35 @@ import javax.inject.Inject
 class CheckGameUseCase @Inject constructor(
     private val historyRepository: HistoryRepository,
     private val gameStatsAnalyzer: GameStatsAnalyzer,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+    private val dispatchersProvider: DispatchersProvider
 ) {
     private val recentContestsCount = 15
 
-    operator fun invoke(gameNumbers: Set<Int>): Flow<CheckerUiState> = flow {
-        emit(CheckerUiState.Loading(progress = 0.1f, message = "Carregando histórico..."))
+    operator fun invoke(gameNumbers: Set<Int>): Flow<GameCheckState> = flow {
+        emit(GameCheckState.InProgress(GameCheckPhase.HISTORICAL, 0.1f))
         val history = historyRepository.getHistory()
+
         if (history.isEmpty()) {
-            emit(CheckerUiState.Error(messageResId = R.string.error_no_history, canRetry = true))
+            emit(GameCheckState.Failure(EmptyHistoryError))
             return@flow
         }
 
-        emit(CheckerUiState.Loading(progress = 0.5f, message = "Calculando resultados..."))
+        emit(GameCheckState.InProgress(GameCheckPhase.CALCULATION, 0.5f))
         val result = calculateResult(gameNumbers, history)
 
-        emit(CheckerUiState.Loading(progress = 0.8f, message = "Analisando estatísticas..."))
+        emit(GameCheckState.InProgress(GameCheckPhase.STATISTICS, 0.8f))
         val gameForAnalysis = LotofacilGame(numbers = gameNumbers)
         val simpleStats = gameStatsAnalyzer.analyze(gameForAnalysis)
 
-        // CORREÇÃO: Converte a List retornada pelo analyzer para a ImmutableList esperada pelo UiState.
-        emit(CheckerUiState.Success(result = result, simpleStats = simpleStats.toImmutableList()))
-    }.flowOn(defaultDispatcher)
+        emit(GameCheckState.Success(result = result, stats = simpleStats.toImmutableList()))
+    }.catch { throwable ->
+        emit(GameCheckState.Failure(mapErrorToAppError(throwable)))
+    }.flowOn(dispatchersProvider.default)
+
+    private fun mapErrorToAppError(throwable: Throwable): AppError = when (throwable) {
+        is AppError -> throwable
+        else -> UnknownError(throwable)
+    }
 
     private fun calculateResult(
         gameNumbers: Set<Int>,
@@ -58,7 +67,7 @@ class CheckGameUseCase @Inject constructor(
             val hits = draw.numbers.intersect(gameNumbers).size
             if (hits >= 11) {
                 scoreCounts[hits] = (scoreCounts[hits] ?: 0) + 1
-                if (lastHitContest == null) { // Captures the most recent hit first
+                if (lastHitContest == null) {
                     lastHitContest = draw.contestNumber
                     lastHitScore = hits
                 }

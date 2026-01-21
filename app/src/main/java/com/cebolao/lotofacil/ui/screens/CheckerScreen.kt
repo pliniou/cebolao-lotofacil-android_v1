@@ -62,6 +62,7 @@ import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.viewmodels.CheckerUiState
 import com.cebolao.lotofacil.viewmodels.CheckerViewModel
 import com.cebolao.lotofacil.navigation.UiEvent
+import com.cebolao.lotofacil.domain.usecase.GameCheckPhase
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.collectLatest
 
@@ -80,7 +81,7 @@ fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
 
     // Handle UI events (snackbars)
     LaunchedEffect(Unit) {
-        checkerViewModel.uiEvents.collectLatest { event: UiEvent ->
+        checkerViewModel.uiEvent.collectLatest { event: UiEvent ->
             when (event) {
                 is UiEvent.ShowSnackbar -> {
                     val message = event.message ?: event.messageResId?.let(context::getString).orEmpty()
@@ -148,7 +149,15 @@ fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
                     when (state) {
                         is CheckerUiState.Idle -> { /* Nothing shown */ }
                         is CheckerUiState.Loading -> {
-                            CheckerLoadingContent(state.progress, state.message)
+                            val loadingMessage = when (state.phase) {
+                                GameCheckPhase.HISTORICAL -> stringResource(id = R.string.checker_loading_history)
+                                GameCheckPhase.CALCULATION -> stringResource(id = R.string.checker_calculating_results)
+                                GameCheckPhase.STATISTICS -> stringResource(id = R.string.checker_analyzing_stats)
+                            }
+                            CheckerLoadingContent(
+                                progress = state.progress,
+                                message = loadingMessage
+                            )
                         }
                         is CheckerUiState.Success -> {
                             CheckerSuccessContent(

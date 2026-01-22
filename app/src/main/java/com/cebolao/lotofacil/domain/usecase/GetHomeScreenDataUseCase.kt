@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
+import com.cebolao.lotofacil.core.error.EmptyHistoryError
+import com.cebolao.lotofacil.core.result.AppResult
+import com.cebolao.lotofacil.core.result.toSuccess
 
 data class HomeScreenData(
     val lastDrawStats: LastDrawStats?,
@@ -25,15 +28,11 @@ class GetHomeScreenDataUseCase @Inject constructor(
     private val statisticsAnalyzer: StatisticsAnalyzer,
     private val dispatchersProvider: DispatchersProvider
 ) {
-    operator fun invoke(): Flow<Result<HomeScreenData>> = flow {
+    operator fun invoke(): Flow<AppResult<HomeScreenData>> = flow {
         // Sync is triggered by repository init, just ensure data is loaded
         val history = historyRepository.getHistory()
         if (history.isEmpty()) {
-            emit(
-                Result.failure(
-                    Exception("Nenhum historico de sorteio disponivel. Verifique a conexao e tente novamente.")
-                )
-            )
+            emit(AppResult.Failure(EmptyHistoryError))
             return@flow
         }
 
@@ -48,7 +47,7 @@ class GetHomeScreenDataUseCase @Inject constructor(
                 history = history
             )
         }
-        emit(Result.success(result))
+        emit(result.toSuccess())
     }.flowOn(dispatchersProvider.default)
 
     private fun calculateLastDrawStats(lastDraw: HistoricalDraw): LastDrawStats {

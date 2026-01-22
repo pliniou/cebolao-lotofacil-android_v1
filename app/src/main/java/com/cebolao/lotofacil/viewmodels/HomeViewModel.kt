@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.cebolao.lotofacil.core.result.AppResult
 
 
 @HiltViewModel
@@ -46,27 +47,30 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(dispatchersProvider.default) {
             updateState { it.copy(isScreenLoading = true, errorMessageResId = null) }
             getHomeScreenDataUseCase().collect { result ->
-                result.onSuccess { data ->
-                    fullHistory = data.history
-                    val lastHistoryDate = data.history.firstOrNull()?.date
-                    updateState {
-                        it.copy(
-                            isScreenLoading = false,
-                            lastDrawStats = data.lastDrawStats,
-                            statistics = data.initialStats,
-                            lastUpdateTime = lastHistoryDate
-                        )
+                when (result) {
+                    is AppResult.Success -> {
+                        val data = result.value
+                        fullHistory = data.history
+                        val lastHistoryDate = data.history.firstOrNull()?.date
+                        updateState {
+                            it.copy(
+                                isScreenLoading = false,
+                                lastDrawStats = data.lastDrawStats,
+                                statistics = data.initialStats,
+                                lastUpdateTime = lastHistoryDate
+                            )
+                        }
+                        showSnackbar(R.string.refresh_success)
                     }
-                    showSnackbar(R.string.refresh_success)
-                }
-                result.onFailure {
-                    updateState {
-                        it.copy(
-                            isScreenLoading = false,
-                            errorMessageResId = R.string.refresh_error
-                        )
+                    is AppResult.Failure -> {
+                        updateState {
+                            it.copy(
+                                isScreenLoading = false,
+                                errorMessageResId = R.string.refresh_error
+                            )
+                        }
+                        showSnackbar(R.string.refresh_error)
                     }
-                    showSnackbar(R.string.refresh_error)
                 }
             }
         }
@@ -75,22 +79,26 @@ class HomeViewModel @Inject constructor(
     private fun loadInitialData() = viewModelScope.launch(dispatchersProvider.default) {
         updateState { it.copy(isScreenLoading = true, errorMessageResId = null) }
         getHomeScreenDataUseCase().collect { result ->
-            result.onSuccess { data ->
-                fullHistory = data.history
-                updateState {
-                    it.copy(
-                        isScreenLoading = false,
-                        lastDrawStats = data.lastDrawStats,
-                        statistics = data.initialStats,
-                        lastUpdateTime = data.history.firstOrNull()?.date
-                    )
+            when (result) {
+                is AppResult.Success -> {
+                    val data = result.value
+                    fullHistory = data.history
+                    updateState {
+                        it.copy(
+                            isScreenLoading = false,
+                            lastDrawStats = data.lastDrawStats,
+                            statistics = data.initialStats,
+                            lastUpdateTime = data.history.firstOrNull()?.date
+                        )
+                    }
                 }
-            }.onFailure {
-                updateState {
-                    it.copy(
-                        isScreenLoading = false,
-                        errorMessageResId = R.string.error_load_data_failed
-                    )
+                is AppResult.Failure -> {
+                    updateState {
+                        it.copy(
+                            isScreenLoading = false,
+                            errorMessageResId = R.string.error_load_data_failed
+                        )
+                    }
                 }
             }
         }

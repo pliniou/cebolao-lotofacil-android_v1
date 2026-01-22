@@ -1,6 +1,6 @@
 package com.cebolao.lotofacil.domain.repository
 
-import com.cebolao.lotofacil.core.result.DomainResult
+import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import kotlinx.coroutines.flow.StateFlow
 
@@ -23,5 +23,5 @@ interface HistoryRepository {
     val syncStatus: StateFlow<SyncStatus>
     suspend fun getHistory(): List<HistoricalDraw>
     suspend fun getLastDraw(): HistoricalDraw?
-    suspend fun syncHistory(): DomainResult<Unit>
+    suspend fun syncHistory(): AppResult<Unit>
 }

@@ -2,6 +2,7 @@ package com.cebolao.lotofacil.viewmodels
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
+import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.domain.model.FilterState
 import com.cebolao.lotofacil.domain.model.FilterType
 import com.cebolao.lotofacil.domain.repository.GameRepository
@@ -93,14 +94,15 @@ class FiltersViewModel @Inject constructor(
             updateState { it.copy(generationState = GenerationUiState.Loading("Criando jogos...")) }
             
             try {
-                generateGamesUseCase(quantity, currentState.filterStates)
-                    .onSuccess { games ->
-                        gameRepository.addGeneratedGames(games)
+                when (val result = generateGamesUseCase(quantity, currentState.filterStates)) {
+                    is AppResult.Success -> {
+                        gameRepository.addGeneratedGames(result.value)
                         navigateToGeneratedGames()
                     }
-                    .onFailure { e ->
-                        showSnackbar(e.message ?: "Erro ao gerar jogos")
+                    is AppResult.Failure -> {
+                        showSnackbar(result.error.cause?.message ?: "Erro ao gerar jogos")
                     }
+                }
             } catch (e: Exception) {
                 showSnackbar(e.message ?: "Erro inesperado")
             } finally {

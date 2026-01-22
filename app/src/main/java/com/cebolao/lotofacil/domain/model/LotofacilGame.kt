@@ -15,7 +15,7 @@ data class LotofacilGame(
     val numbers: Set<Int>,
     val isPinned: Boolean = false,
     val creationTimestamp: Long = System.currentTimeMillis(),
-    val id: String = "${creationTimestamp}_${numbers.hashCode()}"
+    val id: String = java.util.UUID.randomUUID().toString()
 ) {
     init {
         require(numbers.size == 15) { "Um jogo deve ter 15 números." }
@@ -50,7 +50,7 @@ data class LotofacilGame(
                 val numbers = parts[0].split(",").map { it.toInt() }.toSet()
                 val isPinned = parts.getOrNull(1)?.toBoolean() ?: false
                 val timestamp = parts.getOrNull(2)?.toLong() ?: System.currentTimeMillis()
-                val id = parts.getOrNull(3) ?: "${timestamp}_${numbers.hashCode()}"
+                val id = parts.getOrNull(3) ?: java.util.UUID.randomUUID().toString()
                 if (numbers.size == 15) {
                     LotofacilGame(numbers, isPinned, timestamp, id)
                 } else null

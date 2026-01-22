@@ -4,7 +4,7 @@ import com.cebolao.lotofacil.core.error.AppError
 import com.cebolao.lotofacil.core.error.NetworkError
 import com.cebolao.lotofacil.core.error.PersistenceError
 import com.cebolao.lotofacil.core.error.UnknownError
-import com.cebolao.lotofacil.core.result.DomainResult
+import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.data.datasource.HistoryLocalDataSource
 import com.cebolao.lotofacil.data.datasource.HistoryRemoteDataSource
@@ -67,9 +67,9 @@ class HistoryRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun syncHistory(): DomainResult<Unit> = syncMutex.withLock {
+    override suspend fun syncHistory(): AppResult<Unit> = syncMutex.withLock {
         if (_syncStatus.value == SyncStatus.Syncing) {
-            return DomainResult.Success(Unit)
+            return AppResult.Success(Unit)
         }
         _syncStatus.value = SyncStatus.Syncing
         return try {
@@ -88,11 +88,11 @@ class HistoryRepositoryImpl @Inject constructor(
                 }
             }
             _syncStatus.value = SyncStatus.Success
-            DomainResult.Success(Unit)
+            AppResult.Success(Unit)
         } catch (e: Exception) {
             val message = mapErrorToMessage(e)
             _syncStatus.value = SyncStatus.Failed(message)
-            DomainResult.Failure(mapErrorToAppError(e))
+            AppResult.Failure(mapErrorToAppError(e))
         }
     }
 

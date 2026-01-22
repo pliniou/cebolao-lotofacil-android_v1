@@ -1,16 +1,40 @@
 package com.cebolao.lotofacil.ui.screens.home
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,9 +47,8 @@ import com.cebolao.lotofacil.domain.model.WinnerLocation
 import com.cebolao.lotofacil.ui.components.NumberBall
 import com.cebolao.lotofacil.ui.components.NumberBallVariant
 import com.cebolao.lotofacil.ui.components.cards.StatCard
-import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.AppElevation
-import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.LocalAppColors
 import com.cebolao.lotofacil.ui.theme.iconMedium
 import com.cebolao.lotofacil.ui.theme.iconSmall
@@ -156,63 +179,6 @@ fun LastDrawSection(stats: LastDrawStats) {
 }
 
 @Composable
-private fun PrizeRow(prize: PrizeTier, format: NumberFormat) {
-    val colors = LocalAppColors.current
-    
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically, 
-            horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs)
-        ) {
-            Icon(
-                Icons.Default.EmojiEvents, 
-                contentDescription = null, 
-                modifier = Modifier.size(iconSmall()), 
-                tint = colors.brandSecondary
-            )
-            Text(
-                text = prize.description, 
-                style = MaterialTheme.typography.bodySmall,
-                color = colors.textSecondary
-            )
-        }
-        Text(
-            "${prize.winners} ganhadores • ${format.format(prize.prizeValue)}",
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Bold,
-            color = colors.textPrimary
-        )
-    }
-}
-
-@Composable
-private fun WinnerRow(winner: WinnerLocation) {
-    val colors = LocalAppColors.current
-    
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            Icons.Default.LocationOn, 
-            contentDescription = null, 
-            modifier = Modifier.size(iconSmall()), 
-            tint = colors.textTertiary
-        )
-        Text(
-            "${winner.winnersCount} ganhador(es) em ${winner.city}/${winner.state}",
-            style = MaterialTheme.typography.bodySmall,
-            color = colors.textSecondary
-        )
-    }
-}
-
-@Composable
 private fun EnhancedPrizeTierRow(prize: PrizeTier, tier: Int, format: NumberFormat) {
     val colors = LocalAppColors.current
     
@@ -221,9 +187,10 @@ private fun EnhancedPrizeTierRow(prize: PrizeTier, tier: Int, format: NumberForm
             .fillMaxWidth()
             .padding(horizontal = AppSpacing.md, vertical = AppSpacing.xs),
         colors = CardDefaults.cardColors(
-            containerColor = colors.surface2
+            containerColor = colors.surface2.copy(alpha = 0.5f)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = AppElevation.xs)
+        border = BorderStroke(1.dp, colors.outline.copy(alpha = 0.1f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = AppElevation.none)
     ) {
         Row(
             modifier = Modifier
@@ -278,6 +245,7 @@ private fun WinnersByStateGrid(winners: List<WinnerLocation>) {
                 colors = CardDefaults.cardColors(
                     containerColor = colors.surface3
                 ),
+                border = BorderStroke(1.dp, colors.outline.copy(alpha = 0.1f)),
                 elevation = CardDefaults.cardElevation(defaultElevation = AppElevation.none)
             ) {
                 Column(

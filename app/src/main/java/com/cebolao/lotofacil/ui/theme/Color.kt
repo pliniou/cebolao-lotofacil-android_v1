@@ -2,7 +2,6 @@ package com.cebolao.lotofacil.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Semantic Color Palette - Dark Theme Focus
 // Base Colors
 val BaseBackground = Color(0xFF0B0F12)
 val Surface1 = Color(0xFF10171C) // Primary cards/sheets
@@ -54,29 +53,3 @@ val LightSurfaceVariant = Color(0xFFDAE5E3)
 val LightOnSurfaceVariant = Color(0xFF3F4948)
 val LightOutline = Color(0xFF6F7978)
 val LightOutlineVariant = Color(0xFFBECBCA)
-
-// Legacy Dark Colors (for reference during migration)
-val DarkPrimary = BrandPrimary
-val DarkOnPrimary = BaseBackground
-val DarkPrimaryContainer = BrandSubtle
-val DarkOnPrimaryContainer = BrandPrimary
-val DarkSecondary = TextSecondary
-val DarkOnSecondary = BaseBackground
-val DarkSecondaryContainer = Surface2
-val DarkOnSecondaryContainer = TextSecondary
-val DarkTertiary = TextSecondary
-val DarkOnTertiary = BaseBackground
-val DarkTertiaryContainer = Surface2
-val DarkOnTertiaryContainer = TextSecondary
-val DarkError = Error
-val DarkErrorContainer = Color(0xFF4A1015)
-val DarkOnError = BaseBackground
-val DarkOnErrorContainer = Error
-val DarkBackground = BaseBackground
-val DarkOnBackground = TextPrimary
-val DarkSurface = Surface1
-val DarkOnSurface = TextPrimary
-val DarkSurfaceVariant = Surface2
-val DarkOnSurfaceVariant = TextSecondary
-val DarkOutline = OutlineStroke
-val DarkOutlineVariant = Surface2

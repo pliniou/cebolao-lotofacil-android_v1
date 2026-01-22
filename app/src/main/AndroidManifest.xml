@@ -34,5 +34,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Data Safety / Privacy Policy - Required for Play Store -->
+        <meta-data
+            android:name="com.google.android.gms.privacy.url"
+            android:value="https://your-privacy-policy-url.com/privacy" />
     </application>
 </manifest>

@@ -113,7 +113,9 @@ data class CardDefaults(
     val pinnedElevation: androidx.compose.ui.unit.Dp = AppElevation.xs
 )
 
-val AppCardDefaults = CardDefaults()
+val AppCardDefaults = CardDefaults(
+    elevation = AppElevation.none
+)
 
 // Composable helpers for common sizes that might be used across the app
 @Composable

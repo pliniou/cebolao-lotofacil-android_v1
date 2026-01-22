@@ -11,9 +11,9 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.outlined.Timeline
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.cebolao.lotofacil.domain.model.StatisticsReport
-import com.cebolao.lotofacil.domain.model.LastDrawStats
 import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.domain.model.LastDrawStats
+import com.cebolao.lotofacil.domain.model.StatisticsReport
 
 /**
  * Defines the different statistic patterns that can be visualised on the Home screen.
@@ -31,6 +31,19 @@ enum class StatisticPattern(@StringRes val titleRes: Int, val icon: ImageVector)
 }
 
 /**
+ * Data class representing statistics chip values for UI display.
+ */
+@Stable
+data class StatChipValues(
+    val sum: String,
+    val evens: String,
+    val primes: String,
+    val frame: String,
+    val portrait: String,
+    val fibonacci: String
+)
+
+/**
  * Holds all state required by the Home screen, including loading and error flags, the
  * last draw statistics, computed summary statistics, and UI selections such as the
  * currently selected pattern and time window.
@@ -45,17 +58,4 @@ data class HomeUiState(
     val selectedPattern: StatisticPattern = StatisticPattern.SUM,
     val selectedTimeWindow: Int = 0,
     val lastUpdateTime: String? = null
-) {
-    /**
-     * Computed property to check if any data is available
-     */
-    val hasData: Boolean
-        get() = lastDrawStats != null || statistics != null
-    
-    /**
-     * Computed property to check if screen is in any loading state
-     */
-    val isLoading: Boolean
-        get() = isScreenLoading || isStatsLoading
-}
-
+)

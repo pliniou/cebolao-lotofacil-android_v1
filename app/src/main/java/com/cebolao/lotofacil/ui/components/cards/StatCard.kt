@@ -1,5 +1,7 @@
 package com.cebolao.lotofacil.ui.components.cards
 
+import androidx.compose.foundation.BorderStroke
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,7 +34,8 @@ fun StatCard(
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = AppCardDefaults.elevation)
+        elevation = CardDefaults.cardElevation(defaultElevation = AppCardDefaults.elevation),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
     ) {
         Column(
             modifier = Modifier.padding(AppCardDefaults.defaultPadding),
@@ -66,22 +69,4 @@ fun StatCard(
             content()
         }
     }
-}
-
-/**
- * StatCard with optional icon parameter for convenience.
- */
-@Composable
-fun StatCardWithIcon(
-    modifier: Modifier = Modifier,
-    title: String,
-    icon: ImageVector,
-    content: @Composable () -> Unit
-) {
-    StatCard(
-        modifier = modifier,
-        title = title,
-        icon = icon,
-        content = content
-    )
 }

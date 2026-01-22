@@ -3,7 +3,6 @@ package com.cebolao.lotofacil.viewmodels
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cebolao.lotofacil.navigation.Destination
 import com.cebolao.lotofacil.navigation.UiEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,18 +41,6 @@ abstract class BaseViewModel : ViewModel() {
         )
     }
 
-    protected fun navigate(destination: Destination) {
-        sendUiEvent(UiEvent.Navigate(destination))
-    }
-
-    protected fun navigateBack(route: String? = null) {
-        sendUiEvent(UiEvent.NavigateBack(route))
-    }
-
-    protected fun navigateUp() {
-        sendUiEvent(UiEvent.NavigateUp)
-    }
-
     protected fun navigateToGeneratedGames() {
         sendUiEvent(UiEvent.NavigateToGeneratedGames)
     }
@@ -71,7 +58,6 @@ abstract class StateViewModel<S>(initialState: S) : BaseViewModel() {
     val uiState: StateFlow<S> = _uiState.asStateFlow()
 
     protected val currentState: S get() = _uiState.value
-
     protected fun updateState(update: (S) -> S) {
         _uiState.update(update)
     }

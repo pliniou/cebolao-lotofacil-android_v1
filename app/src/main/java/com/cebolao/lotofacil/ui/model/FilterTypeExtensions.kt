@@ -47,4 +47,4 @@ val FilterType.icon: ImageVector
         FilterType.FIBONACCI -> Icons.Default.Timeline
         FilterType.MULTIPLOS_DE_3 -> Icons.Default.Functions
         FilterType.REPETIDAS_CONCURSO_ANTERIOR -> Icons.Default.Repeat
-    }
+}

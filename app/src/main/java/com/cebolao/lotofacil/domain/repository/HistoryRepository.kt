@@ -21,7 +21,6 @@ interface HistoryRepository {
      * Substitui o booleano `isSyncing` para fornecer informações mais detalhadas.
      */
     val syncStatus: StateFlow<SyncStatus>
-
     suspend fun getHistory(): List<HistoricalDraw>
     suspend fun getLastDraw(): HistoricalDraw?
     suspend fun syncHistory(): DomainResult<Unit>

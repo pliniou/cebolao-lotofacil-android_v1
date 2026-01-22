@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
 import kotlin.math.roundToInt
-
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import kotlin.math.exp
@@ -63,27 +62,30 @@ fun BarChart(
     val tertiaryContainer = MaterialTheme.colorScheme.tertiaryContainer
 
     val density = LocalDensity.current
-    val textPaint = remember(density, onSurfaceVariant) {
+    val chartScaleFactor = density.density.coerceIn(0.85f, 1.3f)
+    val baseTextSize = 10.sp * chartScaleFactor
+
+    val textPaint = remember(density, onSurfaceVariant, baseTextSize) {
         Paint().apply {
             isAntiAlias = true
-            textSize = density.run { 10.sp.toPx() }
+            textSize = density.run { baseTextSize.toPx() }
             color = onSurfaceVariant.toArgb()
             textAlign = Paint.Align.RIGHT
         }
     }
-    val valuePaint = remember(density, primaryColor) {
+    val valuePaint = remember(density, primaryColor, baseTextSize) {
         Paint().apply {
             isAntiAlias = true
-            textSize = density.run { 10.sp.toPx() }
+            textSize = density.run { baseTextSize.toPx() }
             color = primaryColor.toArgb()
             textAlign = Paint.Align.CENTER
             isFakeBoldText = true
         }
     }
-    val labelPaint = remember(density, onSurfaceVariant) {
+    val labelPaint = remember(density, onSurfaceVariant, baseTextSize) {
         Paint().apply {
             isAntiAlias = true
-            textSize = density.run { 10.sp.toPx() }
+            textSize = density.run { baseTextSize.toPx() }
             color = onSurfaceVariant.toArgb()
             textAlign = Paint.Align.CENTER
         }
@@ -143,12 +145,15 @@ fun BarChart(
                 val barColor2 = if (isHighlighted) tertiaryContainer else secondaryColor
 
                 // Subtle glow/shadow
+                // Glow - removed for flat design
+                /*
                 drawRoundRect(
                     color = barColor1.copy(alpha = if (isHighlighted) 0.3f else 0.15f),
                     topLeft = Offset(left - 2.dp.toPx(), valueLabelHeight + chartAreaHeight - barHeight - 2.dp.toPx()),
                     size = Size(barWidth + 4.dp.toPx(), barHeight + 4.dp.toPx()),
                     cornerRadius = CornerRadius(x = barWidth / 2.5f, y = barWidth / 2.5f)
                 )
+                */
 
                 drawRoundRect(
                     brush = Brush.verticalGradient(

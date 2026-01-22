@@ -46,7 +46,6 @@ import com.cebolao.lotofacil.ui.components.NumberBall
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
-
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GameCard(
@@ -183,4 +182,3 @@ private fun GameCardActions(
         }
     }
 }
-

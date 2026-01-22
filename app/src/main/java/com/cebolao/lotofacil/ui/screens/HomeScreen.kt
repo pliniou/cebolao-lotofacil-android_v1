@@ -3,14 +3,10 @@ package com.cebolao.lotofacil.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CloudOff
@@ -23,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.R
@@ -53,12 +47,12 @@ import com.cebolao.lotofacil.ui.screens.home.StatisticsExplanationCard
 import com.cebolao.lotofacil.ui.screens.home.StatisticsSection
 import com.cebolao.lotofacil.ui.screens.home.WelcomeBanner
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
-import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.AppElevation
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.LocalAppColors
+import com.cebolao.lotofacil.ui.theme.iconButtonSize
 import com.cebolao.lotofacil.ui.theme.iconExtraLarge
 import com.cebolao.lotofacil.ui.theme.iconMedium
-import com.cebolao.lotofacil.ui.theme.iconButtonSize
 import com.cebolao.lotofacil.viewmodels.HomeViewModel
 
 @Composable
@@ -98,7 +92,7 @@ fun HomeScreen(
             StandardScreenHeader(
                 title = stringResource(id = R.string.cebolao_title),
                 subtitle = stringResource(id = R.string.lotofacil_subtitle),
-                iconPainter = painterResource(id = R.drawable.logo_cebola),
+                iconPainter = painterResource(id = R.drawable.ic_cebolalogo),
                 actions = {
                     IconButton(
                         onClick = { showRefreshConfirmation = true },
@@ -123,7 +117,7 @@ fun HomeScreen(
             contentPadding = PaddingValues(
                 bottom = AppSpacing.xxxl
             ),
-            verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
         ) {
             if (uiState.isScreenLoading) {
                 item(key = "skeleton") { HomeScreenSkeleton() }

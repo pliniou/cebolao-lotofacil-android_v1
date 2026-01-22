@@ -44,10 +44,8 @@ fun InfoDialog(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val hapticFeedback = LocalHapticFeedback.current
-    val resolvedDismissText = if (dismissButtonText.isBlank()) {
+    val resolvedDismissText = dismissButtonText.ifBlank {
         stringResource(id = R.string.understood_button)
-    } else {
-        dismissButtonText
     }
     
     Dialog(

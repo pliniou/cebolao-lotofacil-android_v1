@@ -1,6 +1,5 @@
 package com.cebolao.lotofacil.ui.screens.about
 
-// Import the components from the same package
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

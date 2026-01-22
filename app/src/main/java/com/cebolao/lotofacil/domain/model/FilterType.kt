@@ -49,12 +49,3 @@ enum class FilterType(
         historicalSuccessRate = 0.84f
     );
 }
-
-@Serializable
-enum class FilterCategory {
-    MATHEMATICAL,
-    DISTRIBUTION,
-    POSITIONAL,
-    TEMPORAL
-}
-

@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalDensity
  * Uses proper composition locals and optimized animation specs for better performance.
  */
 fun Modifier.shimmer(): Modifier = composed {
-    val density = LocalDensity.current
+    LocalDensity.current
     val transition = rememberInfiniteTransition(label = "shimmer")
     
     // Optimize animation values for better performance

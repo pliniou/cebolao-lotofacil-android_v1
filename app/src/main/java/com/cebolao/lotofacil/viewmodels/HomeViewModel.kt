@@ -8,36 +8,11 @@ import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.repository.SyncStatus
 import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer
 import com.cebolao.lotofacil.domain.usecase.GetHomeScreenDataUseCase
-import com.cebolao.lotofacil.navigation.UiEvent
-import com.cebolao.lotofacil.viewmodels.HomeUiState
-import androidx.compose.runtime.Stable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// Removed embedded definitions of StatisticPattern, LastDrawStats and HomeUiState.
-    // These types are now defined in HomeScreenModels.kt and the domain layer.
-
-/**
- * Data class representing statistics chip values for UI display.
- */
-@Stable
-data class StatChipValues(
-    val sum: String,
-    val evens: String,
-    val primes: String,
-    val frame: String,
-    val portrait: String,
-    val fibonacci: String
-)
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -46,22 +21,6 @@ class HomeViewModel @Inject constructor(
     private val statisticsAnalyzer: StatisticsAnalyzer,
     private val dispatchersProvider: DispatchersProvider
 ) : StateViewModel<HomeUiState>(HomeUiState()) {
-
-    /**
-     * Computed statistics chip values for UI display.
-     */
-    val statChipValues: StateFlow<StatChipValues?> = uiState.map { state ->
-        state.lastDrawStats?.let { stats ->
-            StatChipValues(
-                sum = stats.sum.toString(),
-                evens = stats.evens.toString(),
-                primes = stats.primes.toString(),
-                frame = stats.frame.toString(),
-                portrait = stats.portrait.toString(),
-                fibonacci = stats.fibonacci.toString()
-            )
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     private var fullHistory: List<HistoricalDraw> = emptyList()
     private var analysisJob: Job? = null

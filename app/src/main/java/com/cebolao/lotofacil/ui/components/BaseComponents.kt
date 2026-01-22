@@ -10,7 +10,6 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -39,9 +38,9 @@ fun AppCard(
     val cardBackgroundColor = backgroundColor ?: colors.surface1
     val cardContentColor = contentColor ?: colors.textPrimary
     
-    val defaultBorder = BorderStroke(
+    val defaultBorder = if (elevation > 0.dp) null else BorderStroke(
         width = 1.dp,
-        color = colors.outline.copy(alpha = 0.3f)
+        color = colors.outline.copy(alpha = 0.12f)
     )
 
     Card(
@@ -74,9 +73,9 @@ fun ClickableCard(
     val cardBackgroundColor = backgroundColor ?: colors.surface1
     val cardContentColor = contentColor ?: colors.textPrimary
     
-    val defaultBorder = BorderStroke(
-        width = 0.5.dp,
-        color = colors.outline.copy(alpha = 0.5f)
+    val defaultBorder = if (elevation > 0.dp) null else BorderStroke(
+        width = 1.dp,
+        color = colors.outline.copy(alpha = 0.12f)
     )
     
     val interactionSource = remember { MutableInteractionSource() }

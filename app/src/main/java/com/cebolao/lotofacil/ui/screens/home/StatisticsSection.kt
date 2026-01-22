@@ -172,7 +172,7 @@ private fun TimeWindowChip(isSelected: Boolean, onClick: () -> Unit, label: Stri
         shape = MaterialTheme.shapes.medium,
         backgroundColor = container,
         border = BorderStroke(1.dp, borderColor),
-        elevation = if (isSelected) AppElevation.xs else AppElevation.none
+        elevation = AppElevation.none
     ) {
         Text(
             text = label,

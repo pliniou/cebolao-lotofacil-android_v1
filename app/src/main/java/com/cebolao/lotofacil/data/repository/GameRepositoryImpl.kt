@@ -98,4 +98,3 @@ class GameRepositoryImpl @Inject constructor(
         userPreferencesRepository.savePinnedGames(pinned.map { it.toCompactString() }.toSet())
     }
 }
-

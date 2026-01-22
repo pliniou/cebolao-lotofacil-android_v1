@@ -66,15 +66,11 @@ fun ErrorActions(
     retryText: String = "",
     dismissText: String = ""
 ) {
-    val resolvedRetryText = if (retryText.isBlank()) {
+    val resolvedRetryText = retryText.ifBlank {
         stringResource(id = R.string.try_again)
-    } else {
-        retryText
     }
-    val resolvedDismissText = if (dismissText.isBlank()) {
+    val resolvedDismissText = dismissText.ifBlank {
         stringResource(id = R.string.close_button)
-    } else {
-        dismissText
     }
     Row(
         modifier = Modifier.fillMaxWidth(),

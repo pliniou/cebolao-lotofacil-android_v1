@@ -148,4 +148,3 @@ private fun RestrictivenessChip(category: RestrictivenessCategory) {
         )
     }
 }
-

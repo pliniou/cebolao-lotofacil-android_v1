@@ -176,4 +176,3 @@ private fun FilterContent(
         modifier = Modifier.padding(top = AppCardDefaults.contentSpacing)
     )
 }
-

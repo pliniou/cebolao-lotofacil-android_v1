@@ -67,14 +67,6 @@ sealed interface Destination {
                 defaultValue = null
             }
         )
-        
-        fun createRoute(numbers: String? = null): String {
-            return if (numbers != null) {
-                "checker?$NUMBERS_ARG=$numbers"
-            } else {
-                "checker"
-            }
-        }
     }
 
     @Serializable

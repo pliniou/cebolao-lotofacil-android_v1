@@ -24,7 +24,7 @@ interface HistoryLocalDataSource {
 
 @Singleton
 class HistoryLocalDataSourceImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val dispatchersProvider: DispatchersProvider
 ) : HistoryLocalDataSource {

@@ -15,8 +15,4 @@ data class FilterStateData(
 ) {
     val range: ClosedFloatingPointRange<Float>
         get() = min..max
-        
-    fun copyWithRange(newRange: ClosedFloatingPointRange<Float>): FilterStateData {
-        return copy(min = newRange.start, max = newRange.endInclusive)
-    }
 }

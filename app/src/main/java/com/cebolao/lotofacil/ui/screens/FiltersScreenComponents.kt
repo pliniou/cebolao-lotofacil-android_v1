@@ -1,10 +1,8 @@
 package com.cebolao.lotofacil.ui.screens
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.Icon
@@ -17,7 +15,6 @@ import androidx.compose.ui.res.stringResource
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.model.FilterState
 import com.cebolao.lotofacil.domain.model.FilterType
-import com.cebolao.lotofacil.ui.model.*
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.FilterCard
 import com.cebolao.lotofacil.ui.components.FilterStatsPanel
@@ -73,7 +70,7 @@ fun LazyListScope.filterList(
     filterStates: List<FilterState>,
     lastDraw: Set<Int>?,
     onFilterToggle: (FilterType, Boolean) -> Unit,
-    onRangeChange: (FilterType, kotlin.ranges.ClosedFloatingPointRange<Float>) -> Unit,
+    onRangeChange: (FilterType, ClosedFloatingPointRange<Float>) -> Unit,
     onInfoClick: (FilterType) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -99,7 +96,7 @@ private fun FilterRowItem(
     filterState: FilterState,
     lastDrawNumbers: Set<Int>?,
     onFilterToggle: (FilterType, Boolean) -> Unit,
-    onRangeChange: (FilterType, kotlin.ranges.ClosedFloatingPointRange<Float>) -> Unit,
+    onRangeChange: (FilterType, ClosedFloatingPointRange<Float>) -> Unit,
     onInfoClick: (FilterType) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -109,7 +106,7 @@ private fun FilterRowItem(
     }
     
     val onRangeChange = remember(filterState.type) {
-        { range: kotlin.ranges.ClosedFloatingPointRange<Float> -> 
+        { range: ClosedFloatingPointRange<Float> ->
             onRangeChange(filterState.type, range) 
         }
     }

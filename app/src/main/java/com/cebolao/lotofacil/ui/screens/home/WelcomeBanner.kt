@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AppRegistration
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -24,8 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
-import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.AppElevation
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.LocalAppColors
 import com.cebolao.lotofacil.ui.theme.iconMedium
 
@@ -49,7 +49,7 @@ fun WelcomeBanner(
             colors = CardDefaults.cardColors(
                 containerColor = colors.brandSubtle
             ),
-            elevation = CardDefaults.cardElevation(defaultElevation = AppElevation.none)
+            border = androidx.compose.foundation.BorderStroke(1.dp, colors.brandPrimary.copy(alpha = 0.2f))
         ) {
             Column(
                 modifier = Modifier.padding(AppSpacing.lg),
@@ -61,16 +61,10 @@ fun WelcomeBanner(
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Lightbulb,
+                        imageVector = Icons.Default.AppRegistration,
                         contentDescription = null,
                         tint = colors.brandPrimary,
                         modifier = Modifier.size(iconMedium())
-                    )
-                    Text(
-                        text = stringResource(id = R.string.emoji_lightbulb),
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = colors.brandPrimary,
-                        fontWeight = FontWeight.Bold
                     )
                 }
                 

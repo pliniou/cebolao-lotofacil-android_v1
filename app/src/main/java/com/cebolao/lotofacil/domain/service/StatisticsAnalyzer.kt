@@ -1,9 +1,8 @@
 package com.cebolao.lotofacil.domain.service
 
-import com.cebolao.lotofacil.domain.model.HistoricalDraw
-import com.cebolao.lotofacil.domain.model.LotofacilConstants
-import com.cebolao.lotofacil.domain.model.StatisticsReport
 import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
+import com.cebolao.lotofacil.domain.model.HistoricalDraw
+import com.cebolao.lotofacil.domain.model.StatisticsReport
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
@@ -79,7 +78,11 @@ class StatisticsAnalyzer @Inject constructor(
         return (1..25).asSequence()
             .map { number ->
                 val lastSeen = lastSeenMap[number]
-                val overdue = if (lastSeen > 0) lastContestNumber - lastSeen else draws.size
+                val overdue = if (lastSeen > 0) {
+                    (lastContestNumber - lastSeen).coerceAtLeast(1)
+                } else {
+                    draws.size + 1
+                }
                 number to overdue
             }
             .sortedByDescending { it.second }

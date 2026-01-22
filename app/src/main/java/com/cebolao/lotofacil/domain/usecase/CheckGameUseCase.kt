@@ -7,7 +7,6 @@ import com.cebolao.lotofacil.core.error.UnknownError
 import com.cebolao.lotofacil.domain.model.CheckResult
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.domain.model.LotofacilGame
-import com.cebolao.lotofacil.domain.model.GameStatistic
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.service.GameStatsAnalyzer
 import kotlinx.collections.immutable.toImmutableList

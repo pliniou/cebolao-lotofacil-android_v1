@@ -25,8 +25,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.cebolao.lotofacil.navigation.AppNavigation
 import com.cebolao.lotofacil.navigation.Destination
-import com.cebolao.lotofacil.navigation.navigateToDestination
 import com.cebolao.lotofacil.navigation.bottomNavDestinations
+import com.cebolao.lotofacil.navigation.navigateToDestination
 
 @Composable
 fun MainScreen() {

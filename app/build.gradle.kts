@@ -23,6 +23,15 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("keystore/release.keystore")
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "cebolaoLOTERIAS25"
+            keyAlias = System.getenv("KEY_ALIAS") ?: "cebolao_lotofacil"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: "cebolaoLOTERIAS25"
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
@@ -32,6 +41,7 @@ android {
             isShrinkResources = false
         }
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -66,8 +76,6 @@ android {
     }
 
     lint {
-        // REFINAMENTO: abortOnError = false é uma escolha consciente para permitir builds
-        // mesmo com warnings de lint, mas checkReleaseBuilds garante a verificação antes do release.
         abortOnError = false
         warningsAsErrors = false
         checkReleaseBuilds = true
@@ -79,6 +87,11 @@ android {
             "NewerVersionAvailable",
         )
     }
+}
+
+fun getSigningConfig(): String {
+    val hasKeystore = file("keystore/release.keystore").exists()
+    return if (hasKeystore) "release" else "debug"
 }
 
 dependencies {

@@ -7,15 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -26,8 +23,10 @@ import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.PrivacyTip
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,6 +48,7 @@ import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.ClickableCard
 import com.cebolao.lotofacil.ui.components.InfoDialog
+import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.screens.about.BolaoInfoContent
 import com.cebolao.lotofacil.ui.screens.about.InfoItem
 import com.cebolao.lotofacil.ui.screens.about.LegalInfoContent
@@ -87,24 +87,37 @@ fun AboutScreen() {
         )
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.statusBars),
-        contentPadding = PaddingValues(
-            top = AppSpacing.lg, 
-            bottom = 120.dp
-        ),
-        verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
-    ) {
-        item {
-            StudioHero()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            StandardScreenHeader(
+                title = stringResource(id = R.string.studio_name),
+                subtitle = stringResource(id = R.string.studio_slogan),
+                icon = Icons.Outlined.Info
+            )
         }
-        items(items, key = { it.titleResId }) { info ->
-            AnimateOnEntry(Modifier.padding(horizontal = AppSpacing.xl)) {
-                InfoCard(info) { 
-                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                    dialogContent = info 
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentPadding = PaddingValues(
+                top = AppSpacing.lg,
+                start = AppSpacing.lg,
+                end = AppSpacing.lg,
+                bottom = AppSpacing.xxxl
+            ),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
+        ) {
+            item {
+                StudioHero()
+            }
+            items(items, key = { it.titleResId }) { info ->
+                AnimateOnEntry {
+                    InfoCard(info) {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        dialogContent = info
+                    }
                 }
             }
         }
@@ -116,11 +129,7 @@ private fun StudioHero() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                bottom = AppSpacing.xxl,
-                start = AppSpacing.lg,
-                end = AppSpacing.lg
-            ),
+            .padding(bottom = AppSpacing.xxl),
         contentAlignment = Alignment.Center
     ) {
         // Studio Hero as background/decorative element
@@ -142,20 +151,6 @@ private fun StudioHero() {
                 contentDescription = stringResource(id = R.string.studio_logo_description),
                 modifier = Modifier.size(80.dp)
             )
-            Spacer(modifier = Modifier.height(AppSpacing.lg))
-            Text(
-                stringResource(R.string.studio_name),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.height(AppSpacing.sm))
-            Text(
-                stringResource(R.string.studio_slogan),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
         }
     }
 }
@@ -164,7 +159,7 @@ private fun StudioHero() {
 private fun InfoCard(item: InfoItem, onClick: () -> Unit) {
     ClickableCard(
         onClick = onClick,
-        shape = MaterialTheme.shapes.large,
+        shape = MaterialTheme.shapes.medium,
         elevation = AppCardDefaults.elevation
     ) {
         Row(

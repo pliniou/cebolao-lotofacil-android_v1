@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -57,6 +57,7 @@ fun NumberGrid(
     val haptic = LocalHapticFeedback.current
     val density = LocalDensity.current
     val screenDensity = density.density
+    val shape = MaterialTheme.shapes.medium
 
     val adaptiveBallSize = when {
         screenDensity < 1.5f -> NumberGridDimens.compactBallSize
@@ -64,14 +65,11 @@ fun NumberGrid(
         else -> ballSize
     }
 
-    // Optimize by caching the click handler and using stable keys
     val handleClick = remember(onNumberClick) { { number: Int ->
         haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
         onNumberClick(number)
     } }
 
-    // Using FlowRow instead of LazyVerticalGrid to avoid nested scrolling issues
-    // and infinite height constraints within LazyColumn.
     FlowRow(
         modifier = modifier
             .fillMaxWidth()
@@ -84,14 +82,18 @@ fun NumberGrid(
         for (item in items) {
             Box(
                 modifier = Modifier
-                    .clip(CircleShape)
+                    .clip(shape)
                     .clickable(
                         enabled = !item.isDisabled,
                         onClick = { handleClick(item.number) }
                     )
                     .padding(2.dp)
                     .semantics {
-                        contentDescription = "Número ${item.number}${if (item.isSelected) " selecionado" else ""}${if (item.isDisabled) " desabilitado" else ""}"
+                        contentDescription = buildString {
+                            append("Número ${item.number}")
+                            if (item.isSelected) append(", selecionado")
+                            if (item.isDisabled) append(", desabilitado")
+                        }
                     }
             ) {
                 NumberBall(
@@ -105,3 +107,4 @@ fun NumberGrid(
         }
     }
 }
+

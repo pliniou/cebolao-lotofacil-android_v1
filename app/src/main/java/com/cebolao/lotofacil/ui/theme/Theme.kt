@@ -67,14 +67,14 @@ private val DarkColors = darkColorScheme(
     onPrimary = BaseBackground,
     primaryContainer = BrandSubtle,
     onPrimaryContainer = BrandPrimary,
-    secondary = TextSecondary,
+    secondary = BrandSecondary,
     onSecondary = BaseBackground,
     secondaryContainer = Surface2,
     onSecondaryContainer = TextSecondary,
-    tertiary = TextSecondary,
+    tertiary = Success,
     onTertiary = BaseBackground,
     tertiaryContainer = Surface2,
-    onTertiaryContainer = TextSecondary,
+    onTertiaryContainer = Success,
     error = Error,
     onError = BaseBackground,
     errorContainer = Color(0xFF4A1015),
@@ -86,7 +86,7 @@ private val DarkColors = darkColorScheme(
     surfaceVariant = Surface2,
     onSurfaceVariant = TextSecondary,
     outline = OutlineStroke,
-    outlineVariant = Surface2,
+    outlineVariant = TextTertiary,
 )
 
 val LocalAnimationEnabled = staticCompositionLocalOf { true }
@@ -94,7 +94,7 @@ val LocalAnimationEnabled = staticCompositionLocalOf { true }
 @Composable
 fun CebolaoLotofacilTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -118,6 +118,9 @@ fun CebolaoLotofacilTheme(
     }
 
     val appColors = AppColors.fromColorScheme(colorScheme)
+    
+    // Create adaptive typography based on current configuration
+    val adaptiveTypography = createAdaptiveTypography()
 
     CompositionLocalProvider(
         LocalAppColors provides appColors,
@@ -125,7 +128,7 @@ fun CebolaoLotofacilTheme(
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
-            typography = Typography,
+            typography = adaptiveTypography,
             shapes = Shapes,
             content = content
         )

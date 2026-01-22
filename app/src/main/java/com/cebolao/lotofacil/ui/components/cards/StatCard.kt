@@ -1,15 +1,10 @@
 package com.cebolao.lotofacil.ui.components.cards
 
-import androidx.compose.foundation.BorderStroke
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,14 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.cebolao.lotofacil.ui.components.AppCard
+import com.cebolao.lotofacil.ui.components.IconBadge
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.LocalAppColors
 
 /**
- * Reusable card component for displaying statistics and information.
- * Consolidates common card layouts used across the app.
+ * Reusable, flat card for statistics blocks with a consistent header layout.
  */
 @Composable
 fun StatCard(
@@ -33,10 +29,12 @@ fun StatCard(
     icon: ImageVector? = null,
     content: @Composable () -> Unit
 ) {
-    Card(
+    val colors = LocalAppColors.current
+
+    AppCard(
         modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = AppCardDefaults.elevation),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        backgroundColor = colors.surface1,
+        elevation = AppCardDefaults.elevation
     ) {
         Column(
             modifier = Modifier.padding(AppCardDefaults.defaultPadding),
@@ -46,27 +44,23 @@ fun StatCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
             ) {
-                icon?.let {
-                    androidx.compose.material3.Icon(
-                        imageVector = it,
+                if (icon != null) {
+                    IconBadge(
+                        icon = icon,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(AppSpacing.lg)
+                        size = 36.dp,
+                        iconSize = 18.dp
                     )
                 }
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = colors.textPrimary
                 )
             }
-            
-            HorizontalDivider(
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f),
-                modifier = Modifier.padding(vertical = AppCardDefaults.contentSpacing)
-            )
-            
+
+            HorizontalDivider(color = colors.outline.copy(alpha = 0.6f))
+
             content()
         }
     }

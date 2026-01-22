@@ -1,7 +1,6 @@
 package com.cebolao.lotofacil.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,7 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,9 +35,11 @@ import com.cebolao.lotofacil.ui.components.GameStatsList
 import com.cebolao.lotofacil.ui.components.InfoDialog
 import com.cebolao.lotofacil.ui.components.LoadingDialog
 import com.cebolao.lotofacil.ui.components.RecentHitsChartContent
+import com.cebolao.lotofacil.ui.components.SnackbarHost
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.components.cards.GameCard
 import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.LocalAppColors
 import com.cebolao.lotofacil.viewmodels.GameAnalysisResult
 import com.cebolao.lotofacil.viewmodels.GameAnalysisUiState
 import com.cebolao.lotofacil.viewmodels.GameViewModel
@@ -52,6 +52,7 @@ fun GeneratedGamesScreen(
     val uiState by gameViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val colors = LocalAppColors.current
 
     LaunchedEffect(Unit) {
         gameViewModel.uiEvent.collect { event ->
@@ -136,7 +137,7 @@ fun GeneratedGamesScreen(
                             Icon(
                                 Icons.Default.DeleteSweep,
                                 contentDescription = stringResource(id = R.string.cd_clear_games),
-                                tint = MaterialTheme.colorScheme.error
+                                tint = colors.error
                             )
                         }
                     }
@@ -149,6 +150,9 @@ fun GeneratedGamesScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = PaddingValues(
+                top = AppSpacing.lg,
+                start = AppSpacing.lg,
+                end = AppSpacing.lg,
                 bottom = AppSpacing.xxxl
             ),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
@@ -165,14 +169,12 @@ fun GeneratedGamesScreen(
                         ((index * 60).coerceAtMost(500)).toLong() 
                     }
                     AnimateOnEntry(delayMillis = animationDelay) {
-                        Box(Modifier.padding(horizontal = AppSpacing.lg)) {
-                            GameCard(
-                                game = game,
-                                onAnalyzeClick = { gameViewModel.analyzeGame(game) },
-                                onPinClick = { gameViewModel.togglePinState(game) },
-                                onDeleteClick = { gameViewModel.requestDeleteGame(game) }
-                            )
-                        }
+                        GameCard(
+                            game = game,
+                            onAnalyzeClick = { gameViewModel.analyzeGame(game) },
+                            onPinClick = { gameViewModel.togglePinState(game) },
+                            onDeleteClick = { gameViewModel.requestDeleteGame(game) }
+                        )
                     }
                 }
             }

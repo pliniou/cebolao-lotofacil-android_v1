@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.HourglassEmpty
 import androidx.compose.material.icons.filled.LocalFireDepartment
@@ -45,8 +44,8 @@ import com.cebolao.lotofacil.ui.components.ClickableCard
 import com.cebolao.lotofacil.ui.components.NumberBall
 import com.cebolao.lotofacil.ui.components.shimmer
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
-import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.AppElevation
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.LocalAppColors
 import com.cebolao.lotofacil.ui.theme.iconMedium
 import com.cebolao.lotofacil.ui.theme.iconSmall
@@ -201,7 +200,7 @@ private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVec
                     .size(iconMedium())
                     .background(
                         colors.brandSubtle,
-                        CircleShape
+                        MaterialTheme.shapes.medium
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -316,7 +315,7 @@ fun HomeScreenSkeleton() {
     val colors = LocalAppColors.current
     
     Column(
-        modifier = Modifier.padding(horizontal = AppSpacing.lg),
+        modifier = Modifier,
         verticalArrangement = Arrangement.spacedBy(AppSpacing.xxl)
     ) {
         // Last Draw Skeleton
@@ -331,7 +330,7 @@ fun HomeScreenSkeleton() {
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     for (i in 0 until 5) {
-                        Box(Modifier.size(40.dp).clip(CircleShape).shimmer())
+                        Box(Modifier.size(40.dp).clip(MaterialTheme.shapes.medium).shimmer())
                     }
                 }
                 Box(Modifier.fillMaxWidth().height(1.dp).background(colors.outline.copy(alpha = 0.1f)))
@@ -359,7 +358,7 @@ fun HomeScreenSkeleton() {
                             Box(Modifier.size(150.dp, 20.dp).clip(MaterialTheme.shapes.small).shimmer())
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                                 for (j in 0 until 5) {
-                                    Box(Modifier.size(40.dp).clip(CircleShape).shimmer())
+                                    Box(Modifier.size(40.dp).clip(MaterialTheme.shapes.medium).shimmer())
                                 }
                             }
                         }
@@ -382,7 +381,7 @@ fun StatsLoadingSkeleton() {
             Box(Modifier.size(150.dp, 20.dp).clip(MaterialTheme.shapes.small).shimmer())
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 for (i in 0 until 5) {
-                    Box(Modifier.size(40.dp).clip(CircleShape).shimmer())
+                    Box(Modifier.size(40.dp).clip(MaterialTheme.shapes.medium).shimmer())
                 }
             }
         }

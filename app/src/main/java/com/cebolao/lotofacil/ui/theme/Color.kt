@@ -2,54 +2,57 @@ package com.cebolao.lotofacil.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Base Colors
-val BaseBackground = Color(0xFF0B0F12)
-val Surface1 = Color(0xFF10171C) // Primary cards/sheets
-val Surface2 = Color(0xFF141E25) // Elevated/secondary surfaces  
-val Surface3 = Color(0xFF18242D) // Emphasized containers (dialogs, expanded panels)
-val OutlineStroke = Color(0xFF24323D) // Dividers and card borders
+// Vintage, geometric palette (earthy + muted accents).
+// Keep existing token names to avoid churn across the codebase.
+
+// Base Colors (Dark)
+val BaseBackground = Color(0xFF12100D)
+val Surface1 = Color(0xFF1B1812) // Primary cards/sheets
+val Surface2 = Color(0xFF252116) // Secondary surfaces
+val Surface3 = Color(0xFF2E291C) // Dialogs/expanded panels
+val OutlineStroke = Color(0xFF3E382A) // Dividers and card borders
 
 // Text Colors
-val TextPrimary = Color(0xFFE7EEF5) // Main text
-val TextSecondary = Color(0xFFB7C6D3) // Subtitles/labels
-val TextTertiary = Color(0xFF7F93A3) // Hints and helper text
+val TextPrimary = Color(0xFFF6ECDD) // Main text (warm parchment)
+val TextSecondary = Color(0xFFD5C9B8) // Subtitles/labels
+val TextTertiary = Color(0xFFA79E8B) // Hints and helper text
 
-// Brand Colors (Teal)
-val BrandPrimary = Color(0xFF39D3CF) // Primary actions, selected states, active toggles, highlights
-val BrandSecondary = Color(0xFF2BB6B2) // Pressed/hover states, secondary accents
-val BrandSubtle = Color(0xFF12363A) // Tinted backgrounds behind important chips/badges
+// Brand Colors (Muted Mustard)
+val BrandPrimary = Color(0xFFD9A441) // Primary actions, selected states, highlights
+val BrandSecondary = Color(0xFFC18A2F) // Pressed/secondary accents
+val BrandSubtle = Color(0xFF2F2615) // Tinted backgrounds behind chips/badges
 
-// Status Colors
-val Success = Color(0xFF39D98A) // Positive feedback
-val Warning = Color(0xFFF7C948) // Cautions
-val Error = Color(0xFFFF5A6A) // Destructive actions and error states
+// Status Colors (Muted, vintage-friendly)
+val Success = Color(0xFF6FB07A) // Positive feedback
+val Warning = Color(0xFFE0C56B) // Cautions
+val Error = Color(0xFFE06C5B) // Errors/destructive
 
 // Disabled States
-val DisabledContainer = Color(0xFF0F1418)
-val DisabledContent = Color(0xFF5B6B78)
+val DisabledContainer = Color(0xFF1A1813)
+val DisabledContent = Color(0xFF7C7263)
 
-// Material 3 Light Theme (Minimal - for completeness)
-val LightPrimary = Color(0xFF006A6A)
+// Material 3 Light Theme (Vintage parchment)
+val LightPrimary = Color(0xFF8A5A00)
 val LightOnPrimary = Color(0xFFFFFFFF)
-val LightPrimaryContainer = Color(0xFF6FF5F5)
-val LightOnPrimaryContainer = Color(0xFF002020)
-val LightSecondary = Color(0xFF4A6363)
+val LightPrimaryContainer = Color(0xFFFFE0B2)
+val LightOnPrimaryContainer = Color(0xFF2B1A00)
+val LightSecondary = Color(0xFF6A5D44)
 val LightOnSecondary = Color(0xFFFFFFFF)
-val LightSecondaryContainer = Color(0xFFCCE8E7)
-val LightOnSecondaryContainer = Color(0xFF051F1F)
-val LightTertiary = Color(0xFF4B607C)
+val LightSecondaryContainer = Color(0xFFF1E3C7)
+val LightOnSecondaryContainer = Color(0xFF251C10)
+val LightTertiary = Color(0xFF4E6A5B)
 val LightOnTertiary = Color(0xFFFFFFFF)
-val LightTertiaryContainer = Color(0xFFD3E4FF)
-val LightOnTertiaryContainer = Color(0xFF041C35)
-val LightError = Color(0xFFBA1A1A)
-val LightErrorContainer = Color(0xFFFFDAD6)
+val LightTertiaryContainer = Color(0xFFCFE7D7)
+val LightOnTertiaryContainer = Color(0xFF0E2218)
+val LightError = Color(0xFFB3261E)
+val LightErrorContainer = Color(0xFFFFDAD4)
 val LightOnError = Color(0xFFFFFFFF)
-val LightOnErrorContainer = Color(0xFF410002)
-val LightBackground = Color(0xFFF4FBF9)
-val LightOnBackground = Color(0xFF161D1D)
-val LightSurface = Color(0xFFF4FBF9)
-val LightOnSurface = Color(0xFF161D1D)
-val LightSurfaceVariant = Color(0xFFDAE5E3)
-val LightOnSurfaceVariant = Color(0xFF3F4948)
-val LightOutline = Color(0xFF6F7978)
-val LightOutlineVariant = Color(0xFFBECBCA)
+val LightOnErrorContainer = Color(0xFF410001)
+val LightBackground = Color(0xFFF7F0E3)
+val LightOnBackground = Color(0xFF1B1711)
+val LightSurface = Color(0xFFFFF7EA)
+val LightOnSurface = Color(0xFF1B1711)
+val LightSurfaceVariant = Color(0xFFEADCC6)
+val LightOnSurfaceVariant = Color(0xFF4E463A)
+val LightOutline = Color(0xFF7B7365)
+val LightOutlineVariant = Color(0xFFCFC3AF)

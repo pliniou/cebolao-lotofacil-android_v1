@@ -27,7 +27,7 @@ import com.cebolao.lotofacil.ui.theme.LocalAppColors
 @Composable
 fun AppCard(
     modifier: Modifier = Modifier,
-    shape: Shape = MaterialTheme.shapes.large,
+    shape: Shape = MaterialTheme.shapes.medium,
     backgroundColor: Color? = null,
     contentColor: Color? = null,
     border: BorderStroke? = null,
@@ -38,9 +38,9 @@ fun AppCard(
     val cardBackgroundColor = backgroundColor ?: colors.surface1
     val cardContentColor = contentColor ?: colors.textPrimary
     
-    val defaultBorder = if (elevation > 0.dp) null else BorderStroke(
+    val defaultBorder = BorderStroke(
         width = 1.dp,
-        color = colors.outline.copy(alpha = 0.12f)
+        color = colors.outline.copy(alpha = 0.75f)
     )
 
     Card(
@@ -61,7 +61,7 @@ fun AppCard(
 fun ClickableCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    shape: Shape = MaterialTheme.shapes.large,
+    shape: Shape = MaterialTheme.shapes.medium,
     backgroundColor: Color? = null,
     contentColor: Color? = null,
     border: BorderStroke? = null,
@@ -73,9 +73,9 @@ fun ClickableCard(
     val cardBackgroundColor = backgroundColor ?: colors.surface1
     val cardContentColor = contentColor ?: colors.textPrimary
     
-    val defaultBorder = if (elevation > 0.dp) null else BorderStroke(
+    val defaultBorder = BorderStroke(
         width = 1.dp,
-        color = colors.outline.copy(alpha = 0.12f)
+        color = colors.outline.copy(alpha = 0.75f)
     )
     
     val interactionSource = remember { MutableInteractionSource() }
@@ -100,8 +100,7 @@ fun ClickableCard(
             .clickable(
                 enabled = enabled,
                 onClick = onClick,
-                interactionSource = interactionSource,
-                indication = null
+                interactionSource = interactionSource
             ),
         shape = shape,
         colors = CardDefaults.cardColors(

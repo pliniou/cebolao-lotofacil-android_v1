@@ -16,7 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,6 +32,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.LocalAppColors
 
 @Composable
 fun InfoDialog(
@@ -44,6 +44,7 @@ fun InfoDialog(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val hapticFeedback = LocalHapticFeedback.current
+    val colors = LocalAppColors.current
     val resolvedDismissText = dismissButtonText.ifBlank {
         stringResource(id = R.string.understood_button)
     }
@@ -76,22 +77,22 @@ fun InfoDialog(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
                     ) {
-                        Icon(
-                            imageVector = icon,
+                        IconBadge(
+                            icon = icon,
                             contentDescription = stringResource(R.string.info_dialog_icon_description),
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(24.dp)
+                            size = 40.dp,
+                            iconSize = 20.dp
                         )
                         Text(
                             text = dialogTitle,
                             style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = colors.textPrimary
                         )
                     }
 
                     Spacer(Modifier.height(AppSpacing.md))
                     HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f),
+                        color = colors.outline.copy(alpha = 0.75f),
                         thickness = 1.dp
                     )
                     Spacer(Modifier.height(AppSpacing.md))
@@ -121,7 +122,8 @@ fun InfoDialog(
                         ) {
                             Text(
                                 text = resolvedDismissText,
-                                style = MaterialTheme.typography.labelLarge
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colors.brandPrimary
                             )
                         }
                     }

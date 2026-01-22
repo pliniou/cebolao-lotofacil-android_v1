@@ -1,11 +1,9 @@
 package com.cebolao.lotofacil.ui.screens
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,9 +22,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.model.FilterType
 import com.cebolao.lotofacil.navigation.UiEvent
-import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.ConfirmationDialog
 import com.cebolao.lotofacil.ui.components.InfoDialog
+import com.cebolao.lotofacil.ui.components.SnackbarHost
 import com.cebolao.lotofacil.ui.model.descriptionRes
 import com.cebolao.lotofacil.ui.model.icon
 import com.cebolao.lotofacil.ui.model.titleRes
@@ -105,6 +103,9 @@ fun FiltersScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = PaddingValues(
+                top = AppSpacing.lg,
+                start = AppSpacing.lg,
+                end = AppSpacing.lg,
                 bottom = AppSpacing.xxxl
             ),
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(AppSpacing.xl)
@@ -115,17 +116,6 @@ fun FiltersScreen(
                     activeFilters = uiState.filterStates.filter { it.isEnabled },
                     successProbability = uiState.successProbability
                 )
-            }
-
-            // Apply single animation to filter items
-            item {
-                AnimateOnEntry(delayMillis = 200L) {
-                    Column(
-                        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(AppSpacing.lg)
-                    ) {
-                        // Filter items will be added here
-                    }
-                }
             }
 
             // Add filter items with animation

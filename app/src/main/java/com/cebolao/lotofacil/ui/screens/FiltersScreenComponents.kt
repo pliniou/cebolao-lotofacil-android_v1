@@ -1,10 +1,10 @@
 package com.cebolao.lotofacil.ui.screens
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -20,7 +20,6 @@ import com.cebolao.lotofacil.ui.components.FilterCard
 import com.cebolao.lotofacil.ui.components.FilterStatsPanel
 import com.cebolao.lotofacil.ui.components.GenerationActionsPanel
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
-import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.viewmodels.GenerationUiState
 
 @Composable
@@ -41,9 +40,9 @@ fun FiltersHeader(
                 onResetFilters()
             }) {
                 Icon(
-                    Icons.Default.FilterAlt, 
+                    Icons.Default.RestartAlt,
                     contentDescription = stringResource(id = R.string.reset_filters),
-                    tint = MaterialTheme.colorScheme.tertiary
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -57,7 +56,7 @@ fun ActiveFiltersPanel(
     modifier: Modifier = Modifier
 ) {
     AnimateOnEntry(
-        modifier = modifier.padding(horizontal = AppSpacing.lg)
+        modifier = modifier
     ) {
         FilterStatsPanel(
             activeFilters = activeFilters,
@@ -86,7 +85,7 @@ fun LazyListScope.filterList(
             onFilterToggle = onFilterToggle,
             onRangeChange = onRangeChange,
             onInfoClick = onInfoClick,
-            modifier = modifier.padding(horizontal = AppSpacing.lg)
+            modifier = modifier
         )
     }
 }
@@ -134,7 +133,7 @@ fun GenerateActionsPanel(
 ) {
     AnimateOnEntry(
         delayMillis = 300L,
-        modifier = modifier.padding(horizontal = AppSpacing.lg)
+        modifier = modifier
     ) {
         Box {
             GenerationActionsPanel(

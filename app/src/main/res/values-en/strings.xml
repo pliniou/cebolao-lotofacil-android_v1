@@ -5,7 +5,6 @@
     <string name="error_load_data_failed">Failed to load data.</string>
     <string name="error_analysis_failed">Analysis failed.</string>
     <string name="error_unknown">Unknown error.</string>
-    <string name="error_load_title">Failed to load data</string>
     <string name="try_again">Try again</string>
 
     <string name="studio_name">Cebola Studios</string>
@@ -174,7 +173,7 @@
     <string name="restrictiveness_disabled">Disabled</string>
 
     <!-- CheckResultCard -->
-    <string name="awards_occurred">Prizes occured</string>
+    <string name="awards_occurred">Prizes occurred</string>
     <string name="performance_analysis">Performance analysis</string>
     <!-- Plurals for internationalization -->
     <plurals name="analysis_in_contests">
@@ -234,7 +233,7 @@
     <string name="info_item_legal_title">Legalese</string>
     <string name="info_item_legal_subtitle">The boring but necessary part</string>
     <string name="info_item_privacy_title">Your privacy</string>
-    <string name="info_item_privacy_subtitle">How we (don't) use your data</string>
+    <string name="info_item_privacy_subtitle">How we do not use your data</string>
 
     <!-- Dialogs -->
     <string name="understood_button">Understood</string>
@@ -254,8 +253,6 @@
     <!-- Content Descriptions -->
     <string name="cd_refresh_data">Update data</string>
     <string name="cd_clear_games">Clear unpinned games</string>
-    <string name="cd_error_state">Error state</string>
-    <string name="emoji_lightbulb">💡</string>
     <string name="next_contest_format">Next Draw: #%d</string>
     <string name="prize_tier_format">Tier %d</string>
 </resources>

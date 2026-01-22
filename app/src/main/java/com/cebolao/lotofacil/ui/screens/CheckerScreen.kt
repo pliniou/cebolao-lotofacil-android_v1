@@ -6,13 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -104,18 +101,18 @@ fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
                 icon = Icons.AutoMirrored.Filled.FactCheck
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        contentWindowInsets = WindowInsets.statusBars
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .windowInsetsPadding(WindowInsets.statusBars),
+                .padding(paddingValues),
             state = listState,
             contentPadding = PaddingValues(
-                horizontal = AppSpacing.lg,
-                vertical = AppSpacing.lg
+                top = AppSpacing.lg,
+                start = AppSpacing.lg,
+                end = AppSpacing.lg,
+                bottom = AppSpacing.xxxl
             ),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
         ) {

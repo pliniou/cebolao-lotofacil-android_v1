@@ -1,8 +1,10 @@
 package com.cebolao.lotofacil.domain.usecase
 
 import com.cebolao.lotofacil.core.coroutine.TestDispatchersProvider
+import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.domain.model.FilterState
 import com.cebolao.lotofacil.domain.model.FilterType
+import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.service.GameGenerationException
@@ -13,6 +15,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -37,39 +40,44 @@ class GenerateGamesUseCaseTest {
             LotofacilGame((1..15).toSet()),
             LotofacilGame((11..25).toSet())
         )
-        whenever(gameGenerator.generateGames(any(), any(), any())).thenReturn(expectedGames)
+        whenever(gameGenerator.generateGames(any(), any(), anyOrNull(), any())).thenReturn(expectedGames)
 
         val result = useCase(quantity = 2, activeFilters = emptyList())
 
-        assertTrue(result.isSuccess)
-        assertEquals(2, result.getOrNull()?.size)
+        assertTrue(result is AppResult.Success)
+        assertEquals(2, (result as AppResult.Success).value.size)
     }
 
     @Test
     fun `generate games with repetitive filter should use last draw`() = runTest {
-        setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
+        val lastDrawNumbers = (1..15).toSet()
         val expectedGames = listOf(LotofacilGame((1..15).toSet()))
-        whenever(historyRepository.getLastDraw()).thenReturn(mock())
-        whenever(gameGenerator.generateGames(any(), any(), any())).thenReturn(expectedGames)
+        whenever(historyRepository.getLastDraw()).thenReturn(
+            HistoricalDraw(
+                contestNumber = 1,
+                numbers = lastDrawNumbers
+            )
+        )
+        whenever(gameGenerator.generateGames(any(), any(), anyOrNull(), any())).thenReturn(expectedGames)
 
         val filters = listOf(
             FilterState(type = FilterType.REPETIDAS_CONCURSO_ANTERIOR, isEnabled = true)
         )
         val result = useCase(quantity = 1, activeFilters = filters)
 
-        assertTrue(result.isSuccess)
+        assertTrue(result is AppResult.Success)
     }
 
     @Test
     fun `generate games with restrictive filters should throw exception`() = runTest {
-        whenever(gameGenerator.generateGames(any(), any(), any()))
-            .thenThrow(GameGenerationException("Unable to generate games"))
+        whenever(gameGenerator.generateGames(any(), any(), anyOrNull(), any()))
+            .thenAnswer { throw GameGenerationException("Unable to generate games") }
 
         val filters = listOf(
             FilterState(type = FilterType.SOMA_DEZENAS, isEnabled = true, selectedRange = 200f..210f)
         )
         val result = useCase(quantity = 10, activeFilters = filters)
 
-        assertTrue(result.isFailure)
+        assertTrue(result is AppResult.Failure)
     }
 }

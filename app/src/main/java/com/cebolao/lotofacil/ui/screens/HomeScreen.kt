@@ -18,7 +18,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +39,7 @@ import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.ConfirmationDialog
+import com.cebolao.lotofacil.ui.components.SnackbarHost
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.screens.home.HomeScreenSkeleton
 import com.cebolao.lotofacil.ui.screens.home.LastDrawSection
@@ -115,6 +115,9 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = PaddingValues(
+                top = AppSpacing.lg,
+                start = AppSpacing.lg,
+                end = AppSpacing.lg,
                 bottom = AppSpacing.xxxl
             ),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
@@ -189,8 +192,7 @@ private fun ErrorState(messageResId: Int, onRetry: () -> Unit) {
     
     AppCard(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = AppSpacing.lg),
+            .fillMaxWidth(),
         backgroundColor = colors.surface1
     ) {
         Column(

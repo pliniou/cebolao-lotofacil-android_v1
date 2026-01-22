@@ -1,16 +1,15 @@
 package com.cebolao.lotofacil.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,10 +40,9 @@ fun StandardScreenHeader(
         tonalElevation = 0.dp
     ) {
         Column(
-            modifier = Modifier.padding(
-                horizontal = AppSpacing.lg,
-                vertical = AppSpacing.xl
-            )
+            modifier = Modifier
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.lg)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -56,42 +54,19 @@ fun StandardScreenHeader(
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
                 ) {
                     if (icon != null || iconPainter != null) {
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .background(
-                                    colors.surface2,
-                                    CircleShape
-                                )
-                                .border(
-                                    width = 1.dp,
-                                    color = colors.outline,
-                                    shape = CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (icon != null) {
-                                androidx.compose.material3.Icon(
-                                    imageVector = icon,
-                                    contentDescription = null,
-                                    tint = colors.brandPrimary,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            } else if (iconPainter != null) {
-                                androidx.compose.material3.Icon(
-                                    painter = iconPainter,
-                                    contentDescription = null,
-                                    tint = colors.brandPrimary,
-                                    modifier = Modifier.size(24.dp)
-                                )
-                            }
-                        }
+                        IconBadge(
+                            icon = icon,
+                            painter = iconPainter,
+                            contentDescription = null,
+                            size = 44.dp,
+                            iconSize = 22.dp
+                        )
                     }
-                    
+
                     Column {
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.headlineMedium,
+                            style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
                             color = colors.textPrimary
                         )
@@ -104,7 +79,7 @@ fun StandardScreenHeader(
                         }
                     }
                 }
-                
+
                 actions?.let {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -113,6 +88,11 @@ fun StandardScreenHeader(
                     )
                 }
             }
+
+            HorizontalDivider(
+                modifier = Modifier.padding(top = AppSpacing.lg),
+                color = colors.outline.copy(alpha = 0.7f)
+            )
         }
     }
 }

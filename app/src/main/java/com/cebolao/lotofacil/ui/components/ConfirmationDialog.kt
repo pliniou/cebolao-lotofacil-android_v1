@@ -7,9 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -21,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.LocalAppColors
 
 @Composable
@@ -39,52 +39,50 @@ fun ConfirmationDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        Card(
+        Column(
             modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = colors.surface3,
-                contentColor = colors.textPrimary
-            ),
-            border = androidx.compose.foundation.BorderStroke(1.dp, colors.outline.copy(alpha = 0.1f)),
-            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                .widthIn(max = 520.dp)
+                .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.xl)
         ) {
-            Column(
-                modifier = Modifier.padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+            AppCard(
+                modifier = Modifier.fillMaxWidth(),
+                backgroundColor = colors.surface3
             ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-                
-                Text(
-                    text = message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                    color = colors.textSecondary
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)
+                Column(
+                    modifier = Modifier.padding(AppSpacing.xl),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
                 ) {
-                    OutlinedButton(
-                        onClick = onDismiss
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        color = colors.textPrimary
+                    )
+
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodyMedium,
+                        textAlign = TextAlign.Center,
+                        color = colors.textSecondary
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)
                     ) {
-                        Text(text = dismissText)
-                    }
-                    
-                    Button(
-                        onClick = onConfirm
-                    ) {
-                        Text(text = confirmText)
+                        if (dismissText.isNotBlank()) {
+                            OutlinedButton(onClick = onDismiss) {
+                                Text(text = dismissText)
+                            }
+                        }
+
+                        Button(onClick = onConfirm) {
+                            Text(text = confirmText)
+                        }
                     }
                 }
             }

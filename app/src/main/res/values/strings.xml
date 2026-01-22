@@ -5,7 +5,6 @@
     <string name="error_load_data_failed">Falha ao carregar dados.</string>
     <string name="error_analysis_failed">Falha na análise.</string>
     <string name="error_unknown">Erro desconhecido.</string>
-    <string name="error_load_title">Falha ao carregar dados</string>
     <string name="try_again">Tentar novamente</string>
 
     <string name="studio_name">Cebola Studios</string>
@@ -253,8 +252,6 @@
     <!-- Content Descriptions -->
     <string name="cd_refresh_data">Atualizar dados</string>
     <string name="cd_clear_games">Limpar jogos não fixados</string>
-    <string name="cd_error_state">Estado de erro</string>
-    <string name="emoji_lightbulb">💡</string>
     <string name="next_contest_format">Próximo Concurso: #%d</string>
     <string name="prize_tier_format">Faixa %d</string>
 </resources>

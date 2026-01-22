@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
 
             CebolaoLotofacilTheme(
                 darkTheme = isSystemInDarkTheme(),
-                dynamicColor = true
+                dynamicColor = false
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),

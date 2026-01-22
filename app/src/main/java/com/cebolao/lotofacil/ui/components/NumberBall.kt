@@ -5,7 +5,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,25 +38,25 @@ fun NumberBall(
     isDisabled: Boolean = false,
     variant: NumberBallVariant = NumberBallVariant.Primary
 ) {
+    val shape = MaterialTheme.shapes.medium
     val (containerColor, contentColor, borderColor) = getBallColors(
         isSelected = isSelected,
         isHighlighted = isHighlighted,
-        isDisabled = isDisabled,
-        variant = variant
+        isDisabled = isDisabled
     )
 
-    val animatedContainerColor by animateColorAsState(containerColor, tween(250), label = "containerColor")
-    val animatedContentColor by animateColorAsState(contentColor, tween(250), label = "contentColor")
-    val animatedBorderColor by animateColorAsState(borderColor, tween(250), label = "borderColor")
+    val animatedContainerColor by animateColorAsState(containerColor, tween(200), label = "containerColor")
+    val animatedContentColor by animateColorAsState(contentColor, tween(200), label = "contentColor")
+    val animatedBorderColor by animateColorAsState(borderColor, tween(200), label = "borderColor")
 
     Surface(
         modifier = modifier
             .size(size)
-            .clip(CircleShape)
+            .clip(shape)
             .border(
-                width = if (isHighlighted && !isSelected) 1.5.dp else 0.5.dp,
+                width = if (isHighlighted && !isSelected) 2.dp else 1.dp,
                 color = animatedBorderColor,
-                shape = CircleShape
+                shape = shape
             )
             .semantics {
                 val state = when {
@@ -68,20 +67,18 @@ fun NumberBall(
                 }
                 contentDescription = "Número $number, $state"
             },
-        shape = CircleShape,
+        shape = shape,
         color = animatedContainerColor,
         tonalElevation = if (isSelected) AppElevation.sm else AppElevation.none
     ) {
         val formattedNumber = remember(number) { "%02d".format(number) }
-        
-        Box(
-            contentAlignment = Alignment.Center
-        ) {
+
+        Box(contentAlignment = Alignment.Center) {
             Text(
                 text = formattedNumber,
                 color = animatedContentColor,
                 style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = (size.value / 2.6).sp, // Slightly larger font for better legibility
+                    fontSize = (size.value / 2.6).sp,
                     fontWeight = FontWeight.Bold
                 )
             )
@@ -93,31 +90,31 @@ fun NumberBall(
 private fun getBallColors(
     isSelected: Boolean,
     isHighlighted: Boolean,
-    isDisabled: Boolean,
-    variant: NumberBallVariant
+    isDisabled: Boolean
 ): Triple<Color, Color, Color> {
     val colors = LocalAppColors.current
-    
+
     return when {
         isDisabled -> Triple(
             colors.disabledContainer,
             colors.disabledContent,
-            colors.outline.copy(alpha = 0.3f)
+            colors.outline.copy(alpha = 0.6f)
         )
         isSelected -> Triple(
             colors.brandPrimary,
             colors.background,
-            colors.brandPrimary.copy(alpha = 0.3f)
+            colors.brandPrimary.copy(alpha = 0.9f)
         )
         isHighlighted -> Triple(
             colors.brandSubtle,
             colors.brandPrimary,
-            colors.brandPrimary.copy(alpha = 0.7f)
+            colors.brandPrimary.copy(alpha = 0.9f)
         )
         else -> Triple(
             colors.surface2,
             colors.textPrimary,
-            colors.outline.copy(alpha = 0.2f)
+            colors.outline.copy(alpha = 0.75f)
         )
     }
 }
+

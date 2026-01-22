@@ -2,6 +2,7 @@ package com.cebolao.lotofacil.viewmodels
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
+import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.domain.model.LastDrawStats
 import com.cebolao.lotofacil.domain.model.StatisticsReport
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
@@ -50,8 +51,9 @@ class HomeViewModelTest {
         statisticsAnalyzer = mock()
         dispatchersProvider = mock()
 
-        whenever(dispatchersProvider.default).thenReturn(Dispatchers.Default)
-        whenever(dispatchersProvider.main).thenReturn(Dispatchers.Main)
+        whenever(dispatchersProvider.default).thenReturn(testDispatcher)
+        whenever(dispatchersProvider.main).thenReturn(testDispatcher)
+        whenever(dispatchersProvider.io).thenReturn(testDispatcher)
         whenever(historyRepository.syncStatus).thenReturn(MutableStateFlow(SyncStatus.Idle))
     }
 
@@ -63,7 +65,7 @@ class HomeViewModelTest {
     @Test
     fun `initial state should have loading true and no error`() = runTest {
         whenever(getHomeScreenDataUseCase.invoke()).thenReturn(flowOf(
-            Result.success(
+            AppResult.Success(
                 HomeScreenData(
                     history = emptyList(),
                     lastDrawStats = null,
@@ -107,7 +109,7 @@ class HomeViewModelTest {
         )
 
         whenever(getHomeScreenDataUseCase.invoke()).thenReturn(flowOf(
-            Result.success(
+            AppResult.Success(
                 HomeScreenData(
                     history = emptyList(),
                     lastDrawStats = lastDrawStats,
@@ -152,7 +154,7 @@ class HomeViewModelTest {
         )
 
         whenever(getHomeScreenDataUseCase.invoke()).thenReturn(flowOf(
-            Result.success(
+            AppResult.Success(
                 HomeScreenData(
                     history = emptyList(),
                     lastDrawStats = lastDrawStats,
@@ -198,7 +200,7 @@ class HomeViewModelTest {
 
         whenever(getHomeScreenDataUseCase.invoke())
             .thenReturn(flowOf(
-                Result.success(
+                AppResult.Success(
                     HomeScreenData(
                         history = emptyList(),
                         lastDrawStats = lastDrawStats,

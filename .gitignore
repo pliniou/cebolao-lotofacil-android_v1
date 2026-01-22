@@ -5,8 +5,10 @@
 .git
 .DS_Store
 /build
+**/build/
 /captures
 .externalNativeBuild
 .cxx
 local.properties
 .gradle-cache
+lint-results-*.txt

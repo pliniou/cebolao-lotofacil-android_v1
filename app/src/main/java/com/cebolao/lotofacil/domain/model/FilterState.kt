@@ -23,6 +23,7 @@ data class FilterState(
     val selectedRange: ClosedFloatingPointRange<Float> = type.defaultRange
 ) {
     val rangePercentage: Float by lazy {
+        if (!isEnabled) return@lazy 0f
         val totalRange = type.fullRange.endInclusive - type.fullRange.start
         if (totalRange > 0) (selectedRange.endInclusive - selectedRange.start) / totalRange else 0f
     }

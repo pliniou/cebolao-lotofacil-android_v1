@@ -10,8 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AppRegistration
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Tune
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
-import com.cebolao.lotofacil.ui.theme.AppElevation
+import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.LocalAppColors
 import com.cebolao.lotofacil.ui.theme.iconMedium
@@ -42,14 +40,10 @@ fun WelcomeBanner(
         delayMillis = 50L,
         modifier = modifier.fillMaxWidth()
     ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = AppSpacing.lg),
-            colors = CardDefaults.cardColors(
-                containerColor = colors.brandSubtle
-            ),
-            border = androidx.compose.foundation.BorderStroke(1.dp, colors.brandPrimary.copy(alpha = 0.2f))
+        AppCard(
+            modifier = Modifier.fillMaxWidth(),
+            backgroundColor = colors.brandSubtle,
+            border = androidx.compose.foundation.BorderStroke(1.dp, colors.brandPrimary.copy(alpha = 0.75f))
         ) {
             Column(
                 modifier = Modifier.padding(AppSpacing.lg),

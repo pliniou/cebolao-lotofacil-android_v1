@@ -1,10 +1,13 @@
 package com.cebolao.lotofacil.core.coroutine
 
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class TestDispatchersProvider : DispatchersProvider {
-    override val main: CoroutineDispatcher = StandardTestDispatcher()
-    override val io: CoroutineDispatcher = StandardTestDispatcher()
-    override val default: CoroutineDispatcher = StandardTestDispatcher()
+    private val dispatcher: CoroutineDispatcher = UnconfinedTestDispatcher()
+    override val main: CoroutineDispatcher = dispatcher
+    override val io: CoroutineDispatcher = dispatcher
+    override val default: CoroutineDispatcher = dispatcher
 }

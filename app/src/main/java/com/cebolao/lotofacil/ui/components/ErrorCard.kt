@@ -1,10 +1,13 @@
 package com.cebolao.lotofacil.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -17,6 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+import com.cebolao.lotofacil.ui.theme.LocalAppColors
 
 @Composable
 fun ErrorCard(
@@ -24,15 +28,25 @@ fun ErrorCard(
     modifier: Modifier = Modifier,
     actions: @Composable (() -> Unit)? = null
 ) {
+    val colors = LocalAppColors.current
     AppCard(
         modifier = modifier.fillMaxWidth(),
-        backgroundColor = MaterialTheme.colorScheme.errorContainer
+        backgroundColor = MaterialTheme.colorScheme.errorContainer,
+        border = BorderStroke(1.dp, colors.error.copy(alpha = 0.85f))
     ) {
         Column(
             modifier = Modifier
                 .padding(AppCardDefaults.defaultPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            IconBadge(
+                icon = Icons.Outlined.ErrorOutline,
+                contentDescription = null,
+                size = 40.dp,
+                iconSize = 20.dp,
+                tint = colors.error
+            )
             Text(
                 text = message,
                 color = MaterialTheme.colorScheme.onErrorContainer,

@@ -10,7 +10,7 @@ import com.cebolao.lotofacil.domain.service.GameGenerator
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-import com.cebolao.lotofacil.core.error.UnknownError
+import com.cebolao.lotofacil.domain.model.DomainError
 import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.core.result.toSuccess
 
@@ -31,7 +31,7 @@ class GenerateGamesUseCase @Inject constructor(
             }
 
             if (activeFilters.any { it.type == FilterType.REPETIDAS_CONCURSO_ANTERIOR && it.isEnabled } && lastDraw == null) {
-                throw GameGenerationException("Histórico não disponível. Desative o filtro 'Repetidas' ou verifique sua conexão.")
+                return@withContext AppResult.Failure(DomainError.HistoryUnavailable)
             }
 
             val games = gameGenerator.generateGames(
@@ -41,7 +41,7 @@ class GenerateGamesUseCase @Inject constructor(
             )
             games.toSuccess()
         } catch (e: Exception) {
-             AppResult.Failure(UnknownError(e))
+             AppResult.Failure(DomainError.Unknown(e))
         }
     }
 }

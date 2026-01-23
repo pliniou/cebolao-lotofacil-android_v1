@@ -8,6 +8,7 @@ import com.cebolao.lotofacil.domain.model.FilterType
 import com.cebolao.lotofacil.domain.repository.GameRepository
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.usecase.GenerateGamesUseCase
+import com.cebolao.lotofacil.domain.model.DomainError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -100,7 +101,11 @@ class FiltersViewModel @Inject constructor(
                         navigateToGeneratedGames()
                     }
                     is AppResult.Failure -> {
-                        showSnackbar(result.error.cause?.message ?: "Erro ao gerar jogos")
+                        val messageResId = when (result.error) {
+                            is DomainError.HistoryUnavailable -> com.cebolao.lotofacil.R.string.error_history_unavailable
+                            else -> com.cebolao.lotofacil.R.string.error_unknown
+                        }
+                        showSnackbar(messageResId)
                     }
                 }
             } catch (e: Exception) {

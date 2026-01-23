@@ -1,6 +1,6 @@
 package com.cebolao.lotofacil.core.error
 
-sealed interface AppError {
+interface AppError {
     val cause: Throwable?
 }
 

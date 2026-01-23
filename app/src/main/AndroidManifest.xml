@@ -16,7 +16,7 @@
         android:theme="@style/Theme.CebolaoLotofacil"
         android:networkSecurityConfig="@xml/network_security_config"
         android:enableOnBackInvokedCallback="true"
-        tools:targetApi="33"
+        tools:targetApi="36"
         tools:ignore="RemoveWorkManagerInitializer">
 
         <provider

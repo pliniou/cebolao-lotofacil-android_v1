@@ -23,7 +23,7 @@ import kotlinx.serialization.Serializable
 @Stable
 sealed interface Destination {
     val route: String
-    val title: String
+    val titleRes: Int
     val selectedIcon: ImageVector
     val unselectedIcon: ImageVector
     val baseRoute: String get() = route.substringBefore('?')
@@ -31,7 +31,7 @@ sealed interface Destination {
     @Serializable
     data object Home : Destination {
         override val route = "home"
-        override val title = "Início"
+        override val titleRes = com.cebolao.lotofacil.R.string.nav_home
         override val selectedIcon = Icons.Filled.Home
         override val unselectedIcon = Icons.Outlined.Home
     }
@@ -39,7 +39,7 @@ sealed interface Destination {
     @Serializable
     data object Filters : Destination {
         override val route = "filters"
-        override val title = "Gerador"
+        override val titleRes = com.cebolao.lotofacil.R.string.nav_filters
         override val selectedIcon = Icons.Filled.Tune
         override val unselectedIcon = Icons.Outlined.Tune
     }
@@ -47,7 +47,7 @@ sealed interface Destination {
     @Serializable
     data object GeneratedGames : Destination {
         override val route = "generated_games"
-        override val title = "Jogos"
+        override val titleRes = com.cebolao.lotofacil.R.string.nav_games
         override val selectedIcon = Icons.AutoMirrored.Filled.ListAlt
         override val unselectedIcon = Icons.AutoMirrored.Filled.ListAlt
     }
@@ -56,7 +56,7 @@ sealed interface Destination {
     data object Checker : Destination {
         const val NUMBERS_ARG = "numbers"
         override val route = "checker?$NUMBERS_ARG={$NUMBERS_ARG}"
-        override val title = "Conferidor"
+        override val titleRes = com.cebolao.lotofacil.R.string.nav_checker
         override val selectedIcon = Icons.Filled.Analytics
         override val unselectedIcon = Icons.Outlined.Analytics
         
@@ -72,7 +72,7 @@ sealed interface Destination {
     @Serializable
     data object About : Destination {
         override val route = "about"
-        override val title = "Sobre"
+        override val titleRes = com.cebolao.lotofacil.R.string.nav_about
         override val selectedIcon = Icons.Filled.Info
         override val unselectedIcon = Icons.Outlined.Info
     }

@@ -41,7 +41,12 @@ android {
             isShrinkResources = false
         }
         release {
-            signingConfig = signingConfigs.getByName("release")
+            val keystoreFile = file("keystore/release.keystore")
+            signingConfig = if (keystoreFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -87,11 +92,6 @@ android {
             "NewerVersionAvailable",
         )
     }
-}
-
-fun getSigningConfig(): String {
-    val hasKeystore = file("keystore/release.keystore").exists()
-    return if (hasKeystore) "release" else "debug"
 }
 
 dependencies {

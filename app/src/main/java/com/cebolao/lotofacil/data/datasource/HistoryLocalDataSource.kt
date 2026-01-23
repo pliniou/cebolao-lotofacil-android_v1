@@ -7,13 +7,12 @@ import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.domain.model.LotofacilConstants
 import com.cebolao.lotofacil.domain.repository.UserPreferencesRepository
+import com.cebolao.lotofacil.data.datasource.database.HistoryDao
+import com.cebolao.lotofacil.data.datasource.database.entity.toDomain
+import com.cebolao.lotofacil.data.datasource.database.entity.toEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import java.io.IOException
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,15 +23,13 @@ interface HistoryLocalDataSource {
 
 @Singleton
 class HistoryLocalDataSourceImpl @Inject constructor(
-    @param:ApplicationContext private val context: Context,
-    private val userPreferencesRepository: UserPreferencesRepository,
+    @ApplicationContext private val context: Context,
+    private val historyDao: HistoryDao,
     private val dispatchersProvider: DispatchersProvider
 ) : HistoryLocalDataSource {
 
     private val lineRegex = """^\d+\s*-\s*[\d, ]+$""".toRegex()
     private val historyFileName = "lotofacil_resultados.txt"
-    private val cacheMutex = Mutex()
-    private var cachedHistory: List<HistoricalDraw>? = null
 
     companion object {
         private const val TAG = "HistoryLocalDataSource"
@@ -40,70 +37,30 @@ class HistoryLocalDataSourceImpl @Inject constructor(
 
     override suspend fun getLocalHistory(): List<HistoricalDraw> =
         withContext(dispatchersProvider.io) {
-        cachedHistory?.let { return@withContext it }
-
-        val assetHistory = parseHistoryFromAssets()
-        val savedHistoryStrings = userPreferencesRepository.getHistory()
-        val savedHistory = savedHistoryStrings.mapNotNull { parseLine(it) }
-
-        cacheMutex.withLock {
-            cachedHistory?.let { return@withContext it }
-            val allDraws = mergeHistory(assetHistory, savedHistory)
-            cachedHistory = allDraws
-            allDraws
+            val dbCount = historyDao.getCount()
+            
+            if (dbCount == 0) {
+                // Initial Load from Assets
+                val assetDraws = parseHistoryFromAssets()
+                if (assetDraws.isNotEmpty()) {
+                    historyDao.insertAll(assetDraws.map { it.toEntity() })
+                }
+                assetDraws
+            } else {
+                // Load from Database
+                historyDao.getAll().map { it.toDomain() }
+            }
         }
-    }
 
     override suspend fun saveNewContests(newDraws: List<HistoricalDraw>) {
         if (newDraws.isEmpty()) return
-
-        cacheMutex.withLock {
-            cachedHistory = null
-        }
-
-        val newHistoryEntries = newDraws.map { draw ->
-            "${draw.contestNumber} - ${draw.numbers.sorted().joinToString(",")}"
-        }.toSet()
-
-        userPreferencesRepository.addDynamicHistoryEntries(newHistoryEntries)
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Persisted ${newDraws.size} new contests locally.")
-        }
-    }
-
-    private fun mergeHistory(
-        assetHistory: List<HistoricalDraw>,
-        savedHistory: List<HistoricalDraw>
-    ): List<HistoricalDraw> {
-        if (BuildConfig.DEBUG) {
-            Log.d(
-                TAG,
-                "Loaded ${assetHistory.size} contests from assets and ${savedHistory.size} from DataStore"
-            )
-        }
-        return (assetHistory + savedHistory)
-            .groupBy { it.contestNumber }
-            .mapValues { (_, draws) ->
-                draws.maxWithOrNull(
-                    compareByDescending<HistoricalDraw> { it.dateEpoch() }
-                        .thenByDescending { it.prizes.size }
-                        .thenByDescending { it.winners.size }
-                ) ?: draws.first()
+        
+        withContext(dispatchersProvider.io) {
+            historyDao.upsertAll(newDraws.map { it.toEntity() })
+            
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Persisted ${newDraws.size} new contests locally.")
             }
-            .values
-            .sortedByDescending { it.contestNumber }
-    }
-
-    private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-
-    private fun HistoricalDraw.dateEpoch(): Long = date.toEpoch()
-
-    private fun String?.toEpoch(): Long {
-        if (this.isNullOrBlank()) return 0L
-        return try {
-            LocalDate.parse(this, dateFormatter).toEpochDay()
-        } catch (_: Exception) {
-            0L
         }
     }
 
@@ -114,6 +71,7 @@ class HistoryLocalDataSourceImpl @Inject constructor(
                     .filter { it.isNotBlank() && it.matches(lineRegex) }
                     .mapNotNull { parseLine(it) }
                     .toList()
+                    .sortedByDescending { it.contestNumber }
             }
         } catch (e: IOException) {
             if (BuildConfig.DEBUG) {
@@ -163,3 +121,4 @@ class HistoryLocalDataSourceImpl @Inject constructor(
         }
     }
 }
+

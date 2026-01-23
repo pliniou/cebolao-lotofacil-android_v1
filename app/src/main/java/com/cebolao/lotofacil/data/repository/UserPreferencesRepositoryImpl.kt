@@ -33,7 +33,6 @@ class UserPreferencesRepositoryImpl @Inject constructor(
     companion object {
         private const val TAG = "UserPreferencesRepo"
         private val PINNED_GAMES_KEY = stringSetPreferencesKey("pinned_games")
-        private val DYNAMIC_HISTORY_KEY = stringSetPreferencesKey("dynamic_history")
         private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
     }
 
@@ -61,41 +60,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getHistory(): Set<String> = withContext(dispatchersProvider.io) {
-        try {
-            context.dataStore.data
-                .map { preferences ->
-                    preferences[DYNAMIC_HISTORY_KEY] ?: emptySet()
-                }
-                .first()
-        } catch (e: Exception) {
-            handleError(e, "getting history")
-            emptySet()
-        }
-    }
 
-    override suspend fun addDynamicHistoryEntries(newHistoryEntries: Set<String>) {
-        withContext(dispatchersProvider.io) {
-            if (newHistoryEntries.isEmpty()) return@withContext
-            try {
-                context.dataStore.edit { preferences ->
-                    val currentHistory = preferences[DYNAMIC_HISTORY_KEY] ?: emptySet()
-                    val validEntries = newHistoryEntries.filter { entry ->
-                        entry.matches(Regex("\\d+ - [\\d,]+"))
-                    }.toSet()
-
-                    if (validEntries.isNotEmpty()) {
-                        preferences[DYNAMIC_HISTORY_KEY] = currentHistory + validEntries
-                        if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "Added ${validEntries.size} valid history entries")
-                        }
-                    }
-                }
-            } catch (e: IOException) {
-                handleError(e, "adding dynamic history entries")
-            }
-        }
-    }
 
     override val themeMode: Flow<String> = context.dataStore.data
         .catch { exception ->

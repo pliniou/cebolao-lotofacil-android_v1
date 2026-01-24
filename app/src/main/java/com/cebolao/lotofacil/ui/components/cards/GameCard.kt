@@ -45,7 +45,7 @@ import com.cebolao.lotofacil.ui.components.NumberBall
 import com.cebolao.lotofacil.ui.components.NumberBallVariant
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -61,7 +61,7 @@ fun GameCard(
     analyzeIcon: ImageVector = Icons.Default.Analytics
 ) {
     val haptic = LocalHapticFeedback.current
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     
     // Optimize expensive calculations with derivedStateOf
     val sortedNumbers by remember(game.numbers) {
@@ -76,12 +76,12 @@ fun GameCard(
         label = "elevation"
     )
     val borderColor by animateColorAsState(
-        if (isPinned) colors.brandPrimary else colors.outline.copy(alpha = 0.55f),
+        if (isPinned) colors.primary else colors.outline.copy(alpha = 0.55f),
         tween(250), 
         label = "borderColor"
     )
     val containerColor by animateColorAsState(
-        if (isPinned) colors.brandSubtle else colors.surface1,
+        if (isPinned) colors.secondaryContainer else colors.surface,
         tween(250), 
         label = "containerColor"
     )
@@ -144,7 +144,7 @@ private fun GameCardActions(
     deleteIcon: ImageVector,
     analyzeIcon: ImageVector
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -158,7 +158,7 @@ private fun GameCardActions(
                 Icon(
                     imageVector = if (isPinned) pinIcon else pinIconOutlined,
                     contentDescription = if (isPinned) stringResource(id = R.string.unpin_game) else stringResource(id = R.string.pin_game),
-                    tint = if (isPinned) colors.brandPrimary else colors.textSecondary,
+                    tint = if (isPinned) colors.primary else colors.onSurfaceVariant,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -179,12 +179,12 @@ private fun GameCardActions(
                 analyzeIcon, 
                 null, 
                 modifier = Modifier.size(ButtonDefaults.IconSize),
-                tint = colors.brandPrimary
+                tint = colors.primary
             )
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(
                 stringResource(id = R.string.analyze_button),
-                color = colors.brandPrimary
+                color = colors.primary
             )
         }
     }

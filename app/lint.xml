@@ -1,14 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <lint>
-    <issue id="ObsoleteSdkInt">
-        <ignore path="src/main/res/mipmap-anydpi-v26" />
-    </issue>
-    <issue id="UnusedResources" severity="informational" />
-    <issue id="HardcodedText" severity="warning" />
+    <issue id="ObsoleteSdkInt" />
     <issue id="IconMissingDensityFolder" severity="ignore" />
-    <issue id="MissingTranslation" severity="warning" />
-    <issue id="ExtraTranslation" severity="warning" />
     <issue id="GradleDependency" severity="informational" />
     <issue id="NewerVersionAvailable" severity="informational" />
-    <issue id="AndroidGradlePluginVersion" severity="informational" />
+    <issue id="AndroidGradlePluginVersion" severity="informational">
+    </issue>
 </lint>

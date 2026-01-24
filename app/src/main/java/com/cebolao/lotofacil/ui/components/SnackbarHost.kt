@@ -8,7 +8,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 import androidx.compose.material3.SnackbarHost as MaterialSnackbarHost
 
 /**
@@ -20,7 +20,7 @@ fun SnackbarHost(
     hostState: SnackbarHostState,
     modifier: Modifier = Modifier
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     MaterialSnackbarHost(
         hostState = hostState,
         modifier = modifier,
@@ -29,11 +29,11 @@ fun SnackbarHost(
             Snackbar(
                 snackbarData = snackbarData,
                 shape = MaterialTheme.shapes.medium,
-                containerColor = if (hasAction) colors.brandSubtle else colors.surface2,
-                contentColor = colors.textPrimary,
-                actionColor = colors.brandPrimary,
-                actionContentColor = colors.background,
-                dismissActionContentColor = colors.textSecondary,
+                containerColor = if (hasAction) colors.secondaryContainer else colors.surfaceVariant,
+                contentColor = colors.onSurface,
+                actionColor = colors.primary,
+                actionContentColor = colors.onPrimary,
+                dismissActionContentColor = colors.onSurfaceVariant,
                 modifier = Modifier.border(
                     width = 1.dp,
                     color = colors.outline.copy(alpha = 0.8f),

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cebolao.lotofacil.ui.theme.AppElevation
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 
 enum class NumberBallVariant {
     Primary, Secondary, Lotofacil
@@ -92,27 +92,27 @@ private fun getBallColors(
     isHighlighted: Boolean,
     isDisabled: Boolean
 ): Triple<Color, Color, Color> {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
 
     return when {
         isDisabled -> Triple(
-            colors.disabledContainer,
-            colors.disabledContent,
+            colors.onSurface.copy(alpha = 0.12f),
+            colors.onSurface.copy(alpha = 0.38f),
             colors.outline.copy(alpha = 0.6f)
         )
         isSelected -> Triple(
-            colors.brandPrimary,
-            colors.background,
-            colors.brandPrimary.copy(alpha = 0.9f)
+            colors.primary,
+            colors.onPrimary,
+            colors.primary.copy(alpha = 0.9f)
         )
         isHighlighted -> Triple(
-            colors.brandSubtle,
-            colors.brandPrimary,
-            colors.brandPrimary.copy(alpha = 0.9f)
+            colors.primaryContainer,
+            colors.primary,
+            colors.primary.copy(alpha = 0.9f)
         )
         else -> Triple(
-            colors.surface2,
-            colors.textPrimary,
+            colors.surfaceVariant,
+            colors.onSurface,
             colors.outline.copy(alpha = 0.75f)
         )
     }

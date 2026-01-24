@@ -46,7 +46,7 @@ import com.cebolao.lotofacil.ui.components.shimmer
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 import com.cebolao.lotofacil.ui.theme.iconMedium
 import com.cebolao.lotofacil.ui.theme.iconSmall
 import com.cebolao.lotofacil.viewmodels.StatisticPattern
@@ -62,7 +62,7 @@ fun StatisticsSection(
     onPatternSelected: (StatisticPattern) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     
     Column(
         modifier = modifier,
@@ -71,7 +71,7 @@ fun StatisticsSection(
         Text(
             text = stringResource(id = R.string.statistics_center),
             style = MaterialTheme.typography.headlineSmall,
-            color = colors.textPrimary,
+            color = colors.onSurface,
             fontWeight = FontWeight.Bold
         )
         stats?.let {
@@ -117,7 +117,7 @@ fun StatisticsSection(
 
 @Composable
 private fun TimeWindowSelector(selected: Int, onSelect: (Int) -> Unit) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     val windows = listOf(0, 500, 250, 100, 50, 10)
     
     Column(
@@ -127,7 +127,7 @@ private fun TimeWindowSelector(selected: Int, onSelect: (Int) -> Unit) {
         Text(
             text = stringResource(id = R.string.analysis_period_title),
             style = MaterialTheme.typography.titleMedium,
-            color = colors.textPrimary,
+            color = colors.onSurface,
             fontWeight = FontWeight.Medium
         )
         LazyRow(horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)) {
@@ -148,20 +148,20 @@ private fun TimeWindowSelector(selected: Int, onSelect: (Int) -> Unit) {
 
 @Composable
 private fun TimeWindowChip(isSelected: Boolean, onClick: () -> Unit, label: String) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     
     val container by animateColorAsState(
-        targetValue = if (isSelected) colors.brandSubtle else colors.surface1,
+        targetValue = if (isSelected) colors.secondaryContainer else colors.surface,
         animationSpec = tween(250),
         label = "chipContainer"
     )
     val content by animateColorAsState(
-        targetValue = if (isSelected) colors.brandPrimary else colors.textPrimary,
+        targetValue = if (isSelected) colors.primary else colors.onSurface,
         animationSpec = tween(250),
         label = "chipContent"
     )
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) colors.brandPrimary.copy(alpha = 0.3f) else colors.outline.copy(alpha = 0.15f),
+        targetValue = if (isSelected) colors.primary.copy(alpha = 0.3f) else colors.outline.copy(alpha = 0.15f),
         animationSpec = tween(250),
         label = "chipBorder"
     )
@@ -185,7 +185,7 @@ private fun TimeWindowChip(isSelected: Boolean, onClick: () -> Unit, label: Stri
 
 @Composable
 private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVector, suffix: String) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     
     Column(
         modifier = Modifier.padding(horizontal = AppSpacing.lg),
@@ -199,7 +199,7 @@ private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVec
                 modifier = Modifier
                     .size(iconMedium())
                     .background(
-                        colors.brandSubtle,
+                        colors.secondaryContainer,
                         MaterialTheme.shapes.medium
                     ),
                 contentAlignment = Alignment.Center
@@ -207,7 +207,7 @@ private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVec
                 Icon(
                     icon, 
                     null, 
-                    tint = colors.brandPrimary,
+                    tint = colors.primary,
                     modifier = Modifier.size(iconSmall())
                 )
             }
@@ -215,7 +215,7 @@ private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVec
                 text = title, 
                 style = MaterialTheme.typography.titleMedium, 
                 fontWeight = FontWeight.Bold,
-                color = colors.textPrimary
+                color = colors.onSurface
             )
         }
         Row(
@@ -231,7 +231,7 @@ private fun StatRow(title: String, numbers: List<Pair<Int, Int>>, icon: ImageVec
                     Text(
                         text = "$value$suffix", 
                         style = MaterialTheme.typography.labelSmall,
-                        color = colors.textSecondary,
+                        color = colors.onSurfaceVariant,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -246,7 +246,7 @@ private fun DistributionCharts(
     selected: StatisticPattern,
     onSelect: (StatisticPattern) -> Unit
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     val patterns = remember { StatisticPattern.entries.toTypedArray() }
     
     Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.md)) {
@@ -262,7 +262,7 @@ private fun DistributionCharts(
                     label = { 
                         Text(
                             text = stringResource(id = pattern.titleRes),
-                            color = if (selectedPattern) colors.background else colors.textPrimary
+                            color = if (selectedPattern) colors.onPrimary else colors.onSurface
                         )
                     },
                     leadingIcon = { 
@@ -270,13 +270,13 @@ private fun DistributionCharts(
                             pattern.icon, 
                             null, 
                             modifier = Modifier.size(iconSmall()),
-                            tint = if (selectedPattern) colors.background else colors.brandPrimary
+                            tint = if (selectedPattern) colors.onPrimary else colors.primary
                         ) 
                     },
                     colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = colors.brandPrimary,
-                        selectedLabelColor = colors.background,
-                        selectedLeadingIconColor = colors.background
+                        selectedContainerColor = colors.primary,
+                        selectedLabelColor = colors.onPrimary,
+                        selectedLeadingIconColor = colors.onPrimary
                     )
                 )
             }
@@ -312,7 +312,7 @@ private fun DistributionCharts(
 
 @Composable
 fun HomeScreenSkeleton() {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     
     Column(
         modifier = Modifier,
@@ -371,7 +371,7 @@ fun HomeScreenSkeleton() {
 
 @Composable
 fun StatsLoadingSkeleton() {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     
     Column(
         modifier = Modifier.padding(vertical = AppSpacing.sm),

@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 
 @Composable
 fun StandardScreenHeader(
@@ -32,7 +32,7 @@ fun StandardScreenHeader(
     iconPainter: Painter? = null,
     actions: (@Composable RowScope.() -> Unit)? = null
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -68,13 +68,13 @@ fun StandardScreenHeader(
                             text = title,
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
-                            color = colors.textPrimary
+                            color = colors.onBackground
                         )
                         subtitle?.let {
                             Text(
                                 text = it,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = colors.textSecondary
+                                color = colors.onSurfaceVariant
                             )
                         }
                     }

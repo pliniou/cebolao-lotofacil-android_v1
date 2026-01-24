@@ -6,7 +6,9 @@ import com.cebolao.lotofacil.domain.model.GameStatisticType
 import com.cebolao.lotofacil.domain.model.LotofacilGame
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class GameStatsAnalyzer @Inject constructor(private val dispatchersProvider: DispatchersProvider) {
 
     suspend fun analyze(game: LotofacilGame): List<GameStatistic> =

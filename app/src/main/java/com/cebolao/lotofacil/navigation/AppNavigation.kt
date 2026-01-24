@@ -37,7 +37,7 @@ fun NavController.navigateToDestination(destination: Destination) {
             launchSingleTop = true
             restoreState = true
         }
-        is Destination.Checker -> navigate(destination.route)
+        is Destination.Checker -> navigate(destination.baseRoute)
         is Destination.About -> navigate(destination.route)
     }
 }

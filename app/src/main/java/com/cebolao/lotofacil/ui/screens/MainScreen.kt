@@ -15,7 +15,7 @@ import com.cebolao.lotofacil.navigation.AppNavigation
 import com.cebolao.lotofacil.navigation.Destination
 import com.cebolao.lotofacil.navigation.bottomNavDestinations
 import com.cebolao.lotofacil.navigation.navigateToDestination
-import com.cebolao.lotofacil.ui.components.RetroBottomBar
+import com.cebolao.lotofacil.ui.components.AppBottomBar
 
 @Composable
 fun MainScreen() {
@@ -27,7 +27,7 @@ fun MainScreen() {
 
     Scaffold(
         bottomBar = {
-            RetroBottomBar(
+            AppBottomBar(
                 destinations = bottomNavDestinations,
                 currentDestination = currentDestination,
                 onDestinationClick = { destination: Destination ->

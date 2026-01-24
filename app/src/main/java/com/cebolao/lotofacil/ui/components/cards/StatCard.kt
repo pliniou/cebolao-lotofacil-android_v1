@@ -17,7 +17,7 @@ import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.IconBadge
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 
 /**
  * Reusable, flat card for statistics blocks with a consistent header layout.
@@ -30,11 +30,11 @@ fun StatCard(
     icon: ImageVector? = null,
     content: @Composable () -> Unit
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
 
     AppCard(
         modifier = modifier.fillMaxWidth(),
-        backgroundColor = colors.surface1,
+        backgroundColor = colors.surface,
         elevation = AppCardDefaults.elevation
     ) {
         Column(
@@ -57,13 +57,13 @@ fun StatCard(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.titleMedium,
-                        color = colors.textPrimary
+                        color = colors.onSurface
                     )
                     if (subtitle != null) {
                         Text(
                             text = subtitle,
                             style = MaterialTheme.typography.bodySmall,
-                            color = colors.textSecondary
+                            color = colors.onSurfaceVariant
                         )
                     }
                 }

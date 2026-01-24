@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 
 @Composable
 fun ConfirmationDialog(
@@ -33,7 +33,7 @@ fun ConfirmationDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     
     Dialog(
         onDismissRequest = onDismiss,
@@ -46,7 +46,7 @@ fun ConfirmationDialog(
         ) {
             AppCard(
                 modifier = Modifier.fillMaxWidth(),
-                backgroundColor = colors.surface3
+                backgroundColor = colors.surface
             ) {
                 Column(
                     modifier = Modifier.padding(AppSpacing.xl),
@@ -58,14 +58,14 @@ fun ConfirmationDialog(
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
-                        color = colors.textPrimary
+                        color = colors.onSurface
                     )
 
                     Text(
                         text = message,
                         style = MaterialTheme.typography.bodyMedium,
                         textAlign = TextAlign.Center,
-                        color = colors.textSecondary
+                        color = colors.onSurfaceVariant
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))

@@ -17,8 +17,8 @@ interface HistoryDao {
     suspend fun upsertAll(draws: List<HistoricalDrawEntity>)
 
     // Insert only if not exists (for initial bulk load optimization if needed) but Upsert is generally safer
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(draws: List<HistoricalDrawEntity>)
+    // Replaced by upsertAll for consistency
+
     
     @Query("SELECT COUNT(*) FROM historical_draws")
     suspend fun getCount(): Int

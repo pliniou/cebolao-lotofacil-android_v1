@@ -26,7 +26,7 @@ import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 import com.cebolao.lotofacil.ui.theme.iconMedium
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -42,7 +42,7 @@ fun WelcomeBanner(
     onExploreFilters: () -> Unit = {},
     onOpenChecker: () -> Unit = {}
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
 
     AnimateOnEntry(
         delayMillis = 50L,
@@ -50,8 +50,8 @@ fun WelcomeBanner(
     ) {
         AppCard(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = colors.brandSubtle,
-            border = androidx.compose.foundation.BorderStroke(1.dp, colors.brandPrimary.copy(alpha = 0.75f))
+            backgroundColor = colors.secondaryContainer,
+            border = androidx.compose.foundation.BorderStroke(1.dp, colors.primary.copy(alpha = 0.75f))
         ) {
             Column(
                 modifier = Modifier.padding(AppSpacing.lg),
@@ -65,7 +65,7 @@ fun WelcomeBanner(
                     Icon(
                         imageVector = Icons.Default.AppRegistration,
                         contentDescription = null,
-                        tint = colors.brandPrimary,
+                        tint = colors.primary,
                         modifier = Modifier.size(iconMedium())
                     )
                 }
@@ -73,14 +73,14 @@ fun WelcomeBanner(
                 Text(
                     text = stringResource(id = R.string.welcome_banner_title),
                     style = MaterialTheme.typography.titleLarge,
-                    color = colors.textPrimary,
+                    color = colors.onSurface,
                     fontWeight = FontWeight.Bold
                 )
 
                 Text(
                     text = stringResource(id = R.string.welcome_banner_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = colors.textSecondary
+                    color = colors.onSurfaceVariant
                 )
 
                 DrawScheduleInfo(
@@ -93,7 +93,7 @@ fun WelcomeBanner(
                     Text(
                         text = stringResource(id = R.string.last_update_status, time),
                         style = MaterialTheme.typography.bodySmall,
-                        color = colors.textTertiary
+                        color = colors.outline
                     )
                 }
 
@@ -125,7 +125,7 @@ private fun DrawScheduleInfo(
     nextDrawContest: Int?,
     isTodayDrawDay: Boolean
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     val todayDate = getTodayFormattedDate()
 
     Row(
@@ -136,7 +136,7 @@ private fun DrawScheduleInfo(
         Icon(
             imageVector = if (isTodayDrawDay) Icons.Default.Today else Icons.Default.CalendarMonth,
             contentDescription = null,
-            tint = if (isTodayDrawDay) colors.error else colors.brandPrimary,
+            tint = if (isTodayDrawDay) colors.error else colors.primary,
             modifier = Modifier.size(16.dp)
         )
         when {
@@ -152,14 +152,14 @@ private fun DrawScheduleInfo(
                 Text(
                     text = stringResource(id = R.string.next_draw_info, nextDrawContest, nextDrawDate),
                     style = MaterialTheme.typography.labelMedium,
-                    color = colors.brandPrimary
+                    color = colors.primary
                 )
             }
             else -> {
                 Text(
                     text = stringResource(id = R.string.last_draw_info, todayDate),
                     style = MaterialTheme.typography.labelMedium,
-                    color = colors.textSecondary
+                    color = colors.onSurfaceVariant
                 )
             }
         }
@@ -178,7 +178,7 @@ private fun QuickActionChip(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
 
     androidx.compose.material3.AssistChip(
         onClick = onClick,
@@ -188,7 +188,7 @@ private fun QuickActionChip(
                 text = text,
                 style = MaterialTheme.typography.labelSmall,
                 maxLines = 1,
-                color = colors.textPrimary
+                color = colors.onSurface
             )
         },
         leadingIcon = {
@@ -196,13 +196,13 @@ private fun QuickActionChip(
                 imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(iconMedium()),
-                tint = colors.brandPrimary
+                tint = colors.primary
             )
         },
         colors = androidx.compose.material3.AssistChipDefaults.assistChipColors(
-            containerColor = colors.surface1,
-            labelColor = colors.textPrimary,
-            leadingIconContentColor = colors.brandPrimary
+            containerColor = colors.surface,
+            labelColor = colors.onSurface,
+            leadingIconContentColor = colors.primary
         ),
         border = androidx.compose.foundation.BorderStroke(
             width = 1.dp,

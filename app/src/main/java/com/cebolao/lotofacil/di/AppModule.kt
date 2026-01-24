@@ -23,18 +23,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideGameGenerator(dispatchersProvider: DispatchersProvider): GameGenerator =
-        GameGenerator(dispatchersProvider)
-
-    @Provides
-    @Singleton
-    fun provideStatisticsAnalyzer(dispatchersProvider: DispatchersProvider): StatisticsAnalyzer =
-        StatisticsAnalyzer(dispatchersProvider)
-
-    @Provides
-    @Singleton
-    fun provideGameStatsAnalyzer(dispatchersProvider: DispatchersProvider): GameStatsAnalyzer =
-        GameStatsAnalyzer(dispatchersProvider)
+    fun provideRandom(): java.util.Random = java.util.Random()
 
     @Provides
     @Singleton

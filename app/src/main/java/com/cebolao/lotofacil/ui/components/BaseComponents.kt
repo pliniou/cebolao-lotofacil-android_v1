@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 
 @Composable
 fun AppCard(
@@ -34,9 +34,9 @@ fun AppCard(
     elevation: Dp = AppCardDefaults.elevation,
     content: @Composable () -> Unit
 ) {
-    val colors = LocalAppColors.current
-    val cardBackgroundColor = backgroundColor ?: colors.surface1
-    val cardContentColor = contentColor ?: colors.textPrimary
+    val colors = MaterialTheme.colorScheme
+    val cardBackgroundColor = backgroundColor ?: colors.surface
+    val cardContentColor = contentColor ?: colors.onSurface
     
     val defaultBorder = BorderStroke(
         width = 1.dp,
@@ -69,9 +69,9 @@ fun ClickableCard(
     enabled: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colors = LocalAppColors.current
-    val cardBackgroundColor = backgroundColor ?: colors.surface1
-    val cardContentColor = contentColor ?: colors.textPrimary
+    val colors = MaterialTheme.colorScheme
+    val cardBackgroundColor = backgroundColor ?: colors.surface
+    val cardContentColor = contentColor ?: colors.onSurface
     
     val defaultBorder = BorderStroke(
         width = 1.dp,
@@ -121,13 +121,13 @@ fun SurfaceCard(
     shape: Shape = MaterialTheme.shapes.medium,
     content: @Composable () -> Unit
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     
     androidx.compose.material3.Surface(
         modifier = modifier,
         shape = shape,
         tonalElevation = tonalElevation,
-        color = colors.surface2
+        color = colors.surfaceVariant
     ) {
         content()
     }

@@ -15,13 +15,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 
 @Composable
 fun LoadingDialog(
     text: String
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     Dialog(
         onDismissRequest = { /* O diálogo não pode ser dispensado pelo usuário */ },
         properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
@@ -38,12 +38,12 @@ fun LoadingDialog(
                 CircularProgressIndicator(
                     modifier = Modifier.size(32.dp),
                     strokeWidth = 3.dp,
-                    color = colors.brandPrimary
+                    color = colors.primary
                 )
                 Text(
                     text = text,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = colors.textPrimary
+                    color = colors.onSurface
                 )
             }
         }

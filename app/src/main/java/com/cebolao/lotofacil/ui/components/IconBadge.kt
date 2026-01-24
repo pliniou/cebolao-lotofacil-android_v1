@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 
 @Composable
 fun IconBadge(
@@ -30,10 +30,10 @@ fun IconBadge(
     borderColor: Color? = null,
     tint: Color? = null
 ) {
-    val colors = LocalAppColors.current
-    val resolvedBackground = backgroundColor ?: colors.surface2
+    val colors = MaterialTheme.colorScheme
+    val resolvedBackground = backgroundColor ?: colors.surfaceVariant
     val resolvedBorder = borderColor ?: colors.outline.copy(alpha = 0.9f)
-    val resolvedTint = tint ?: colors.brandPrimary
+    val resolvedTint = tint ?: colors.primary
 
     Box(
         modifier = modifier

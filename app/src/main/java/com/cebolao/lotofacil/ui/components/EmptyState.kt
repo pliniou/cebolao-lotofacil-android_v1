@@ -19,7 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 
 @Composable
 fun EmptyState(
@@ -28,7 +28,7 @@ fun EmptyState(
     icon: ImageVector? = null,
     iconSize: androidx.compose.ui.unit.Dp = 64.dp
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -39,7 +39,7 @@ fun EmptyState(
             modifier = Modifier
                 .widthIn(max = 520.dp)
                 .fillMaxWidth(),
-            backgroundColor = colors.surface1
+            backgroundColor = colors.surface
         ) {
             Column(
                 modifier = Modifier.padding(AppSpacing.xl),
@@ -52,7 +52,7 @@ fun EmptyState(
                         contentDescription = null,
                         size = iconSize + 8.dp,
                         iconSize = iconSize / 2,
-                        tint = colors.brandPrimary
+                        tint = colors.primary
                     )
                 } else {
                     IconBadge(
@@ -68,7 +68,7 @@ fun EmptyState(
                     text = message,
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
-                    color = colors.textPrimary
+                    color = colors.onSurface
                 )
             }
         }

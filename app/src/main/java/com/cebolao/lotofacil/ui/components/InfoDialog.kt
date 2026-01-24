@@ -32,7 +32,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 
 @Composable
 fun InfoDialog(
@@ -44,7 +44,7 @@ fun InfoDialog(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val hapticFeedback = LocalHapticFeedback.current
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     val resolvedDismissText = dismissButtonText.ifBlank {
         stringResource(id = R.string.understood_button)
     }
@@ -86,7 +86,7 @@ fun InfoDialog(
                         Text(
                             text = dialogTitle,
                             style = MaterialTheme.typography.titleLarge,
-                            color = colors.textPrimary
+                            color = colors.onSurface
                         )
                     }
 
@@ -123,7 +123,7 @@ fun InfoDialog(
                             Text(
                                 text = resolvedDismissText,
                                 style = MaterialTheme.typography.labelLarge,
-                                color = colors.brandPrimary
+                                color = colors.primary
                             )
                         }
                     }

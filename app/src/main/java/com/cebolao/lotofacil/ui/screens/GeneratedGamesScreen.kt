@@ -39,7 +39,7 @@ import com.cebolao.lotofacil.ui.components.SnackbarHost
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.components.cards.GameCard
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.viewmodels.GameAnalysisResult
 import com.cebolao.lotofacil.viewmodels.GameAnalysisUiState
@@ -53,7 +53,7 @@ fun GeneratedGamesScreen(
     val uiState by gameViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
 
     LaunchedEffect(Unit) {
         gameViewModel.uiEvent.collect { event ->

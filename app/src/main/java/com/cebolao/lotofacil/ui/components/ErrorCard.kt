@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 
 @Composable
 fun ErrorCard(
@@ -28,7 +28,7 @@ fun ErrorCard(
     modifier: Modifier = Modifier,
     actions: @Composable (() -> Unit)? = null
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     AppCard(
         modifier = modifier.fillMaxWidth(),
         backgroundColor = MaterialTheme.colorScheme.errorContainer,

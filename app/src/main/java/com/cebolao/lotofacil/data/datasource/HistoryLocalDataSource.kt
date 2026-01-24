@@ -36,7 +36,7 @@ class HistoryLocalDataSourceImpl @Inject constructor(
             if (dbCount == 0) {
                 val assetDraws = parseHistoryFromAssets()
                 if (assetDraws.isNotEmpty()) {
-                    historyDao.insertAll(assetDraws.map { it.toEntity() })
+                    historyDao.upsertAll(assetDraws.map { it.toEntity() })
                 }
                 assetDraws
             } else {

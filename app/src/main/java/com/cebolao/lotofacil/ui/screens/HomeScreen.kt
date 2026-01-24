@@ -51,7 +51,7 @@ import com.cebolao.lotofacil.ui.screens.home.WelcomeBanner
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-import com.cebolao.lotofacil.ui.theme.LocalAppColors
+
 import com.cebolao.lotofacil.ui.theme.iconButtonSize
 import com.cebolao.lotofacil.ui.theme.iconExtraLarge
 import com.cebolao.lotofacil.ui.theme.iconMedium
@@ -69,7 +69,7 @@ fun HomeScreen(
 ) {
     val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -174,7 +174,7 @@ private fun RefreshButton(
     isRefreshing: Boolean,
     onClick: () -> Unit
 ) {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     val rotationAngle by animateFloatAsState(
         targetValue = if (isRefreshing) 360f else 0f,
         animationSpec = tween(durationMillis = 1000),
@@ -189,7 +189,7 @@ private fun RefreshButton(
         Icon(
             imageVector = Icons.Default.Refresh,
             contentDescription = stringResource(id = R.string.cd_refresh_data),
-            tint = if (isRefreshing) colors.textTertiary else colors.brandPrimary,
+            tint = if (isRefreshing) colors.outline else colors.primary,
             modifier = Modifier
                 .size(iconMedium())
                 .graphicsLayer { rotationZ = rotationAngle }
@@ -199,7 +199,7 @@ private fun RefreshButton(
 
 @Composable
 private fun HomeScreenLoadingState() {
-    val colors = LocalAppColors.current
+    val colors = MaterialTheme.colorScheme
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
@@ -223,13 +223,13 @@ private fun HomeScreenLoadingState() {
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
             ) {
                 CircularProgressIndicator(
-                    color = colors.brandPrimary,
+                    color = colors.primary,
                     modifier = Modifier.size(iconExtraLarge())
                 )
                 Text(
                     text = stringResource(id = R.string.loading_data),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = colors.textSecondary
+                    color = colors.onSurfaceVariant
                 )
             }
         }
@@ -238,8 +238,8 @@ private fun HomeScreenLoadingState() {
 
 @Composable
 private fun ErrorState(messageResId: Int, onRetry: () -> Unit) {
-    val colors = LocalAppColors.current
-    AppCard(modifier = Modifier.fillMaxWidth(), backgroundColor = colors.surface1) {
+    val colors = MaterialTheme.colorScheme
+    AppCard(modifier = Modifier.fillMaxWidth(), backgroundColor = colors.surface) {
         Column(
             modifier = Modifier.padding(AppCardDefaults.defaultPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -254,12 +254,12 @@ private fun ErrorState(messageResId: Int, onRetry: () -> Unit) {
             Text(
                 text = stringResource(id = messageResId),
                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-                color = colors.textPrimary,
+                color = colors.onSurface,
                 textAlign = TextAlign.Center
             )
             Button(
                 onClick = onRetry,
-                colors = ButtonDefaults.buttonColors(containerColor = colors.brandPrimary, contentColor = colors.background),
+                colors = ButtonDefaults.buttonColors(containerColor = colors.primary, contentColor = colors.onPrimary),
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = AppElevation.sm)
             ) {
                 Text(

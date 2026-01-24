@@ -119,7 +119,7 @@ class GameViewModel @Inject constructor(
                             simpleStats = checkState.stats.toImmutableList(),
                             checkResult = checkState.result
                         )
-                        _uiState.update { it.copy(analysisState = GameAnalysisUiState.Idle, analysisResult = result) }
+                        _uiState.update { it.copy(analysisState = GameAnalysisUiState.Success(), analysisResult = result) }
                     }
                     is GameCheckState.Failure -> {
                         val messageResId = when (checkState.error) {

@@ -15,30 +15,26 @@ import com.cebolao.lotofacil.ui.screens.HomeScreen
  * Navigation utilities for type-safe navigation.
  */
 fun NavController.navigateToDestination(destination: Destination) {
-    when (destination) {
-        is Destination.Home -> navigate(destination.route) {
-            popUpTo(graph.startDestinationId) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
+    val route = when (destination) {
+        is Destination.Home -> destination.route
+        is Destination.Filters -> destination.route
+        is Destination.GeneratedGames -> destination.route
+        is Destination.Checker -> destination.baseRoute
+        is Destination.About -> destination.route
+    }
+
+    navigate(route) {
+        // Pop up to the start destination of the graph to
+        // avoid building up a large stack of destinations
+        // on the back stack as users select items
+        popUpTo(graph.startDestinationId) {
+            saveState = true
         }
-        is Destination.Filters -> navigate(destination.route) {
-            popUpTo(graph.startDestinationId) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-        is Destination.GeneratedGames -> navigate(destination.route) {
-            popUpTo(graph.startDestinationId) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-        is Destination.Checker -> navigate(destination.baseRoute)
-        is Destination.About -> navigate(destination.route)
+        // Avoid multiple copies of the same destination when
+        // reselecting the same item
+        launchSingleTop = true
+        // Restore state when reselecting a previously selected item
+        restoreState = true
     }
 }
 

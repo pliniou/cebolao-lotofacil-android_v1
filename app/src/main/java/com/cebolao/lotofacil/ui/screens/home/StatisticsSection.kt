@@ -46,7 +46,6 @@ import com.cebolao.lotofacil.ui.components.shimmer
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-
 import com.cebolao.lotofacil.ui.theme.iconMedium
 import com.cebolao.lotofacil.ui.theme.iconSmall
 import com.cebolao.lotofacil.viewmodels.StatisticPattern
@@ -118,7 +117,7 @@ fun StatisticsSection(
 @Composable
 private fun TimeWindowSelector(selected: Int, onSelect: (Int) -> Unit) {
     val colors = MaterialTheme.colorScheme
-    val windows = listOf(0, 500, 250, 100, 50, 10)
+    val windows = listOf(9, 13, 20, 25, 30, 50, 200, 500, 1000, 2000, 0)
     
     Column(
         modifier = Modifier.padding(horizontal = AppSpacing.lg),

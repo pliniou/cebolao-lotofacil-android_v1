@@ -11,6 +11,7 @@ import kotlinx.collections.immutable.ImmutableSet
 @Immutable
 data class LastDrawStats(
     val contest: Int,
+    val date: String? = null,
     val numbers: ImmutableSet<Int>,
     val sum: Int,
     val evens: Int,

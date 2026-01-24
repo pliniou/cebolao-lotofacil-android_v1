@@ -25,7 +25,7 @@ object DatabaseModule {
             LotofacilDatabase::class.java,
             "lotofacil_db"
         )
-        .fallbackToDestructiveMigration() // Reset DB if schema changes (dev only appropriate for now)
+        .fallbackToDestructiveMigration(dropAllTables = true)
         .build()
     }
 

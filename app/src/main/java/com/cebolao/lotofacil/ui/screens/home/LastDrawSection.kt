@@ -64,6 +64,7 @@ fun LastDrawSection(stats: LastDrawStats) {
     Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)) {
         StatCard(
             title = "${stringResource(id = R.string.last_contest)}: #${stats.contest}",
+            subtitle = stats.date?.let { stringResource(id = R.string.contest_date_format, it) },
             content = {
                 val sortedNumbers = remember(stats.numbers) { stats.numbers.sorted() }
                 Column(

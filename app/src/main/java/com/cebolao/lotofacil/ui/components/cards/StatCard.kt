@@ -26,6 +26,7 @@ import com.cebolao.lotofacil.ui.theme.LocalAppColors
 fun StatCard(
     modifier: Modifier = Modifier,
     title: String,
+    subtitle: String? = null,
     icon: ImageVector? = null,
     content: @Composable () -> Unit
 ) {
@@ -52,11 +53,20 @@ fun StatCard(
                         iconSize = 18.dp
                     )
                 }
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = colors.textPrimary
-                )
+                Column {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = colors.textPrimary
+                    )
+                    if (subtitle != null) {
+                        Text(
+                            text = subtitle,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colors.textSecondary
+                        )
+                    }
+                }
             }
 
             HorizontalDivider(color = colors.outline.copy(alpha = 0.6f))

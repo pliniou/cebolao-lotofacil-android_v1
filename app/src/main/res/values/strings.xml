@@ -67,6 +67,10 @@
     <string name="refresh_confirmation_message">Isso irá baixar os dados mais recentes da Caixa. Deseja continuar?</string>
     <string name="refresh_success">Dados atualizados com sucesso!</string>
     <string name="refresh_error">Falha ao atualizar dados. Tente novamente.</string>
+    <string name="loading_data">Carregando dados…</string>
+    <string name="today_draw_day">Hoje tem sorteio! Concurso #%1$d</string>
+    <string name="next_draw_info">Próximo: #%1$d em %2$s</string>
+    <string name="last_draw_info">Último sorteio: %1$s</string>
     <string name="prize_details_title">Detalhes do prêmio</string>
     <string name="prize_details_expand">Ver detalhes</string>
     <string name="prize_details_collapse">Ocultar detalhes</string>
@@ -75,6 +79,7 @@
     <string name="cebolao_title">Cebolão</string>
     <string name="lotofacil_subtitle">Gerador Lotofácil</string>
     <string name="last_contest">Último concurso</string>
+    <string name="contest_date_format">Data: %s</string>
     <string name="sum_label">Soma</string>
     <string name="even_label">Pares</string>
     <string name="odd_label">Impares</string>

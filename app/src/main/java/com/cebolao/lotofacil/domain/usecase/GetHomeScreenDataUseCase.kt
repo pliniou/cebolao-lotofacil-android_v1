@@ -53,6 +53,7 @@ class GetHomeScreenDataUseCase @Inject constructor(
     private fun calculateLastDrawStats(lastDraw: HistoricalDraw): LastDrawStats {
         return LastDrawStats(
             contest = lastDraw.contestNumber,
+            date = lastDraw.date,
             numbers = lastDraw.numbers.toImmutableSet(),
             sum = lastDraw.sum,
             evens = lastDraw.evens,

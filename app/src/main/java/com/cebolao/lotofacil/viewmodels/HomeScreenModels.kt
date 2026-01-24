@@ -51,11 +51,15 @@ data class StatChipValues(
 @Stable
 data class HomeUiState(
     val isScreenLoading: Boolean = true,
+    val isRefreshing: Boolean = false,
     val isStatsLoading: Boolean = false,
     @StringRes val errorMessageResId: Int? = null,
     val lastDrawStats: LastDrawStats? = null,
     val statistics: StatisticsReport? = null,
     val selectedPattern: StatisticPattern = StatisticPattern.SUM,
     val selectedTimeWindow: Int = 0,
-    val lastUpdateTime: String? = null
+    val lastUpdateTime: String? = null,
+    val nextDrawDate: String? = null,
+    val nextDrawContest: Int? = null,
+    val isTodayDrawDay: Boolean = false
 )

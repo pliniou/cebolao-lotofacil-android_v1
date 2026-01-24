@@ -60,12 +60,17 @@ class HomeViewModel @Inject constructor(
                 when (result) {
                     is com.cebolao.lotofacil.core.result.AppResult.Success -> {
                         val data = result.value
+                        val lastDraw = data.history.firstOrNull()
+                        val nextDrawStats = data.lastDrawStats
                         _uiState.update {
                             it.copy(
                                 isScreenLoading = false,
                                 lastDrawStats = data.lastDrawStats,
                                 statistics = data.initialStats,
-                                lastUpdateTime = data.history.firstOrNull()?.date
+                                lastUpdateTime = lastDraw?.date,
+                                nextDrawDate = nextDrawStats?.nextDate,
+                                nextDrawContest = nextDrawStats?.nextContest,
+                                isTodayDrawDay = checkIsTodayDrawDay(nextDrawStats?.nextDate)
                             )
                         }
                     }
@@ -80,26 +85,41 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun checkIsTodayDrawDay(nextDate: String?): Boolean {
+        if (nextDate.isNullOrBlank()) return false
+        return try {
+            val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+            val today = dateFormat.format(java.util.Date())
+            today == nextDate
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     fun refreshData() {
         viewModelScope.launch(dispatchersProvider.default) {
-            _uiState.update { it.copy(isScreenLoading = true, errorMessageResId = null) }
+            _uiState.update { it.copy(isRefreshing = true, errorMessageResId = null) }
             getHomeScreenDataUseCase().collect { result ->
                 when (result) {
                     is com.cebolao.lotofacil.core.result.AppResult.Success -> {
                         val data = result.value
+                        val nextDrawStats = data.lastDrawStats
                         _uiState.update {
                             it.copy(
-                                isScreenLoading = false,
+                                isRefreshing = false,
                                 lastDrawStats = data.lastDrawStats,
                                 statistics = data.initialStats,
-                                lastUpdateTime = data.history.firstOrNull()?.date
+                                lastUpdateTime = data.history.firstOrNull()?.date,
+                                nextDrawDate = nextDrawStats?.nextDate,
+                                nextDrawContest = nextDrawStats?.nextContest,
+                                isTodayDrawDay = checkIsTodayDrawDay(nextDrawStats?.nextDate)
                             )
                         }
                         _uiEvent.send(UiEvent.ShowSnackbar(message = "Dados atualizados com sucesso."))
                     }
                     is com.cebolao.lotofacil.core.result.AppResult.Failure -> {
                         _uiState.update {
-                            it.copy(isScreenLoading = false, errorMessageResId = R.string.refresh_error)
+                            it.copy(isRefreshing = false, errorMessageResId = R.string.refresh_error)
                         }
                         _uiEvent.send(UiEvent.ShowSnackbar(message = "Erro ao atualizar dados."))
                     }

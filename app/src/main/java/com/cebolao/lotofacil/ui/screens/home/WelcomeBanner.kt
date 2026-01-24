@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AppRegistration
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Today
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,16 +28,22 @@ import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.LocalAppColors
 import com.cebolao.lotofacil.ui.theme.iconMedium
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun WelcomeBanner(
     modifier: Modifier = Modifier,
     lastUpdateTime: String? = null,
+    nextDrawDate: String? = null,
+    nextDrawContest: Int? = null,
+    isTodayDrawDay: Boolean = false,
     onExploreFilters: () -> Unit = {},
     onOpenChecker: () -> Unit = {}
 ) {
     val colors = LocalAppColors.current
-    
+
     AnimateOnEntry(
         delayMillis = 50L,
         modifier = modifier.fillMaxWidth()
@@ -61,20 +69,26 @@ fun WelcomeBanner(
                         modifier = Modifier.size(iconMedium())
                     )
                 }
-                
+
                 Text(
                     text = stringResource(id = R.string.welcome_banner_title),
                     style = MaterialTheme.typography.titleLarge,
                     color = colors.textPrimary,
                     fontWeight = FontWeight.Bold
                 )
-                
+
                 Text(
                     text = stringResource(id = R.string.welcome_banner_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = colors.textSecondary
                 )
-                
+
+                DrawScheduleInfo(
+                    nextDrawDate = nextDrawDate,
+                    nextDrawContest = nextDrawContest,
+                    isTodayDrawDay = isTodayDrawDay
+                )
+
                 lastUpdateTime?.let { time ->
                     Text(
                         text = stringResource(id = R.string.last_update_status, time),
@@ -82,7 +96,7 @@ fun WelcomeBanner(
                         color = colors.textTertiary
                     )
                 }
-                
+
                 Row(
                     modifier = Modifier.padding(top = AppSpacing.md),
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.lg)
@@ -106,6 +120,58 @@ fun WelcomeBanner(
 }
 
 @Composable
+private fun DrawScheduleInfo(
+    nextDrawDate: String?,
+    nextDrawContest: Int?,
+    isTodayDrawDay: Boolean
+) {
+    val colors = LocalAppColors.current
+    val todayDate = getTodayFormattedDate()
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+        modifier = Modifier.padding(vertical = AppSpacing.xs)
+    ) {
+        Icon(
+            imageVector = if (isTodayDrawDay) Icons.Default.Today else Icons.Default.CalendarMonth,
+            contentDescription = null,
+            tint = if (isTodayDrawDay) colors.error else colors.brandPrimary,
+            modifier = Modifier.size(16.dp)
+        )
+        when {
+            isTodayDrawDay && nextDrawContest != null -> {
+                Text(
+                    text = stringResource(id = R.string.today_draw_day, nextDrawContest),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = colors.error,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            nextDrawDate != null && nextDrawContest != null -> {
+                Text(
+                    text = stringResource(id = R.string.next_draw_info, nextDrawContest, nextDrawDate),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = colors.brandPrimary
+                )
+            }
+            else -> {
+                Text(
+                    text = stringResource(id = R.string.last_draw_info, todayDate),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = colors.textSecondary
+                )
+            }
+        }
+    }
+}
+
+private fun getTodayFormattedDate(): String {
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    return dateFormat.format(Date())
+}
+
+@Composable
 private fun QuickActionChip(
     text: String,
     icon: ImageVector,
@@ -113,7 +179,7 @@ private fun QuickActionChip(
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColors.current
-    
+
     androidx.compose.material3.AssistChip(
         onClick = onClick,
         modifier = modifier,

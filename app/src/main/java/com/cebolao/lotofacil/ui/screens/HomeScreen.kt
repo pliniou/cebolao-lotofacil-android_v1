@@ -13,18 +13,18 @@ import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,11 +35,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.AppCard
-import com.cebolao.lotofacil.ui.components.ConfirmationDialog
-import com.cebolao.lotofacil.ui.components.SnackbarHost
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.screens.home.HomeScreenSkeleton
 import com.cebolao.lotofacil.ui.screens.home.LastDrawSection
@@ -53,8 +50,12 @@ import com.cebolao.lotofacil.ui.theme.LocalAppColors
 import com.cebolao.lotofacil.ui.theme.iconButtonSize
 import com.cebolao.lotofacil.ui.theme.iconExtraLarge
 import com.cebolao.lotofacil.ui.theme.iconMedium
+import com.cebolao.lotofacil.navigation.UiEvent
+import com.cebolao.lotofacil.viewmodels.HomeEvent
+import com.cebolao.lotofacil.viewmodels.HomeUiState
 import com.cebolao.lotofacil.viewmodels.HomeViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
@@ -62,23 +63,21 @@ fun HomeScreen(
     onOpenChecker: () -> Unit = {}
 ) {
     val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
-    val context = LocalContext.current
-    var showRefreshConfirmation by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
     val colors = LocalAppColors.current
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         homeViewModel.uiEvent.collect { event ->
             when (event) {
                 is UiEvent.ShowSnackbar -> {
-                    val message = event.message ?: event.messageResId?.let(context::getString).orEmpty()
-                    if (message.isNotBlank()) {
-                        val actionLabel = event.actionLabel ?: event.actionLabelResId?.let(context::getString)
-                        snackbarHostState.showSnackbar(
-                            message = message,
-                            actionLabel = actionLabel,
-                            duration = SnackbarDuration.Long
-                        )
+                    event.message?.let { message ->
+                        if (message.isNotBlank()) {
+                            snackbarHostState.showSnackbar(
+                                message = message,
+                                duration = SnackbarDuration.Long
+                            )
+                        }
                     }
                 }
                 else -> {}
@@ -87,7 +86,7 @@ fun HomeScreen(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             StandardScreenHeader(
                 title = stringResource(id = R.string.cebolao_title),
@@ -95,7 +94,7 @@ fun HomeScreen(
                 iconPainter = painterResource(id = R.drawable.ic_cebolalogo),
                 actions = {
                     IconButton(
-                        onClick = { showRefreshConfirmation = true },
+                        onClick = { homeViewModel.refreshData() },
                         modifier = Modifier.size(iconButtonSize())
                     ) {
                         Icon(
@@ -126,12 +125,8 @@ fun HomeScreen(
                 item(key = "skeleton") { HomeScreenSkeleton() }
             } else if (uiState.errorMessageResId != null) {
                 item(key = "error") {
-                    val errorMessageResId = uiState.errorMessageResId
-                    if (errorMessageResId != null) {
-                        ErrorState(
-                            messageResId = errorMessageResId,
-                            onRetry = { homeViewModel.retryInitialLoad() }
-                        )
+                    ErrorState(messageResId = uiState.errorMessageResId!!) {
+                        homeViewModel.refreshData()
                     }
                 }
             } else {
@@ -144,9 +139,7 @@ fun HomeScreen(
                 }
                 item(key = "last_draw") {
                     uiState.lastDrawStats?.let { stats ->
-                        AnimateOnEntry(delayMillis = 100L) {
-                            LastDrawSection(stats)
-                        }
+                        AnimateOnEntry(delayMillis = 100L) { LastDrawSection(stats) }
                     }
                 }
                 item(key = "statistics") {
@@ -162,39 +155,17 @@ fun HomeScreen(
                     }
                 }
                 item(key = "explanation") {
-                    AnimateOnEntry(delayMillis = 300L) {
-                        StatisticsExplanationCard()
-                    }
+                    AnimateOnEntry(delayMillis = 300L) { StatisticsExplanationCard() }
                 }
             }
         }
-    }
-
-    // Refresh confirmation dialog
-    if (showRefreshConfirmation) {
-        ConfirmationDialog(
-            title = stringResource(id = R.string.refresh_confirmation_title),
-            message = stringResource(id = R.string.refresh_confirmation_message),
-            confirmText = stringResource(id = R.string.confirm_button),
-            dismissText = stringResource(id = R.string.cancel_button),
-            onConfirm = {
-                showRefreshConfirmation = false
-                homeViewModel.refreshData()
-            },
-            onDismiss = { showRefreshConfirmation = false }
-        )
     }
 }
 
 @Composable
 private fun ErrorState(messageResId: Int, onRetry: () -> Unit) {
     val colors = LocalAppColors.current
-    
-    AppCard(
-        modifier = Modifier
-            .fillMaxWidth(),
-        backgroundColor = colors.surface1
-    ) {
+    AppCard(modifier = Modifier.fillMaxWidth(), backgroundColor = colors.surface1) {
         Column(
             modifier = Modifier.padding(AppCardDefaults.defaultPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -206,25 +177,20 @@ private fun ErrorState(messageResId: Int, onRetry: () -> Unit) {
                 tint = colors.error,
                 modifier = Modifier.size(iconExtraLarge())
             )
-            
             Text(
                 text = stringResource(id = messageResId),
-                style = MaterialTheme.typography.bodyMedium,
+                style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
                 color = colors.textPrimary,
                 textAlign = TextAlign.Center
             )
-            
             Button(
                 onClick = onRetry,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colors.brandPrimary,
-                    contentColor = colors.background
-                ),
+                colors = ButtonDefaults.buttonColors(containerColor = colors.brandPrimary, contentColor = colors.background),
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = AppElevation.sm)
             ) {
                 Text(
                     text = stringResource(id = R.string.try_again),
-                    style = MaterialTheme.typography.labelMedium,
+                    style = androidx.compose.material3.MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Medium
                 )
             }

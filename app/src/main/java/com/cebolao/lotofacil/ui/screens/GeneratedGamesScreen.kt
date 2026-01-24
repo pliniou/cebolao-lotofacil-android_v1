@@ -40,6 +40,7 @@ import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.components.cards.GameCard
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.LocalAppColors
+import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.viewmodels.GameAnalysisResult
 import com.cebolao.lotofacil.viewmodels.GameAnalysisUiState
 import com.cebolao.lotofacil.viewmodels.GameViewModel
@@ -57,7 +58,7 @@ fun GeneratedGamesScreen(
     LaunchedEffect(Unit) {
         gameViewModel.uiEvent.collect { event ->
             when (event) {
-                is com.cebolao.lotofacil.navigation.UiEvent.ShowSnackbar -> {
+                is UiEvent.ShowSnackbar -> {
                     val message = event.message ?: event.messageResId?.let(context::getString).orEmpty()
                     if (message.isNotBlank()) {
                         snackbarHostState.showSnackbar(message = message)

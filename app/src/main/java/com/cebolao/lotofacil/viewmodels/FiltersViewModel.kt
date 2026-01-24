@@ -1,33 +1,41 @@
 package com.cebolao.lotofacil.viewmodels
 
 import androidx.compose.runtime.Stable
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cebolao.lotofacil.core.result.AppResult
+import com.cebolao.lotofacil.domain.model.DomainError
 import com.cebolao.lotofacil.domain.model.FilterState
 import com.cebolao.lotofacil.domain.model.FilterType
 import com.cebolao.lotofacil.domain.repository.GameRepository
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.usecase.GenerateGamesUseCase
-import com.cebolao.lotofacil.domain.model.DomainError
+import com.cebolao.lotofacil.navigation.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @Stable
-data class FiltersScreenState(
+data class FiltersUiState(
     val filterStates: List<FilterState> = emptyList(),
-    val generationState: GenerationUiState = GenerationUiState.Idle,
+    val isGenerating: Boolean = false,
     val lastDraw: Set<Int>? = null,
     val activeFiltersCount: Int = 0,
-    val successProbability: Float = 1f
+    val successProbability: Float = 1f,
+    val generationState: GenerationUiState = GenerationUiState.Idle
 )
 
-@Stable
-sealed interface GenerationUiState {
-    object Idle : GenerationUiState
-    data class Loading(val message: String) : GenerationUiState
+sealed interface FiltersEvent {
+    data class ShowSnackbar(val message: String) : FiltersEvent
+    data object NavigateToGames : FiltersEvent
 }
 
 @HiltViewModel
@@ -35,7 +43,16 @@ class FiltersViewModel @Inject constructor(
     private val gameRepository: GameRepository,
     private val generateGamesUseCase: GenerateGamesUseCase,
     private val historyRepository: HistoryRepository
-) : StateViewModel<FiltersScreenState>(FiltersScreenState()) {
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(FiltersUiState())
+    val uiState: StateFlow<FiltersUiState> = _uiState.asStateFlow()
+
+    private val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
+    val uiEvent = _uiEvent.receiveAsFlow()
+
+    private val _events = Channel<FiltersEvent>(Channel.BUFFERED)
+    val events = _events
 
     init {
         loadLastDraw()
@@ -44,7 +61,7 @@ class FiltersViewModel @Inject constructor(
     private fun loadLastDraw() {
         viewModelScope.launch {
             val lastDrawNumbers = historyRepository.getLastDraw()?.numbers
-            updateState { state ->
+            _uiState.update { state ->
                 state.copy(
                     lastDraw = lastDrawNumbers,
                     filterStates = FilterType.entries.map { FilterState(type = it) }
@@ -55,7 +72,7 @@ class FiltersViewModel @Inject constructor(
     }
 
     fun onFilterToggle(type: FilterType, isEnabled: Boolean) {
-        updateState { state ->
+        _uiState.update { state ->
             state.copy(
                 filterStates = state.filterStates.map { f ->
                     if (f.type == type) f.copy(isEnabled = isEnabled) else f
@@ -67,8 +84,7 @@ class FiltersViewModel @Inject constructor(
 
     fun onRangeAdjust(type: FilterType, newRange: ClosedFloatingPointRange<Float>) {
         val snappedRange = newRange.start.roundToInt().toFloat()..newRange.endInclusive.roundToInt().toFloat()
-        
-        updateState { state ->
+        _uiState.update { state ->
             state.copy(
                 filterStates = state.filterStates.map { f ->
                     if (f.type == type) f.copy(selectedRange = snappedRange) else f
@@ -79,7 +95,7 @@ class FiltersViewModel @Inject constructor(
     }
 
     private fun updateProbability() {
-        updateState { state ->
+        _uiState.update { state ->
             val activeFilters = state.filterStates.filter { it.isEnabled }
             state.copy(
                 activeFiltersCount = activeFilters.size,
@@ -89,35 +105,34 @@ class FiltersViewModel @Inject constructor(
     }
 
     fun generateGames(quantity: Int) {
-        if (currentState.generationState is GenerationUiState.Loading) return
-        
+        if (_uiState.value.isGenerating) return
         viewModelScope.launch {
-            updateState { it.copy(generationState = GenerationUiState.Loading("Criando jogos...")) }
-            
-            try {
-                when (val result = generateGamesUseCase(quantity, currentState.filterStates)) {
-                    is AppResult.Success -> {
-                        gameRepository.addGeneratedGames(result.value)
-                        navigateToGeneratedGames()
-                    }
-                    is AppResult.Failure -> {
-                        val messageResId = when (result.error) {
-                            is DomainError.HistoryUnavailable -> com.cebolao.lotofacil.R.string.error_history_unavailable
-                            else -> com.cebolao.lotofacil.R.string.error_unknown
-                        }
-                        showSnackbar(messageResId)
-                    }
+            _uiState.update { it.copy(isGenerating = true, generationState = GenerationUiState.Loading) }
+            when (val result = generateGamesUseCase(quantity, _uiState.value.filterStates)) {
+                is AppResult.Success -> {
+                    gameRepository.addGeneratedGames(result.value)
+                    _uiState.update { it.copy(generationState = GenerationUiState.Success(result.value.size)) }
+                    _uiEvent.send(UiEvent.NavigateToGeneratedGames)
+                    _events.send(FiltersEvent.NavigateToGames)
                 }
-            } catch (e: Exception) {
-                showSnackbar(e.message ?: "Erro inesperado")
-            } finally {
-                updateState { it.copy(generationState = GenerationUiState.Idle) }
+                is AppResult.Failure -> {
+                    val message = when (result.error) {
+                        is DomainError.HistoryUnavailable -> "Histórico indisponível."
+                        is DomainError.InvalidOperation -> result.error.reason
+                        is DomainError.ValidationError -> result.error.message
+                        else -> "Erro desconhecido ao gerar jogos."
+                    }
+                    _uiState.update { it.copy(generationState = GenerationUiState.Error(message)) }
+                    _uiEvent.send(UiEvent.ShowSnackbar(message = message))
+                    _events.send(FiltersEvent.ShowSnackbar(message))
+                }
             }
+            _uiState.update { it.copy(isGenerating = false) }
         }
     }
 
-    fun resetAllFilters() {
-        updateState { state ->
+    fun resetFilters() {
+        _uiState.update { state ->
             state.copy(
                 filterStates = FilterType.entries.map { FilterState(type = it) },
                 activeFiltersCount = 0,
@@ -126,9 +141,15 @@ class FiltersViewModel @Inject constructor(
         }
     }
 
-    fun requestResetAllFilters() = showResetConfirmation()
+    fun requestResetAllFilters() {
+        viewModelScope.launch {
+            _uiEvent.send(UiEvent.ShowResetConfirmation)
+        }
+    }
 
-    fun confirmResetAllFilters() = resetAllFilters()
+    fun confirmResetAllFilters() {
+        resetFilters()
+    }
 
     private fun calculateSuccessProbability(activeFilters: List<FilterState>): Float {
         if (activeFilters.isEmpty()) return 1f

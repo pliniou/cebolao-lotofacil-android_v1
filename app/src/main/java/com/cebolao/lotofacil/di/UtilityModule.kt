@@ -1,0 +1,16 @@
+package com.cebolao.lotofacil.di
+
+import com.cebolao.lotofacil.data.parser.HistoryParser
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object UtilityModule {
+    @Provides
+    @Singleton
+    fun provideHistoryParser(): HistoryParser = HistoryParser()
+}

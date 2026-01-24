@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -18,17 +20,23 @@ android {
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "com.cebolao.lotofacil.HiltTestRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        vectorDrawables.useSupportLibrary = true
     }
 
     signingConfigs {
+        // Load signing credentials from gradle properties or environment variables.
+        // gradle.properties should define: keystoreFile, keystorePassword,
+        // keyAlias and keyPassword.  Environment variables override them.
         create("release") {
-            storeFile = file("keystore/release.keystore")
-            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "cebolaoLOTERIAS25"
-            keyAlias = System.getenv("KEY_ALIAS") ?: "cebolao_lotofacil"
-            keyPassword = System.getenv("KEY_PASSWORD") ?: "cebolaoLOTERIAS25"
+            val keystorePath = project.properties["keystoreFile"]?.toString()
+                ?: System.getenv("KEYSTORE_FILE")
+            storeFile = keystorePath?.let { file(it) }
+            storePassword = project.properties["keystorePassword"]?.toString()
+                ?: System.getenv("KEYSTORE_PASSWORD")
+            keyAlias = project.properties["keyAlias"]?.toString()
+                ?: System.getenv("KEY_ALIAS")
+            keyPassword = project.properties["keyPassword"]?.toString()
+                ?: System.getenv("KEY_PASSWORD")
         }
     }
 
@@ -41,8 +49,8 @@ android {
             isShrinkResources = false
         }
         release {
-            val keystoreFile = file("keystore/release.keystore")
-            signingConfig = if (keystoreFile.exists()) {
+            // Use debug signing if no release keystore is provided
+            signingConfig = if (signingConfigs.findByName("release")?.storeFile?.exists() == true) {
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")
@@ -70,14 +78,13 @@ android {
         buildConfig = true
     }
 
+    // Filter only supported locales (Portuguese and English)
     androidResources {
         localeFilters += listOf("pt", "en")
     }
 
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+    packaging.resources {
+        excludes += "/META-INF/{AL2.0,LGPL2.1}"
     }
 
     lint {
@@ -88,17 +95,16 @@ android {
         disable += listOf(
             "MissingTranslation",
             "ExtraTranslation",
-            "AndroidGradlePluginVersion",
             "NewerVersionAvailable",
         )
     }
 }
 
 dependencies {
-    // Core Library Desugaring
+    // Desugaring for Java 8+ APIs
     coreLibraryDesugaring(libs.android.desugarJdkLibs)
 
-    // AndroidX Core & Activity
+    // AndroidX core and lifecycle
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.activity.compose)
@@ -107,53 +113,55 @@ dependencies {
     // WorkManager for background tasks
     implementation(libs.androidx.work.runtime.ktx)
 
-    // Compose BOM and dependencies
+    // Jetpack Compose BOM and related libraries
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.bundles.androidx.compose)
 
-    // Collections & Serialization
+    // Kotlinx collections, serialization and coroutines
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
 
-    // DataStore for persistence
+    // DataStore for key/value preferences
     implementation(libs.androidx.datastore.preferences)
 
-    // Room
+    // Room database
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
 
-    // Hilt for dependency injection
+    // Hilt dependency injection
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.hilt.work)
     ksp(libs.hilt.compiler.androidx)
 
-    // Networking
+    // Networking (Retrofit + OkHttp)
     implementation(libs.bundles.networking)
 
-    // Utilities
+    // Compose utilities
     implementation(libs.androidx.interpolator)
     implementation(libs.androidx.navigation.compose)
 
-    // Testing - Unit Tests
+    // Unit testing
     testImplementation(libs.bundles.testing.unit)
     kspTest(libs.hilt.compiler)
 
-    // Testing - Android Tests
+    // Instrumented testing
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.bundles.testing.android)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
 
-    // Debug Tools
+    // Debug tooling
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
+
+// Configure Java toolchain explicitly
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }

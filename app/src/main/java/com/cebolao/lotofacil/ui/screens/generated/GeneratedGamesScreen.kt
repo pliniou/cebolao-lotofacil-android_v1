@@ -1,4 +1,4 @@
-package com.cebolao.lotofacil.ui.screens
+package com.cebolao.lotofacil.ui.screens.generated
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

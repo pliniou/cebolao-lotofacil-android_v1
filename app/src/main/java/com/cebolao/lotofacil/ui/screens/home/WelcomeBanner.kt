@@ -28,9 +28,7 @@ import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 import com.cebolao.lotofacil.ui.theme.iconMedium
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+
 
 @Composable
 fun WelcomeBanner(
@@ -167,8 +165,8 @@ private fun DrawScheduleInfo(
 }
 
 private fun getTodayFormattedDate(): String {
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    return dateFormat.format(Date())
+    val formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    return java.time.LocalDate.now().format(formatter)
 }
 
 @Composable

@@ -1,4 +1,4 @@
-package com.cebolao.lotofacil.ui.screens
+package com.cebolao.lotofacil.ui.screens.checker
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement

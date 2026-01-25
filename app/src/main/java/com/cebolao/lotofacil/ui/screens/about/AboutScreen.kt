@@ -1,4 +1,4 @@
-package com.cebolao.lotofacil.ui.screens
+package com.cebolao.lotofacil.ui.screens.about
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -49,13 +49,7 @@ import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.ClickableCard
 import com.cebolao.lotofacil.ui.components.InfoDialog
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
-import com.cebolao.lotofacil.ui.screens.about.BolaoInfoContent
-import com.cebolao.lotofacil.ui.screens.about.InfoItem
-import com.cebolao.lotofacil.ui.screens.about.LegalInfoContent
-import com.cebolao.lotofacil.ui.screens.about.PrivacyInfoContent
-import com.cebolao.lotofacil.ui.screens.about.ProbabilitiesTable
-import com.cebolao.lotofacil.ui.screens.about.PurposeInfoContent
-import com.cebolao.lotofacil.ui.screens.about.RulesInfoContent
+
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.iconLarge

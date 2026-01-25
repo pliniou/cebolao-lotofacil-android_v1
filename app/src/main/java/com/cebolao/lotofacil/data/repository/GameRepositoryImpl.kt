@@ -55,11 +55,7 @@ class GameRepositoryImpl @Inject constructor(
                 val currentPinned = currentGames.filter { it.isPinned }
                 (currentPinned + newGames)
                     .distinctBy { it.numbers } // Keep uniqueness by numbers for gameplay
-                    .sortedWith(
-                        compareBy<LotofacilGame> { !it.isPinned }
-                            .thenByDescending { it.creationTimestamp }
-                    )
-                    .toImmutableList()
+                .toImmutableList()
             }
         }
     }

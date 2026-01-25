@@ -1,4 +1,4 @@
-package com.cebolao.lotofacil.ui.screens
+package com.cebolao.lotofacil.ui.screens.home
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -44,10 +44,7 @@ import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
-import com.cebolao.lotofacil.ui.screens.home.LastDrawSection
-import com.cebolao.lotofacil.ui.screens.home.StatisticsExplanationCard
-import com.cebolao.lotofacil.ui.screens.home.StatisticsSection
-import com.cebolao.lotofacil.ui.screens.home.WelcomeBanner
+
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing

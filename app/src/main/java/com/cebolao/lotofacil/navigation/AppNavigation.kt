@@ -5,11 +5,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.cebolao.lotofacil.ui.screens.AboutScreen
-import com.cebolao.lotofacil.ui.screens.CheckerScreen
-import com.cebolao.lotofacil.ui.screens.FiltersScreen
-import com.cebolao.lotofacil.ui.screens.GeneratedGamesScreen
-import com.cebolao.lotofacil.ui.screens.HomeScreen
+import com.cebolao.lotofacil.ui.screens.about.AboutScreen
+import com.cebolao.lotofacil.ui.screens.checker.CheckerScreen
+import com.cebolao.lotofacil.ui.screens.filters.FiltersScreen
+import com.cebolao.lotofacil.ui.screens.generated.GeneratedGamesScreen
+import com.cebolao.lotofacil.ui.screens.home.HomeScreen
 
 /**
  * Navigation utilities for type-safe navigation.

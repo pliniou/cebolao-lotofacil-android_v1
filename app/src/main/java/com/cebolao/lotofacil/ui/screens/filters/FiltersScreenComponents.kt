@@ -1,4 +1,4 @@
-package com.cebolao.lotofacil.ui.screens
+package com.cebolao.lotofacil.ui.screens.filters
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyListScope

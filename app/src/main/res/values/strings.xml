@@ -57,6 +57,7 @@
 
     <!-- HomeScreen -->
     <string name="sync_failed_message">Não foi possível atualizar. Exibindo dados locais.</string>
+    <string name="sync_failed_check_connection">Sincronização falhou. Verifique sua conexão.</string>
     <!-- HomeScreen -->
     <string name="welcome_banner_title">Bem-vindo ao Cebolão!</string>
     <string name="welcome_banner_subtitle">Sua sorte com inteligência estatística</string>

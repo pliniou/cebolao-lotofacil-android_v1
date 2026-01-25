@@ -10,6 +10,10 @@ import com.cebolao.lotofacil.domain.model.GameStatistic
 import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.domain.repository.GameRepository
 import com.cebolao.lotofacil.domain.usecase.CheckGameUseCase
+import com.cebolao.lotofacil.domain.usecase.ClearUnpinnedGamesUseCase
+import com.cebolao.lotofacil.domain.usecase.DeleteGameUseCase
+import com.cebolao.lotofacil.domain.usecase.GetSavedGamesUseCase
+import com.cebolao.lotofacil.domain.usecase.ToggleGamePinUseCase
 import com.cebolao.lotofacil.domain.usecase.GameCheckState
 import com.cebolao.lotofacil.navigation.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -64,8 +68,11 @@ sealed interface GameAnalysisUiState {
 
 @HiltViewModel
 class GameViewModel @Inject constructor(
-    private val gameRepository: GameRepository,
-    private val checkGameUseCase: CheckGameUseCase
+    private val getSavedGamesUseCase: GetSavedGamesUseCase,
+    private val checkGameUseCase: CheckGameUseCase,
+    private val clearUnpinnedGamesUseCase: ClearUnpinnedGamesUseCase,
+    private val toggleGamePinUseCase: ToggleGamePinUseCase,
+    private val deleteGameUseCase: DeleteGameUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -73,7 +80,7 @@ class GameViewModel @Inject constructor(
     val uiEvent = _uiEvent.receiveAsFlow()
     private val _events = Channel<GameEvent>(Channel.BUFFERED)
     val events = _events
-    val generatedGames: StateFlow<ImmutableList<LotofacilGame>> = gameRepository.games
+    val generatedGames: StateFlow<ImmutableList<LotofacilGame>> = getSavedGamesUseCase()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
@@ -84,9 +91,9 @@ class GameViewModel @Inject constructor(
     }
     fun confirmClearUnpinned() {
         viewModelScope.launch {
-            gameRepository.clearUnpinnedGames()
+            clearUnpinnedGamesUseCase()
             _uiState.update { it.copy(showClearGamesDialog = false) }
-            _uiEvent.send(UiEvent.ShowSnackbar(message = "Jogos não fixados limpos com sucesso."))
+            _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.unpinned_games_cleared))
         }
     }
     fun dismissClearDialog() {
@@ -97,9 +104,9 @@ class GameViewModel @Inject constructor(
     }
     fun confirmDeleteGame(game: LotofacilGame) {
         viewModelScope.launch {
-            gameRepository.deleteGame(game)
+            deleteGameUseCase(game)
             _uiState.update { it.copy(gameToDelete = null) }
-            _uiEvent.send(UiEvent.ShowSnackbar(message = "Jogo excluído com sucesso."))
+            _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.game_deleted_confirmation))
         }
     }
     fun dismissDeleteDialog() {
@@ -133,7 +140,7 @@ class GameViewModel @Inject constructor(
             } catch (_: Exception) {
                 val messageResId = R.string.error_analysis_failed
                 _uiState.update { it.copy(analysisState = GameAnalysisUiState.Error(messageResId)) }
-                _uiEvent.send(UiEvent.ShowSnackbar(message = "Erro ao analisar jogo."))
+                _uiEvent.send(UiEvent.ShowSnackbar(messageResId = messageResId))
             }
         }
     }
@@ -142,12 +149,12 @@ class GameViewModel @Inject constructor(
     }
     fun clearUnpinned() {
         viewModelScope.launch {
-            gameRepository.clearUnpinnedGames()
+            clearUnpinnedGamesUseCase()
         }
     }
     fun togglePinState(game: LotofacilGame) {
         viewModelScope.launch {
-            gameRepository.togglePinState(game)
+            toggleGamePinUseCase(game)
         }
     }
     fun requestDeleteGame(game: LotofacilGame) {

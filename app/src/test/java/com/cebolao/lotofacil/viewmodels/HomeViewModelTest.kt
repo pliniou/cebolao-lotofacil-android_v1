@@ -118,6 +118,8 @@ class HomeViewModelTest {
             )
         ))
 
+        whenever(historyRepository.getHistory()).thenReturn(emptyList())
+
         viewModel = HomeViewModel(
             getHomeScreenDataUseCase,
             historyRepository,

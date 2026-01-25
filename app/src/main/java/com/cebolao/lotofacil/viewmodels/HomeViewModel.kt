@@ -48,7 +48,7 @@ class HomeViewModel @Inject constructor(
     private fun observeSyncStatus() {
         historyRepository.syncStatus.onEach { status ->
             if (status is SyncStatus.Failed) {
-                _uiEvent.send(UiEvent.ShowSnackbar(message = "Sincronização falhou. Verifique sua conexão."))
+                _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.sync_failed_check_connection))
             }
         }.launchIn(viewModelScope)
     }
@@ -78,7 +78,7 @@ class HomeViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(isScreenLoading = false, errorMessageResId = R.string.error_load_data_failed)
                         }
-                        _uiEvent.send(UiEvent.ShowSnackbar(message = "Erro ao carregar dados."))
+                        _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.error_load_data_failed))
                     }
                 }
             }
@@ -88,8 +88,8 @@ class HomeViewModel @Inject constructor(
     private fun checkIsTodayDrawDay(nextDate: String?): Boolean {
         if (nextDate.isNullOrBlank()) return false
         return try {
-            val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
-            val today = dateFormat.format(java.util.Date())
+            val formatter = java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")
+            val today = java.time.LocalDate.now().format(formatter)
             today == nextDate
         } catch (_: Exception) {
             false
@@ -115,13 +115,13 @@ class HomeViewModel @Inject constructor(
                                 isTodayDrawDay = checkIsTodayDrawDay(nextDrawStats?.nextDate)
                             )
                         }
-                        _uiEvent.send(UiEvent.ShowSnackbar(message = "Dados atualizados com sucesso."))
+                        _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.refresh_success))
                     }
                     is com.cebolao.lotofacil.core.result.AppResult.Failure -> {
                         _uiState.update {
                             it.copy(isRefreshing = false, errorMessageResId = R.string.refresh_error)
                         }
-                        _uiEvent.send(UiEvent.ShowSnackbar(message = "Erro ao atualizar dados."))
+                        _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.refresh_error))
                     }
                 }
             }

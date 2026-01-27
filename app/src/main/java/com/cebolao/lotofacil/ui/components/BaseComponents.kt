@@ -4,10 +4,9 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -19,10 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
-
 
 @Composable
 fun AppCard(
@@ -30,28 +27,25 @@ fun AppCard(
     shape: Shape = MaterialTheme.shapes.medium,
     backgroundColor: Color? = null,
     contentColor: Color? = null,
-    border: BorderStroke? = null,
     elevation: Dp = AppCardDefaults.elevation,
     content: @Composable () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
-    val cardBackgroundColor = backgroundColor ?: colors.surface
-    val cardContentColor = contentColor ?: colors.onSurface
-    
-    val defaultBorder = BorderStroke(
-        width = 1.dp,
-        color = colors.outline.copy(alpha = 0.75f)
-    )
+    // If no specific background is provided, ElevatedCard defaults later, but we can respect the parameter
+    val cardColors = if (backgroundColor != null || contentColor != null) {
+        CardDefaults.elevatedCardColors(
+            containerColor = backgroundColor ?: colors.surface,
+            contentColor = contentColor ?: colors.onSurface
+        )
+    } else {
+        CardDefaults.elevatedCardColors()
+    }
 
-    Card(
+    androidx.compose.material3.ElevatedCard(
         modifier = modifier,
         shape = shape,
-        colors = CardDefaults.cardColors(
-            containerColor = cardBackgroundColor,
-            contentColor = cardContentColor
-        ),
-        border = border ?: defaultBorder,
-        elevation = CardDefaults.cardElevation(elevation)
+        colors = cardColors,
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = elevation),
     ) {
         content()
     }
@@ -70,13 +64,14 @@ fun ClickableCard(
     content: @Composable () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
-    val cardBackgroundColor = backgroundColor ?: colors.surface
-    val cardContentColor = contentColor ?: colors.onSurface
-    
-    val defaultBorder = BorderStroke(
-        width = 1.dp,
-        color = colors.outline.copy(alpha = 0.75f)
-    )
+    val cardColors = if (backgroundColor != null || contentColor != null) {
+        CardDefaults.elevatedCardColors(
+            containerColor = backgroundColor ?: colors.surface,
+            contentColor = contentColor ?: colors.onSurface
+        )
+    } else {
+        CardDefaults.elevatedCardColors()
+    }
     
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -89,26 +84,25 @@ fun ClickableCard(
         ),
         label = "scale"
     )
-    
-    Card(
-        modifier = modifier
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-            }
-            .clip(shape)
-            .clickable(
-                enabled = enabled,
-                onClick = onClick,
-                interactionSource = interactionSource
-            ),
+
+    val cardModifier = modifier
+        .graphicsLayer {
+            scaleX = scale
+            scaleY = scale
+        }
+        .clip(shape)
+        .then(if (border != null) Modifier.border(border, shape) else Modifier)
+
+    androidx.compose.material3.ElevatedCard(
+        modifier = cardModifier,
+        onClick = onClick,
+        enabled = enabled,
         shape = shape,
-        colors = CardDefaults.cardColors(
-            containerColor = cardBackgroundColor,
-            contentColor = cardContentColor
-        ),
-        border = border ?: defaultBorder,
-        elevation = CardDefaults.cardElevation(if (isPressed) elevation / 2 else elevation)
+        colors = cardColors,
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = elevation,
+            pressedElevation = if (isPressed) elevation / 2 else elevation
+        )
     ) {
         content()
     }

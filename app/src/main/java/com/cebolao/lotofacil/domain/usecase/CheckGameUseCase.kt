@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
+import kotlinx.coroutines.flow.first
+
 class CheckGameUseCase @Inject constructor(
     private val historyRepository: HistoryRepository,
     private val gameStatsAnalyzer: GameStatsAnalyzer,
@@ -26,7 +28,7 @@ class CheckGameUseCase @Inject constructor(
 
     operator fun invoke(gameNumbers: Set<Int>): Flow<GameCheckState> = flow {
         emit(GameCheckState.InProgress(GameCheckPhase.HISTORICAL, 0.1f))
-        val history = historyRepository.getHistory()
+        val history = historyRepository.getHistory().first()
 
         if (history.isEmpty()) {
             emit(GameCheckState.Failure(EmptyHistoryError))

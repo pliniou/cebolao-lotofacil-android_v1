@@ -1,21 +1,19 @@
 package com.cebolao.lotofacil.domain.usecase
 
 import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
-import com.cebolao.lotofacil.domain.model.HistoricalDraw
-import com.cebolao.lotofacil.domain.model.StatisticsReport
-import com.cebolao.lotofacil.domain.model.LastDrawStats
-import com.cebolao.lotofacil.domain.repository.HistoryRepository
-import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer
-import kotlinx.collections.immutable.toImmutableSet
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import javax.inject.Inject
 import com.cebolao.lotofacil.core.error.EmptyHistoryError
 import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.core.result.toSuccess
+import com.cebolao.lotofacil.domain.model.HistoricalDraw
+import com.cebolao.lotofacil.domain.model.LastDrawStats
+import com.cebolao.lotofacil.domain.model.StatisticsReport
+import com.cebolao.lotofacil.domain.repository.HistoryRepository
+import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer
+import kotlinx.collections.immutable.toImmutableSet
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 data class HomeScreenData(
     val lastDrawStats: LastDrawStats?,
@@ -28,27 +26,25 @@ class GetHomeScreenDataUseCase @Inject constructor(
     private val statisticsAnalyzer: StatisticsAnalyzer,
     private val dispatchersProvider: DispatchersProvider
 ) {
-    operator fun invoke(): Flow<AppResult<HomeScreenData>> = flow {
-        // Sync is triggered by repository init, just ensure data is loaded
-        val history = historyRepository.getHistory()
-        if (history.isEmpty()) {
-            emit(AppResult.Failure(EmptyHistoryError))
-            return@flow
-        }
+    operator fun invoke(): Flow<AppResult<HomeScreenData>> {
+        return historyRepository.getHistory()
+            .map { history ->
+                if (history.isEmpty()) {
+                    AppResult.Failure(EmptyHistoryError)
+                } else {
+                    val lastDraw = history.first()
+                    val lastDrawStats = calculateLastDrawStats(lastDraw)
+                    val initialStats = statisticsAnalyzer.analyze(history)
 
-        val result = coroutineScope {
-            val lastDraw = history.first()
-            val lastDrawStatsDeferred = async { calculateLastDrawStats(lastDraw) }
-            val initialStatsDeferred = async { statisticsAnalyzer.analyze(history) }
-
-            HomeScreenData(
-                lastDrawStats = lastDrawStatsDeferred.await(),
-                initialStats = initialStatsDeferred.await(),
-                history = history
-            )
-        }
-        emit(result.toSuccess())
-    }.flowOn(dispatchersProvider.default)
+                    HomeScreenData(
+                        lastDrawStats = lastDrawStats,
+                        initialStats = initialStats,
+                        history = history
+                    ).toSuccess()
+                }
+            }
+            .flowOn(dispatchersProvider.default)
+    }
 
     private fun calculateLastDrawStats(lastDraw: HistoricalDraw): LastDrawStats {
         return LastDrawStats(

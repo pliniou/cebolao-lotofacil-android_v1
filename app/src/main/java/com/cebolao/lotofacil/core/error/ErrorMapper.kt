@@ -24,11 +24,11 @@ object ErrorMapper {
      * internationalise these messages by mapping them to string resources.
      */
     fun messageFor(error: AppError): String = when (error) {
-        is NetworkError -> "Sem conexão com o servidor. Tente novamente."
-        is PersistenceError -> "Erro ao acessar o armazenamento local."
-        is ParsingError -> "Erro ao processar dados remotos."
-        is EmptyHistoryError -> "Histórico indisponível."
-        is UnknownError -> "Ocorreu um erro inesperado."
-        else -> "Erro inesperado."
+        is NetworkError -> "No connection to server. Please try again."
+        is PersistenceError -> "Error accessing local storage."
+        is ParsingError -> "Error processing remote data."
+        is EmptyHistoryError -> "History unavailable."
+        is UnknownError -> "An unexpected error occurred."
+        else -> "Unexpected error."
     }
 }

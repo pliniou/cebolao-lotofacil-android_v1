@@ -1,14 +1,12 @@
 package com.cebolao.lotofacil.domain.model
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
 /**
- * Representa um único jogo da Lotofácil.
- * Otimizada para performance no Jetpack Compose com @Immutable.
+ * Represents a single Lotofácil game.
+ * Optimized for performance in Jetpack Compose with @Immutable.
  */
-@SuppressLint("UnsafeOptInUsageError")
 @Immutable
 @Serializable
 data class LotofacilGame(
@@ -18,11 +16,11 @@ data class LotofacilGame(
     val id: String = java.util.UUID.randomUUID().toString()
 ) {
     init {
-        require(numbers.size == 15) { "Um jogo deve ter 15 números." }
-        require(numbers.all { it in 1..25 }) { "Números inválidos encontrados." }
+        require(numbers.size == 15) { "A game must have 15 numbers." }
+        require(numbers.all { it in 1..25 }) { "Invalid numbers found." }
     }
 
-    // Propriedades computadas para análise estatística
+    // Computed properties for statistical analysis
     val sum: Int by lazy { numbers.sum() }
     val evens: Int by lazy { numbers.count { it % 2 == 0 } }
     val odds: Int by lazy { 15 - evens }
@@ -32,18 +30,18 @@ data class LotofacilGame(
     val fibonacci: Int by lazy { numbers.count { it in setOf(1, 2, 3, 5, 8, 13, 21) } }
     val multiplesOf3: Int by lazy { numbers.count { it in setOf(3, 6, 9, 12, 15, 18, 21, 24) } }
 
-    /** Calcula quantos números deste jogo se repetiram do sorteio anterior. */
+    /** Calculates how many numbers from this game repeated from the previous draw. */
     fun repeatedFrom(lastDraw: Set<Int>?): Int {
         return lastDraw?.let { numbers.intersect(it).size } ?: 0
     }
 
-    /** Converte o jogo para uma string compacta para armazenamento eficiente. */
+    /** Converts the game to a compact string for efficient storage. */
     fun toCompactString(): String {
         return "${numbers.sorted().joinToString(",")}|$isPinned|$creationTimestamp|$id"
     }
 
     companion object {
-        /** Cria um LotofacilGame a partir de uma string compacta. */
+        /** Creates a LotofacilGame from a compact string. */
         fun fromCompactString(compactString: String): LotofacilGame? {
             return try {
                 val parts = compactString.split("|")

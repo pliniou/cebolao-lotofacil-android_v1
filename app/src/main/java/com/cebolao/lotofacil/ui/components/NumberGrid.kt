@@ -1,5 +1,4 @@
 @file:Suppress("ConstPropertyName")
-
 package com.cebolao.lotofacil.ui.components
 
 import androidx.compose.foundation.clickable
@@ -20,8 +19,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -85,14 +86,22 @@ fun NumberGrid(
                     .clip(shape)
                     .clickable(
                         enabled = !item.isDisabled,
-                        onClick = { handleClick(item.number) }
+                        onClick = { handleClick(item.number) },
+                        role = Role.Button
                     )
                     .padding(2.dp)
-                    .semantics {
+                    .semantics(mergeDescendants = true) {
                         contentDescription = buildString {
-                            append("Número ${item.number}")
-                            if (item.isSelected) append(", selecionado")
-                            if (item.isDisabled) append(", desabilitado")
+                            append("Number ${item.number}")
+                            if (item.isSelected) append(", selected")
+                            if (item.isDisabled) append(", disabled")
+                        }
+                        stateDescription = buildString {
+                            when {
+                                item.isDisabled -> "Disabled"
+                                item.isSelected -> "Selected"
+                                else -> "Not selected"
+                            }
                         }
                     }
             ) {
@@ -100,11 +109,9 @@ fun NumberGrid(
                     number = item.number,
                     isSelected = item.isSelected,
                     isDisabled = item.isDisabled,
-                    size = adaptiveBallSize,
-                    variant = NumberBallVariant.Primary
+                    size = adaptiveBallSize
                 )
             }
         }
     }
 }
-

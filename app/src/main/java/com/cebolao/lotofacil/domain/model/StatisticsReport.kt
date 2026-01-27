@@ -1,13 +1,11 @@
 package com.cebolao.lotofacil.domain.model
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
-@SuppressLint("UnsafeOptInUsageError")
 @Immutable
 @Serializable
 @Stable

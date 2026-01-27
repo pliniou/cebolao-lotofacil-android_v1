@@ -27,6 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.core.constants.AppConstants
+import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.CheckResultCard
 import com.cebolao.lotofacil.ui.components.ConfirmationDialog
@@ -39,8 +41,6 @@ import com.cebolao.lotofacil.ui.components.SnackbarHost
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.components.cards.GameCard
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-
-import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.viewmodels.GameAnalysisResult
 import com.cebolao.lotofacil.viewmodels.GameAnalysisUiState
 import com.cebolao.lotofacil.viewmodels.GameViewModel
@@ -167,7 +167,7 @@ fun GeneratedGamesScreen(
                 itemsIndexed(games, key = { _, game -> game.id }) { index, game ->
                     // Optimize animation delay calculation
                     val animationDelay = remember(index) { 
-                        ((index * 60).coerceAtMost(500)).toLong() 
+                        ((index * AppConstants.STAGGER_DELAY_MS).coerceAtMost(AppConstants.MAX_STAGGER_DELAY_MS)).toLong() 
                     }
                     AnimateOnEntry(delayMillis = animationDelay) {
                         GameCard(

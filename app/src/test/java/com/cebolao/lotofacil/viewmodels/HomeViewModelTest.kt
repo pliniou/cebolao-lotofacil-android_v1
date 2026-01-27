@@ -118,7 +118,7 @@ class HomeViewModelTest {
             )
         ))
 
-        whenever(historyRepository.getHistory()).thenReturn(emptyList())
+        whenever(historyRepository.getHistory()).thenReturn(flowOf(emptyList()))
 
         viewModel = HomeViewModel(
             getHomeScreenDataUseCase,
@@ -210,6 +210,9 @@ class HomeViewModelTest {
                     )
                 )
             ))
+
+        whenever(historyRepository.syncHistory())
+            .thenReturn(AppResult.Success(Unit))
 
         viewModel = HomeViewModel(
             getHomeScreenDataUseCase,

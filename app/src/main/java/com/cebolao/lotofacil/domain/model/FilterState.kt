@@ -1,10 +1,9 @@
 package com.cebolao.lotofacil.domain.model
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
-/** Categoriza a restritividade de um filtro com base no tamanho do seu range. */
+/** Categorizes the restrictiveness of a filter based on its range size. */
 enum class RestrictivenessCategory {
     DISABLED,
     VERY_LOOSE,
@@ -14,7 +13,6 @@ enum class RestrictivenessCategory {
     VERY_TIGHT
 }
 
-@SuppressLint("UnsafeOptInUsageError")
 @Immutable
 @Serializable
 data class FilterState(

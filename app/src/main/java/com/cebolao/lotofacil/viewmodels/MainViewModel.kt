@@ -2,6 +2,7 @@ package com.cebolao.lotofacil.viewmodels
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
+import com.cebolao.lotofacil.core.constants.AppConstants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -27,11 +28,11 @@ class MainViewModel @Inject constructor() : StateViewModel<MainUiState>(MainUiSt
         viewModelScope.launch {
             try {
                 // Simulating initialization (like loading preferences or checking local DB)
-                delay(1300)
+                delay(AppConstants.ANIMATION_DURATION_SPLASH)
                 updateState { it.copy(isLoading = false) }
             } catch (_: Exception) {
                 updateState {
-                    it.copy(isLoading = false, hasError = true, errorMessage = "Falha ao inicializar o aplicativo.")
+                    it.copy(isLoading = false, hasError = true, errorMessage = "Failed to initialize the application.")
                 }
             }
         }

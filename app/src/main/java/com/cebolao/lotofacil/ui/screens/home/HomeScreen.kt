@@ -45,6 +45,7 @@ import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 
+import com.cebolao.lotofacil.core.constants.AppConstants
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
@@ -142,11 +143,11 @@ fun HomeScreen(
                     }
                     item(key = "last_draw") {
                         uiState.lastDrawStats?.let { stats ->
-                            AnimateOnEntry(delayMillis = 100L) { LastDrawSection(stats) }
+                            AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_SHORT.toLong()) { LastDrawSection(stats) }
                         }
                     }
                     item(key = "statistics") {
-                        AnimateOnEntry(delayMillis = 200L) {
+                        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_MEDIUM.toLong()) {
                             StatisticsSection(
                                 stats = uiState.statistics,
                                 isStatsLoading = uiState.isStatsLoading,
@@ -158,7 +159,7 @@ fun HomeScreen(
                         }
                     }
                     item(key = "explanation") {
-                        AnimateOnEntry(delayMillis = 300L) { StatisticsExplanationCard() }
+                        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_LONG.toLong()) { StatisticsExplanationCard() }
                     }
                 }
             }
@@ -174,7 +175,7 @@ private fun RefreshButton(
     val colors = MaterialTheme.colorScheme
     val rotationAngle by animateFloatAsState(
         targetValue = if (isRefreshing) 360f else 0f,
-        animationSpec = tween(durationMillis = 1000),
+        animationSpec = tween(durationMillis = AppConstants.ANIMATION_DURATION_LONG.toInt()),
         label = "refresh_rotation"
     )
 

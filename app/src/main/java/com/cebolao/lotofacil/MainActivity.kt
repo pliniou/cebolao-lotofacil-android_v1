@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.cebolao.lotofacil.core.constants.AppConstants
 import com.cebolao.lotofacil.ui.screens.MainScreen
 import com.cebolao.lotofacil.ui.theme.CebolaoLotofacilTheme
 import com.cebolao.lotofacil.viewmodels.MainViewModel
@@ -50,7 +51,7 @@ class MainActivity : ComponentActivity() {
                     -splashScreenView.view.height.toFloat()
                 )
                 slideUp.interpolator = AnticipateInterpolator()
-                slideUp.duration = 400L
+                slideUp.duration = AppConstants.ANIMATION_DURATION_LONG
 
                 val fadeOut = ObjectAnimator.ofFloat(
                     splashScreenView.view,
@@ -58,7 +59,7 @@ class MainActivity : ComponentActivity() {
                     1f,
                     0f
                 )
-                fadeOut.duration = 400L
+                fadeOut.duration = AppConstants.ANIMATION_DURATION_LONG
 
                 AnimatorSet().apply {
                     playTogether(slideUp, fadeOut)

@@ -22,7 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
-
 @Composable
 fun StandardScreenHeader(
     title: String,

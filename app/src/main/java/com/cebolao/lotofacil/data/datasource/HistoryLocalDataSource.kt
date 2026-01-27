@@ -1,8 +1,11 @@
 package com.cebolao.lotofacil.data.datasource
 
+import kotlinx.coroutines.flow.map
+
 import android.content.Context
 import android.util.Log
 import com.cebolao.lotofacil.BuildConfig
+import com.cebolao.lotofacil.core.constants.AppConstants
 import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
 import com.cebolao.lotofacil.data.datasource.database.HistoryDao
 import com.cebolao.lotofacil.data.datasource.database.entity.toDomain
@@ -15,9 +18,13 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
+import kotlinx.coroutines.flow.Flow
+
 interface HistoryLocalDataSource {
-    suspend fun getLocalHistory(): List<HistoricalDraw>
+    fun getHistory(): Flow<List<HistoricalDraw>>
+    suspend fun getLatestDraw(): HistoricalDraw?
     suspend fun saveNewContests(newDraws: List<HistoricalDraw>)
+    suspend fun populateIfNeeded()
 }
 
 @Singleton
@@ -28,9 +35,16 @@ class HistoryLocalDataSourceImpl @Inject constructor(
     private val parser: HistoryParser
 ) : HistoryLocalDataSource {
 
-    private val historyFileName = "lotofacil_resultados.txt"
+    private val historyFileName = AppConstants.HISTORY_ASSET_FILE
 
-    override suspend fun getLocalHistory(): List<HistoricalDraw> =
+    override fun getHistory(): Flow<List<HistoricalDraw>> =
+        historyDao.getAll()
+            .map { entities -> entities.map { it.toDomain() } }
+
+    override suspend fun getLatestDraw(): HistoricalDraw? =
+        historyDao.getLatestDraw()?.toDomain()
+
+    override suspend fun populateIfNeeded() {
         withContext(dispatchersProvider.io) {
             val dbCount = historyDao.getCount()
             if (dbCount == 0) {
@@ -38,11 +52,9 @@ class HistoryLocalDataSourceImpl @Inject constructor(
                 if (assetDraws.isNotEmpty()) {
                     historyDao.upsertAll(assetDraws.map { it.toEntity() })
                 }
-                assetDraws
-            } else {
-                historyDao.getAll().map { it.toDomain() }
             }
         }
+    }
 
     override suspend fun saveNewContests(newDraws: List<HistoricalDraw>) {
         if (newDraws.isEmpty()) return
@@ -67,4 +79,3 @@ class HistoryLocalDataSourceImpl @Inject constructor(
         }
     }
 }
-

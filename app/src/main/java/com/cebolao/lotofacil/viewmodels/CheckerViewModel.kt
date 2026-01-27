@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
+import androidx.navigation.toRoute
 
 @Stable
 data class CheckerScreenState(
@@ -51,14 +52,19 @@ class CheckerViewModel @Inject constructor(
 
     private var checkJob: Job? = null
     init {
-        savedStateHandle.get<String?>(Destination.Checker.NUMBERS_ARG)?.let { arg ->
-            val numbers = arg.split(',').mapNotNull { it.toIntOrNull() }.toSet()
-            if (numbers.isNotEmpty()) {
-                updateState { it.copy(selectedNumbers = numbers) }
-                if (numbers.size == LotofacilConstants.GAME_SIZE) {
-                    onCheckGameClicked()
+        try { // Wrap in try-catch in case parsing fails or route data isn't there (though using toRoute is standard)
+            val args = savedStateHandle.toRoute<Destination.Checker>()
+             args.numbers?.let { arg ->
+                val numbers = arg.split(',').mapNotNull { it.toIntOrNull() }.toSet()
+                if (numbers.isNotEmpty()) {
+                    updateState { it.copy(selectedNumbers = numbers) }
+                    if (numbers.size == LotofacilConstants.GAME_SIZE) {
+                        onCheckGameClicked()
+                    }
                 }
             }
+        } catch (_: Exception) {
+            // Fallback or ignore if arguments are missing/malformed (e.g. initial start)
         }
     }
 

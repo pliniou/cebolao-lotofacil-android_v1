@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
-
 @Composable
 fun EmptyState(
     message: String,

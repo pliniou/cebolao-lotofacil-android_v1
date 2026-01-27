@@ -1,5 +1,6 @@
 package com.cebolao.lotofacil.domain.service
 
+import com.cebolao.lotofacil.core.constants.AppConstants
 import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
 import com.cebolao.lotofacil.domain.model.FilterState
 import com.cebolao.lotofacil.domain.model.FilterType
@@ -16,13 +17,13 @@ class GameGenerator @Inject constructor(
     private val dispatchersProvider: DispatchersProvider,
     private val random: Random = Random()
 ) {
-    private val allNumbers = (1..25).toList()
+    private val allNumbers = AppConstants.LOTOFACIL_NUMBER_RANGE.toList()
 
     suspend fun generateGames(
         activeFilters: List<FilterState>,
         count: Int,
         lastDraw: Set<Int>? = null,
-        maxAttempts: Int = 250_000
+        maxAttempts: Int = AppConstants.MAX_GAME_GENERATION_ATTEMPTS
     ): List<LotofacilGame> = withContext(dispatchersProvider.default) {
         val uniqueGames = mutableSetOf<Set<Int>>()
         val resultList = mutableListOf<LotofacilGame>()
@@ -42,17 +43,16 @@ class GameGenerator @Inject constructor(
         }
 
         if (resultList.size < count) {
-            throw GameGenerationException("Não foi possível gerar a quantidade de jogos desejada com os filtros atuais. Tente configurações menos restritivas.")
+            throw GameGenerationException("Unable to generate the desired number of games with current filters. Try less restrictive settings.")
         }
 
         return@withContext resultList
     }
 
     private fun generateRandomNumbers(): Set<Int> {
-        // Optimized selection: Fisher-Yates shuffle variant for small pool
         val pool = allNumbers.toMutableList()
         val selection = mutableSetOf<Int>()
-        repeat(15) {
+        repeat(AppConstants.GAME_SIZE) {
             val index = random.nextInt(pool.size)
             selection.add(pool.removeAt(index))
         }

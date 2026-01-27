@@ -1,11 +1,11 @@
 package com.cebolao.lotofacil.viewmodels
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.annotation.StringRes
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
-import com.cebolao.lotofacil.domain.model.HistoricalDraw
+import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.repository.SyncStatus
 import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer
@@ -16,6 +16,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -54,17 +55,19 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadInitialData() {
-        viewModelScope.launch(dispatchersProvider.default) {
-            _uiState.update { it.copy(isScreenLoading = true, errorMessageResId = null) }
-            getHomeScreenDataUseCase().collect { result ->
+        _uiState.update { it.copy(isScreenLoading = true, errorMessageResId = null) }
+        
+        getHomeScreenDataUseCase()
+            .onEach { result ->
                 when (result) {
-                    is com.cebolao.lotofacil.core.result.AppResult.Success -> {
+                    is AppResult.Success -> {
                         val data = result.value
                         val lastDraw = data.history.firstOrNull()
                         val nextDrawStats = data.lastDrawStats
                         _uiState.update {
                             it.copy(
                                 isScreenLoading = false,
+                                errorMessageResId = null,
                                 lastDrawStats = data.lastDrawStats,
                                 statistics = data.initialStats,
                                 lastUpdateTime = lastDraw?.date,
@@ -74,15 +77,17 @@ class HomeViewModel @Inject constructor(
                             )
                         }
                     }
-                    is com.cebolao.lotofacil.core.result.AppResult.Failure -> {
+                    is AppResult.Failure -> {
                         _uiState.update {
                             it.copy(isScreenLoading = false, errorMessageResId = R.string.error_load_data_failed)
                         }
+                        // Only show snackbar if it's not just pending initialization
+                        // But for now we stick to showing it.
                         _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.error_load_data_failed))
                     }
                 }
             }
-        }
+            .launchIn(viewModelScope)
     }
 
     private fun checkIsTodayDrawDay(nextDate: String?): Boolean {
@@ -99,31 +104,11 @@ class HomeViewModel @Inject constructor(
     fun refreshData() {
         viewModelScope.launch(dispatchersProvider.default) {
             _uiState.update { it.copy(isRefreshing = true, errorMessageResId = null) }
-            getHomeScreenDataUseCase().collect { result ->
-                when (result) {
-                    is com.cebolao.lotofacil.core.result.AppResult.Success -> {
-                        val data = result.value
-                        val nextDrawStats = data.lastDrawStats
-                        _uiState.update {
-                            it.copy(
-                                isRefreshing = false,
-                                lastDrawStats = data.lastDrawStats,
-                                statistics = data.initialStats,
-                                lastUpdateTime = data.history.firstOrNull()?.date,
-                                nextDrawDate = nextDrawStats?.nextDate,
-                                nextDrawContest = nextDrawStats?.nextContest,
-                                isTodayDrawDay = checkIsTodayDrawDay(nextDrawStats?.nextDate)
-                            )
-                        }
-                        _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.refresh_success))
-                    }
-                    is com.cebolao.lotofacil.core.result.AppResult.Failure -> {
-                        _uiState.update {
-                            it.copy(isRefreshing = false, errorMessageResId = R.string.refresh_error)
-                        }
-                        _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.refresh_error))
-                    }
-                }
+            val result = historyRepository.syncHistory()
+            _uiState.update { it.copy(isRefreshing = false) }
+            when (result) {
+                is AppResult.Success -> _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.refresh_success))
+                is AppResult.Failure -> _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.refresh_error))
             }
         }
     }
@@ -133,7 +118,8 @@ class HomeViewModel @Inject constructor(
         if (current.selectedTimeWindow == window) return
         viewModelScope.launch(dispatchersProvider.default) {
             _uiState.update { it.copy(isStatsLoading = true, selectedTimeWindow = window) }
-            val draws = if (window > 0) historyRepository.getHistory().take(window) else historyRepository.getHistory()
+            val allHistory = historyRepository.getHistory().first()
+            val draws = if (window > 0) allHistory.take(window) else allHistory
             val newStats = statisticsAnalyzer.analyze(draws)
             _uiState.update { it.copy(statistics = newStats, isStatsLoading = false) }
         }
@@ -147,8 +133,7 @@ class HomeViewModel @Inject constructor(
 }
 
 /**
- * Events emitted by [HomeViewModel].  Similar to other event classes,
- * these are collected by the UI to display snackbars or dialogs.
+ * Events emitted by [HomeViewModel].
  */
 sealed interface HomeEvent {
     data class ShowSnackbar(@StringRes val messageRes: Int) : HomeEvent

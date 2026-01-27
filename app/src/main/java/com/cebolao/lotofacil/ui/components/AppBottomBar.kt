@@ -11,8 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.cebolao.lotofacil.navigation.Destination
+import com.cebolao.lotofacil.navigation.selectedIcon
+import com.cebolao.lotofacil.navigation.titleRes
+import com.cebolao.lotofacil.navigation.unselectedIcon
 
 @Composable
 fun AppBottomBar(
@@ -28,9 +32,9 @@ fun AppBottomBar(
         tonalElevation = 3.dp
     ) {
         destinations.forEach { destination ->
-            val isSelected = currentDestination?.hierarchy?.any {
-                it.route?.substringBefore('?') == destination.baseRoute
-            } == true
+            val isSelected = currentDestination
+                ?.hierarchy
+                ?.any { it.hasRoute(destination::class) } == true
 
             NavigationBarItem(
                 selected = isSelected,

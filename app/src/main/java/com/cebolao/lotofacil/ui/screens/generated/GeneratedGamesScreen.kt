@@ -27,10 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.R
-<<<<<<< HEAD
 import com.cebolao.lotofacil.core.constants.AppConstants
-=======
->>>>>>> 16297bf53176bde23942576b6b1057afc7a219c9
 import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.CheckResultCard

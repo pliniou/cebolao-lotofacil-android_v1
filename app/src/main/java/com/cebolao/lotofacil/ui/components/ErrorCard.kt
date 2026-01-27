@@ -1,6 +1,5 @@
 package com.cebolao.lotofacil.ui.components
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 
-
 @Composable
 fun ErrorCard(
     message: String,
@@ -31,8 +29,7 @@ fun ErrorCard(
     val colors = MaterialTheme.colorScheme
     AppCard(
         modifier = modifier.fillMaxWidth(),
-        backgroundColor = MaterialTheme.colorScheme.errorContainer,
-        border = BorderStroke(1.dp, colors.error.copy(alpha = 0.85f))
+        backgroundColor = MaterialTheme.colorScheme.errorContainer
     ) {
         Column(
             modifier = Modifier

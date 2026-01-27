@@ -1,16 +1,13 @@
 package com.cebolao.lotofacil.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,14 +25,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.model.FilterState
 import com.cebolao.lotofacil.domain.model.FilterType
-import com.cebolao.lotofacil.ui.model.*
+import com.cebolao.lotofacil.ui.model.icon
+import com.cebolao.lotofacil.ui.model.titleRes
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
@@ -59,15 +56,9 @@ fun FilterCard(
         spring(stiffness = Spring.StiffnessMedium), 
         label = "elevation"
     )
-    val border by animateColorAsState(
-        if (enabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.5f) else Color.Transparent, 
-        tween(300), 
-        label = "borderColor"
-    )
 
     AppCard(
         modifier = modifier.fillMaxWidth(),
-        border = BorderStroke(0.5.dp, border),
         elevation = elevation
     ) {
         Column(modifier = Modifier.padding(AppSpacing.lg)) {

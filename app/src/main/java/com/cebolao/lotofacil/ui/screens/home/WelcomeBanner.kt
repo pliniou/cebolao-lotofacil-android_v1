@@ -26,9 +26,7 @@ import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-
 import com.cebolao.lotofacil.ui.theme.iconMedium
-
 
 @Composable
 fun WelcomeBanner(
@@ -48,8 +46,7 @@ fun WelcomeBanner(
     ) {
         AppCard(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = colors.secondaryContainer,
-            border = androidx.compose.foundation.BorderStroke(1.dp, colors.primary.copy(alpha = 0.75f))
+            backgroundColor = colors.secondaryContainer
         ) {
             Column(
                 modifier = Modifier.padding(AppSpacing.lg),

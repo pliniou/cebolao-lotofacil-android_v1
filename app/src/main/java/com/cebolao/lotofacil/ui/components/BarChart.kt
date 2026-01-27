@@ -60,7 +60,6 @@ fun BarChart(
     val outlineVariant = MaterialTheme.colorScheme.outlineVariant
     val tertiaryColor = MaterialTheme.colorScheme.tertiary
     val tertiaryContainer = MaterialTheme.colorScheme.tertiaryContainer
-
     val density = LocalDensity.current
     val chartScaleFactor = density.density.coerceIn(0.85f, 1.3f)
     val baseTextSize = 10.sp * chartScaleFactor

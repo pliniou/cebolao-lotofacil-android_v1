@@ -23,11 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cebolao.lotofacil.ui.theme.AppElevation
 
-
-enum class NumberBallVariant {
-    Primary, Secondary, Lotofacil
-}
-
 @Composable
 fun NumberBall(
     number: Int,
@@ -35,8 +30,7 @@ fun NumberBall(
     size: Dp = 40.dp,
     isSelected: Boolean = false,
     isHighlighted: Boolean = false,
-    isDisabled: Boolean = false,
-    variant: NumberBallVariant = NumberBallVariant.Primary
+    isDisabled: Boolean = false
 ) {
     val shape = MaterialTheme.shapes.medium
     val (containerColor, contentColor, borderColor) = getBallColors(
@@ -117,4 +111,3 @@ private fun getBallColors(
         )
     }
 }
-

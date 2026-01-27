@@ -67,4 +67,3 @@ class HistoryLocalDataSourceImpl @Inject constructor(
         }
     }
 }
-

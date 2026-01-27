@@ -18,7 +18,6 @@ import com.cebolao.lotofacil.ui.components.IconBadge
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
-
 /**
  * Reusable, flat card for statistics blocks with a consistent header layout.
  */

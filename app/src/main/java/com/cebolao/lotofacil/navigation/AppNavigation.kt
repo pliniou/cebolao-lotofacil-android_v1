@@ -15,15 +15,7 @@ import com.cebolao.lotofacil.ui.screens.home.HomeScreen
  * Navigation utilities for type-safe navigation.
  */
 fun NavController.navigateToDestination(destination: Destination) {
-    val route = when (destination) {
-        is Destination.Home -> destination.route
-        is Destination.Filters -> destination.route
-        is Destination.GeneratedGames -> destination.route
-        is Destination.Checker -> destination.baseRoute
-        is Destination.About -> destination.route
-    }
-
-    navigate(route) {
+    navigate(destination) {
         // Pop up to the start destination of the graph to
         // avoid building up a large stack of destinations
         // on the back stack as users select items
@@ -51,38 +43,39 @@ fun AppNavigation(
     
     NavHost(
         navController = navController,
-        startDestination = startDestination.route,
+        startDestination = startDestination,
         modifier = modifier
     ) {
-        composable(Destination.Home.route) {
+        composable<Destination.Home> {
             HomeScreen(
                 onExploreFilters = {
                     navController.navigateToDestination(Destination.Filters)
                 },
                 onOpenChecker = {
-                    navController.navigateToDestination(Destination.Checker)
+                    navController.navigateToDestination(Destination.Checker())
                 }
             )
         }
         
-        composable(Destination.Filters.route) {
+        composable<Destination.Filters> {
             FiltersScreen {
                 onNavigateToGeneratedGames()
             }
         }
         
-        composable(Destination.GeneratedGames.route) {
+        composable<Destination.GeneratedGames> {
             GeneratedGamesScreen()
         }
         
-        composable(
-            route = Destination.Checker.route,
-            arguments = Destination.Checker.arguments
-        ) {
+        composable<Destination.Checker> {
+            // Arguments are automatically handled by the Destination.Checker data class
+            // parsing if we need them, but here we just show the screen.
+            // If the screen needs args, we can obtain them via:
+            // val args = it.toRoute<Destination.Checker>()
             CheckerScreen()
         }
         
-        composable(Destination.About.route) {
+        composable<Destination.About> {
             AboutScreen()
         }
     }

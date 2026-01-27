@@ -16,7 +16,6 @@ import androidx.compose.ui.window.DialogProperties
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
-
 @Composable
 fun LoadingDialog(
     text: String

@@ -1,11 +1,10 @@
 package com.cebolao.lotofacil.viewmodels
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.annotation.StringRes
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
-import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.repository.SyncStatus
 import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer

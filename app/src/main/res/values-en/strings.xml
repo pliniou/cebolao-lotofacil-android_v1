@@ -255,4 +255,5 @@
     <string name="cd_clear_games">Clear unpinned games</string>
     <string name="next_contest_format">Next Draw: #%d</string>
     <string name="prize_tier_format">Tier %d</string>
+    <string name="pattern_analysis_title">Analisys</string>
 </resources>

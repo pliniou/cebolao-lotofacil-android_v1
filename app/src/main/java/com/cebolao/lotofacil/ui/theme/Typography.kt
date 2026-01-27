@@ -1,5 +1,4 @@
 @file:Suppress("SameParameterValue")
-
 package com.cebolao.lotofacil.ui.theme
 
 import androidx.compose.material3.Typography

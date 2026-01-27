@@ -14,6 +14,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.FactCheck
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +41,6 @@ import com.cebolao.lotofacil.domain.model.LotofacilConstants
 import com.cebolao.lotofacil.domain.usecase.GameCheckPhase
 import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
-import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.CheckResultCard
 import com.cebolao.lotofacil.ui.components.CheckerScrollableActions
 import com.cebolao.lotofacil.ui.components.ConfirmationDialog
@@ -52,7 +53,7 @@ import com.cebolao.lotofacil.ui.components.RecentHitsChartContent
 import com.cebolao.lotofacil.ui.components.SnackbarHost
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.components.shimmer
-import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.viewmodels.CheckerUiState
 import com.cebolao.lotofacil.viewmodels.CheckerViewModel
@@ -207,13 +208,14 @@ private fun NumberGridSection(
     selectedNumbers: Set<Int>,
     onNumberClicked: (Int) -> Unit
 ) {
-    AppCard(
+    ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        elevation = AppCardDefaults.elevation
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = AppElevation.sm),
+        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Column(
-            modifier = Modifier.padding(AppCardDefaults.defaultPadding),
-            verticalArrangement = Arrangement.spacedBy(AppCardDefaults.contentSpacing)
+            modifier = Modifier.padding(AppSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
         ) {
             Text(
                 text = stringResource(id = R.string.selected_numbers_progress, selectedNumbers.size),
@@ -242,7 +244,11 @@ private fun NumberGridSection(
 
 @Composable
 private fun CheckerLoadingContent(progress: Float, message: String) {
-    AppCard(modifier = Modifier.fillMaxWidth()) {
+    ElevatedCard(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = AppElevation.sm),
+        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
         Column(
             modifier = Modifier.padding(AppSpacing.lg),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -270,10 +276,14 @@ private fun CheckerSuccessContent(
         }
 
         AnimateOnEntry(delayMillis = 100) {
-            AppCard(modifier = Modifier.fillMaxWidth()) {
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.elevatedCardElevation(defaultElevation = AppElevation.sm),
+                colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.surface)
+            ) {
                 Column(
-                    modifier = Modifier.padding(AppCardDefaults.defaultPadding),
-                    verticalArrangement = Arrangement.spacedBy(AppCardDefaults.contentSpacing)
+                    modifier = Modifier.padding(AppSpacing.lg),
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
                 ) {
                     Text(
                         text = stringResource(id = R.string.game_stats_title),

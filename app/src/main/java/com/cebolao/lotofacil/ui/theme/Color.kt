@@ -2,16 +2,10 @@ package com.cebolao.lotofacil.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Vintage, geometric palette (earthy + muted accents).
-// Keep existing token names to avoid churn across the codebase.
-
-// Pantone 2593U / 2627U Palette (Flat Retro Material)
-
 // Base Colors (Dark - Keeping dark theme base but tinted purple/neutral)
 val BaseBackground = Color(0xFF1A1521) // Very Dark Purple Grey
 val Surface1 = Color(0xFF241C2D) // Dark Purple Surface
 val Surface2 = Color(0xFF2E243A) // Lighter Purple Surface
-val Surface3 = Color(0xFF3A2D48) // Highlight Surface
 val OutlineStroke = Color(0xFF5A4B6B) // Purple-ish Outline
 
 // Text Colors
@@ -26,17 +20,12 @@ val BrandSubtle = Color(0xFF4A2558) // Deep muted purple for backgrounds
 
 // Support Palette (Caixa-inspired)
 val CaixaTurquoise = Color(0xFF54BBAA) // ~Pantone 326C
-val CaixaBlue = Color(0xFF005CA9) // ~Pantone 287C
 val CaixaOrange = Color(0xFFF39200) // ~Pantone 151C
 
 // Status Colors
 val Success = CaixaTurquoise
 val Warning = CaixaOrange
 val Error = Color(0xFFE05B5B) 
-
-// Disabled States
-val DisabledContainer = Color(0xFF2A2430)
-val DisabledContent = Color(0xFF6A5D75)
 
 // Material 3 Light Theme (Light version of the palette)
 val LightPrimary = BrandPrimary

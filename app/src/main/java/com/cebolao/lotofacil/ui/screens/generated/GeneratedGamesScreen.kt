@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.CheckResultCard
 import com.cebolao.lotofacil.ui.components.ConfirmationDialog
@@ -39,8 +40,6 @@ import com.cebolao.lotofacil.ui.components.SnackbarHost
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.components.cards.GameCard
 import com.cebolao.lotofacil.ui.theme.AppSpacing
-
-import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.viewmodels.GameAnalysisResult
 import com.cebolao.lotofacil.viewmodels.GameAnalysisUiState
 import com.cebolao.lotofacil.viewmodels.GameViewModel
@@ -170,6 +169,9 @@ fun GeneratedGamesScreen(
                         ((index * 60).coerceAtMost(500)).toLong() 
                     }
                     AnimateOnEntry(delayMillis = animationDelay) {
+                        // GameCard internally uses standard components, but we wrap it in ElevatedCard here if GameCard isn't elevated yet,
+                        // or we rely on GameCard being updated. Let's assume GameCard is a shared component we might need to update.
+                        // For now, focusing on the Screen layout which looks correct.
                         GameCard(
                             game = game,
                             onAnalyzeClick = { gameViewModel.analyzeGame(game) },

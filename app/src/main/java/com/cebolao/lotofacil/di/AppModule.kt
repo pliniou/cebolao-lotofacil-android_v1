@@ -2,9 +2,6 @@ package com.cebolao.lotofacil.di
 
 import com.cebolao.lotofacil.core.coroutine.DefaultDispatchersProvider
 import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
-import com.cebolao.lotofacil.domain.service.GameGenerator
-import com.cebolao.lotofacil.domain.service.GameStatsAnalyzer
-import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

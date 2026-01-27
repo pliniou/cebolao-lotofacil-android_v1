@@ -1,8 +1,6 @@
 package com.cebolao.lotofacil.data.datasource.database
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import com.cebolao.lotofacil.data.datasource.database.entity.HistoricalDrawEntity
@@ -16,10 +14,6 @@ interface HistoryDao {
     @Upsert
     suspend fun upsertAll(draws: List<HistoricalDrawEntity>)
 
-    // Insert only if not exists (for initial bulk load optimization if needed) but Upsert is generally safer
-    // Replaced by upsertAll for consistency
-
-    
     @Query("SELECT COUNT(*) FROM historical_draws")
     suspend fun getCount(): Int
 

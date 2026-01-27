@@ -1,5 +1,4 @@
 @file:Suppress("ConstPropertyName")
-
 package com.cebolao.lotofacil.ui.components
 
 import androidx.compose.foundation.clickable
@@ -100,11 +99,9 @@ fun NumberGrid(
                     number = item.number,
                     isSelected = item.isSelected,
                     isDisabled = item.isDisabled,
-                    size = adaptiveBallSize,
-                    variant = NumberBallVariant.Primary
+                    size = adaptiveBallSize
                 )
             }
         }
     }
 }
-

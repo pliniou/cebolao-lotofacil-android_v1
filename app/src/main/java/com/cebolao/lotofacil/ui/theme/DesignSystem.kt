@@ -1,10 +1,7 @@
 package com.cebolao.lotofacil.ui.theme
 
-import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.Composable
-
 import androidx.compose.ui.unit.dp
-
 
 data class Spacing(
     val xs: androidx.compose.ui.unit.Dp = 4.dp,

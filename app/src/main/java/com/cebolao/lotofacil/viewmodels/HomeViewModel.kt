@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
+<<<<<<< HEAD
 import com.cebolao.lotofacil.core.result.AppResult
+=======
+>>>>>>> 16297bf53176bde23942576b6b1057afc7a219c9
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.repository.SyncStatus
 import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer

@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<lint>
-    <issue id="ObsoleteSdkInt" />
-    <issue id="IconMissingDensityFolder" severity="ignore" />
-    <issue id="GradleDependency" severity="informational" />
-    <issue id="NewerVersionAvailable" severity="informational" />
-    <issue id="AndroidGradlePluginVersion" severity="informational">
-    </issue>
-</lint>

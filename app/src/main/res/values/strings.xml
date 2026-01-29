@@ -2,7 +2,7 @@
     <string name="app_name">CeboLotoGen</string>
 
     <string name="error_no_history">Não foi possível carregar o histórico.</string>
-    <string name="error_history_unavailable">Histórico indisponível. Verifique sua conexão ou desative o filtro de repetidas.</string>
+
     <string name="error_load_data_failed">Falha ao carregar dados.</string>
     <string name="error_analysis_failed">Falha na análise.</string>
     <string name="error_unknown">Erro desconhecido.</string>
@@ -11,6 +11,8 @@
     <string name="studio_name">Cebola Studios</string>
     <string name="studio_slogan">Sorte e estatística.</string>
     <string name="studio_logo_description">Logo Cebola Studios</string>
+    <string name="about_section_guide">Guia e Informações</string>
+    <string name="about_section_legal">Legal e Privacidade</string>
 
     <string name="about_purpose_desc_body">Este app ajuda a analisar jogos da Lotofácil.</string>
     <string name="about_purpose_desc_footer">Use com responsabilidade.</string>
@@ -56,16 +58,13 @@
     <string name="probability_11_hits_value">1 em 11</string>
 
     <!-- HomeScreen -->
-    <string name="sync_failed_message">Não foi possível atualizar. Exibindo dados locais.</string>
-    <string name="sync_failed_check_connection">Sincronização falhou. Verifique sua conexão.</string>
     <!-- HomeScreen -->
     <string name="welcome_banner_title">Bem-vindo ao Cebolão!</string>
     <string name="welcome_banner_subtitle">Sua sorte com inteligência estatística</string>
     <string name="welcome_tip_filters">Explore os filtros para refinar seus jogos</string>
     <string name="welcome_tip_checker">Teste seus jogos contra o histórico</string>
     <string name="last_update_status">Dados atualizados há %s</string>
-    <string name="refresh_confirmation_title">Atualizar dados?</string>
-    <string name="refresh_confirmation_message">Isso irá baixar os dados mais recentes da Caixa. Deseja continuar?</string>
+
     <string name="refresh_success">Dados atualizados com sucesso!</string>
     <string name="refresh_error">Falha ao atualizar dados. Tente novamente.</string>
     <string name="loading_data">Carregando dados…</string>
@@ -73,14 +72,13 @@
     <string name="next_draw_info">Próximo: #%1$d em %2$s</string>
     <string name="last_draw_info">Último sorteio: %1$s</string>
     <string name="prize_details_title">Detalhes do prêmio</string>
-    <string name="prize_details_expand">Ver detalhes</string>
-    <string name="prize_details_collapse">Ocultar detalhes</string>
+
     <string name="winners_by_state">Ganhadores por estado</string>
 
     <string name="cebolao_title">Cebolão</string>
     <string name="lotofacil_subtitle">Gerador Lotofácil</string>
     <string name="last_contest">Último concurso</string>
-    <string name="contest_date_format">Data: %s</string>
+
     <string name="sum_label">Soma</string>
     <string name="even_label">Pares</string>
     <string name="odd_label">Impares</string>
@@ -149,7 +147,7 @@
     <string name="delete_game">Excluir jogo</string>
 
     <!-- Common Actions -->
-    <string name="confirm_button">Confirmar</string>
+
     <string name="reset_button">Resetar</string>
 
     <!-- FilterCard -->
@@ -252,7 +250,7 @@
     <string name="unpinned_games_cleared">Jogos não fixados removidos.</string>
     <string name="accumulated">ACUMULOU!</string>
     <string name="prize_estimate">Estimativa de Prêmio</string>
-    <string name="next_draw_date">Sorteio em %s</string>
+
     <string name="stats_guide_title">Guia de Filtros e Estatísticas</string>
     <string name="how_filters_work">Como funcionam os filtros?</string>
     
@@ -260,7 +258,7 @@
     <string name="cd_refresh_data">Atualizar dados</string>
     <string name="cd_clear_games">Limpar jogos não fixados</string>
     <string name="next_contest_format">Próximo Concurso: #%d</string>
-    <string name="prize_tier_format">Faixa %d</string>
+
     <string name="nav_home">Início</string>
     <string name="nav_filters">Gerador</string>
     <string name="nav_games">Jogos</string>

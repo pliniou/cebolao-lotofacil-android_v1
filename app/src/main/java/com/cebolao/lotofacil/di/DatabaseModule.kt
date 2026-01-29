@@ -25,7 +25,7 @@ object DatabaseModule {
             LotofacilDatabase::class.java,
             "lotofacil_db"
         )
-        .fallbackToDestructiveMigration(dropAllTables = true)
+        .fallbackToDestructiveMigration()
         .build()
     }
 

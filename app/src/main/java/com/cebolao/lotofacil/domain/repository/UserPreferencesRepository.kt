@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface UserPreferencesRepository {
     val pinnedGames: Flow<Set<String>>
-    val themeMode: Flow<String>
+
     suspend fun savePinnedGames(games: Set<String>)
-    suspend fun setThemeMode(mode: String)
+
 }

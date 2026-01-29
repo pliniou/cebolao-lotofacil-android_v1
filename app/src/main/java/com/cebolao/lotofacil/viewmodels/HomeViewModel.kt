@@ -49,7 +49,7 @@ class HomeViewModel @Inject constructor(
     private fun observeSyncStatus() {
         historyRepository.syncStatus.onEach { status ->
             if (status is SyncStatus.Failed) {
-                _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.sync_failed_check_connection))
+                _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.refresh_error))
             }
         }.launchIn(viewModelScope)
     }
@@ -113,14 +113,31 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private var statsJob: kotlinx.coroutines.Job? = null
+    // Simple cache for stats report by window size
+    private val statsCache = mutableMapOf<Int, com.cebolao.lotofacil.domain.model.StatisticsReport>()
+
     fun onTimeWindowSelected(window: Int) {
         val current = _uiState.value
         if (current.selectedTimeWindow == window) return
-        viewModelScope.launch(dispatchersProvider.default) {
+        
+        // Check cache first
+        if (statsCache.containsKey(window)) {
+             _uiState.update { it.copy(selectedTimeWindow = window, statistics = statsCache[window]!!) }
+             return
+        }
+
+        statsJob?.cancel()
+        statsJob = viewModelScope.launch(dispatchersProvider.default) {
             _uiState.update { it.copy(isStatsLoading = true, selectedTimeWindow = window) }
+            // Use local history flow or current state history access if available, 
+            // but repository flow is safer source of truth.
             val allHistory = historyRepository.getHistory().first()
             val draws = if (window > 0) allHistory.take(window) else allHistory
             val newStats = statisticsAnalyzer.analyze(draws)
+            
+            statsCache[window] = newStats
+            
             _uiState.update { it.copy(statistics = newStats, isStatsLoading = false) }
         }
     }

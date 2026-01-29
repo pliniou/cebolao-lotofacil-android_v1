@@ -67,12 +67,17 @@ fun AboutScreen() {
         ) { item.content() }
     }
 
-    val items = remember {
+    val guideItems = remember {
         listOf(
             InfoItem.Rules(Icons.Default.Gavel, content = { RulesInfoContent() }),
             InfoItem.Probabilities(Icons.Default.Calculate, content = { ProbabilitiesTable() }),
             InfoItem.Bolao(Icons.Default.Group, content = { BolaoInfoContent() }),
-            InfoItem.Purpose(Icons.Default.Lightbulb, content = { PurposeInfoContent() }),
+            InfoItem.Purpose(Icons.Default.Lightbulb, content = { PurposeInfoContent() })
+        )
+    }
+
+    val legalItems = remember {
+        listOf(
             InfoItem.Legal(Icons.Default.Info, content = { LegalInfoContent() }),
             InfoItem.Privacy(Icons.Default.PrivacyTip, content = { PrivacyInfoContent() })
         )
@@ -93,17 +98,33 @@ fun AboutScreen() {
                 .fillMaxSize()
                 .padding(innerPadding),
             contentPadding = PaddingValues(
-                top = AppSpacing.lg,
-                start = AppSpacing.lg,
-                end = AppSpacing.lg,
                 bottom = AppSpacing.xxxl
             ),
-            verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
         ) {
             item {
                 StudioHero()
             }
-            items(items, key = { it.titleResId }) { info ->
+            
+            item {
+                SectionHeader(stringResource(R.string.about_section_guide))
+            }
+            
+            items(guideItems, key = { it.titleResId }) { info ->
+                AnimateOnEntry {
+                    InfoCard(info) {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        dialogContent = info
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(AppSpacing.md))
+                SectionHeader(stringResource(R.string.about_section_legal))
+            }
+
+            items(legalItems, key = { it.titleResId }) { info ->
                 AnimateOnEntry {
                     InfoCard(info) {
                         hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -113,6 +134,18 @@ fun AboutScreen() {
             }
         }
     }
+}
+
+@Composable
+private fun SectionHeader(title: String) {
+    Text(
+        text = title,
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = AppSpacing.lg, vertical = AppSpacing.xs)
+    )
 }
 
 @Composable
@@ -151,7 +184,8 @@ private fun InfoCard(item: InfoItem, onClick: () -> Unit) {
     ClickableCard(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
-        elevation = AppCardDefaults.elevation
+        elevation = AppCardDefaults.elevation,
+        modifier = Modifier.padding(horizontal = AppSpacing.lg)
     ) {
         Row(
             modifier = Modifier.padding(AppCardDefaults.defaultPadding),

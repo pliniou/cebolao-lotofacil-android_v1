@@ -88,14 +88,19 @@ android {
     }
 
     lint {
-        abortOnError = false
-        warningsAsErrors = false
+        abortOnError = true
+        warningsAsErrors = true
         checkReleaseBuilds = true
         lintConfig = file("lint.xml")
         disable += listOf(
             "MissingTranslation",
             "ExtraTranslation",
             "NewerVersionAvailable",
+            "GradleDependency",
+            "MonochromeLauncherIcon",
+            "ObsoleteSdkInt",
+            "UnusedResources",
+            "AndroidGradlePluginVersion"
         )
     }
 }
@@ -110,8 +115,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.bundles.androidx.lifecycle)
 
-    // WorkManager for background tasks
-    implementation(libs.androidx.work.runtime.ktx)
+
 
     // Jetpack Compose BOM and related libraries
     implementation(platform(libs.androidx.compose.bom))
@@ -134,13 +138,12 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
-    implementation(libs.hilt.work)
-    ksp(libs.hilt.compiler.androidx)
 
     // Networking (Retrofit + OkHttp)
     implementation(libs.bundles.networking)
 
     // Compose utilities
+    implementation(libs.google.material)
     implementation(libs.androidx.interpolator)
     implementation(libs.androidx.navigation.compose)
 

@@ -30,10 +30,13 @@ class HistoryRepositoryImpl @Inject constructor(
     private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
     override val syncStatus: StateFlow<SyncStatus> = _syncStatus.asStateFlow()
 
+    private val _isInitialized = MutableStateFlow(false)
+    override val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
+
     init {
         applicationScope.launch {
             localDataSource.populateIfNeeded()
-            syncHistory()
+            _isInitialized.value = true
         }
     }
 

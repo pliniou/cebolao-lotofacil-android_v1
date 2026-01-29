@@ -11,6 +11,7 @@ import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -41,6 +42,17 @@ class GetHomeScreenDataUseCase @Inject constructor(
                         initialStats = initialStats,
                         history = history
                     ).toSuccess()
+                }
+            }
+            .distinctUntilChanged { old, new ->
+                // Optimize: Only re-emit/re-calculate if history size or latest contest changed
+                if (old is AppResult.Success && new is AppResult.Success) {
+                    val oldData = old.value
+                    val newData = new.value
+                    oldData.history.size == newData.history.size &&
+                            oldData.history.firstOrNull()?.contestNumber == newData.history.firstOrNull()?.contestNumber
+                } else {
+                    old == new
                 }
             }
             .flowOn(dispatchersProvider.default)

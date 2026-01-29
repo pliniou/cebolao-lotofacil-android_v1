@@ -32,7 +32,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
     companion object {
         private const val TAG = "UserPreferencesRepo"
         private val PINNED_GAMES_KEY = stringSetPreferencesKey("pinned_games")
-        private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
+
     }
 
     override val pinnedGames: Flow<Set<String>> = context.dataStore.data
@@ -61,26 +61,6 @@ class UserPreferencesRepositoryImpl @Inject constructor(
 
 
 
-    override val themeMode: Flow<String> = context.dataStore.data
-        .catch { exception ->
-            handleError(exception, "reading theme mode")
-            emit(emptyPreferences())
-        }
-        .map { preferences ->
-            preferences[THEME_MODE_KEY] ?: "auto"
-        }
-
-    override suspend fun setThemeMode(mode: String) {
-        withContext(dispatchersProvider.io) {
-            try {
-                context.dataStore.edit { preferences ->
-                    preferences[THEME_MODE_KEY] = mode
-                }
-            } catch (e: IOException) {
-                handleError(e, "setting theme mode")
-            }
-        }
-    }
 
     private fun handleError(exception: Throwable, contextMessage: String) {
         if (BuildConfig.DEBUG) {

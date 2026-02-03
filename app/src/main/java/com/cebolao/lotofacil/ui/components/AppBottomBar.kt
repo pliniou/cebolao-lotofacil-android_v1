@@ -18,42 +18,54 @@ import com.cebolao.lotofacil.navigation.selectedIcon
 import com.cebolao.lotofacil.navigation.titleRes
 import com.cebolao.lotofacil.navigation.unselectedIcon
 
+/**
+ * Custom bottom navigation bar with modern styling and optimized interactions.
+ * Uses Material3 NavigationBar with consistent elevation and spacing.
+ */
 @Composable
 fun AppBottomBar(
     destinations: List<Destination>,
-    currentDestination: NavDestination?,
-    onDestinationClick: (Destination) -> Unit,
+    selectedDestination: Destination,
+    onDestinationSelected: (Destination) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = MaterialTheme.colorScheme
+    val haptic = LocalHapticFeedback.current
+
     NavigationBar(
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurface,
+        containerColor = colors.surface,
         tonalElevation = 3.dp
     ) {
         destinations.forEach { destination ->
-            val isSelected = currentDestination
-                ?.hierarchy
-                ?.any { it.hasRoute(destination::class) } == true
-
+            val selected = destination == selectedDestination
+            
             NavigationBarItem(
-                selected = isSelected,
-                onClick = { onDestinationClick(destination) },
+                selected = selected,
+                onClick = {
+                    if (!selected) {
+                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        onDestinationSelected(destination)
+                    }
+                },
                 icon = {
                     Icon(
-                        imageVector = if (isSelected) destination.selectedIcon else destination.unselectedIcon,
-                        contentDescription = stringResource(destination.titleRes)
+                        imageVector = if (selected) destination.selectedIcon else destination.unselectedIcon,
+                        contentDescription = stringResource(id = destination.titleRes)
                     )
                 },
                 label = {
-                    Text(text = stringResource(destination.titleRes))
+                    Text(
+                        text = stringResource(id = destination.titleRes),
+                        style = MaterialTheme.typography.labelSmall
+                    )
                 },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    selectedTextColor = MaterialTheme.colorScheme.onSurface,
-                    indicatorColor = MaterialTheme.colorScheme.secondaryContainer,
-                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    selectedIconColor = colors.primary,
+                    selectedTextColor = colors.primary,
+                    unselectedIconColor = colors.onSurfaceVariant,
+                    unselectedTextColor = colors.onSurfaceVariant,
+                    indicatorColor = colors.primaryContainer
                 )
             )
         }

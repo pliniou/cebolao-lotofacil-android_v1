@@ -50,56 +50,48 @@ object NumberGridDimens {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NumberGrid(
-    modifier: Modifier = Modifier,
     items: List<NumberBallItem>,
     onNumberClick: (Int) -> Unit,
-    ballSize: Dp = NumberGridDimens.baseBallSize
+    modifier: Modifier = Modifier,
+    columns: Int = 5
 ) {
-    val haptic = LocalHapticFeedback.current
     val density = LocalDensity.current
-    val screenDensity = density.density
-    val shape = MaterialTheme.shapes.medium
-
-    val adaptiveBallSize = when {
-        screenDensity < 1.5f -> NumberGridDimens.compactBallSize
-        screenDensity > 2.5f -> NumberGridDimens.expandedBallSize
-        else -> ballSize
-    }
-
-    val handleClick = remember(onNumberClick) { { number: Int ->
-        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-        onNumberClick(number)
-    } }
+    val configuration = LocalConfiguration.current
+    
+    // Optimize ball size calculation with proper density consideration
+    val screenWidthDp = configuration.screenWidthDp.dp
+    val spacing = AppSpacing.sm
+    val horizontalPadding = AppSpacing.lg * 2
+    
+    val availableWidth = screenWidthDp - horizontalPadding
+    val spacingTotal = spacing * (columns - 1)
+    val ballSize = (availableWidth - spacingTotal) / columns
+    
+    // Clamp ball size to reasonable bounds
+    val finalBallSize = ballSize.coerceIn(32.dp, 48.dp)
+    
+    val haptic = LocalHapticFeedback.current
 
     FlowRow(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(NumberGridDimens.spacing)
-            .wrapContentHeight(),
-        horizontalArrangement = Arrangement.spacedBy(NumberGridDimens.spacing, Alignment.CenterHorizontally),
-        verticalArrangement = Arrangement.spacedBy(NumberGridDimens.spacing),
-        maxItemsInEachRow = NumberGridDimens.maxItemsPerRow
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(spacing, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(spacing),
+        maxItemsInEachRow = columns
     ) {
-        for (item in items) {
-            Box(
-                modifier = Modifier
-                    .clip(shape)
-                    .clickable(
-                        enabled = !item.isDisabled,
-                        onClick = { handleClick(item.number) },
-                        role = Role.Button
-                    )
-                    .padding(2.dp)
-                    .semantics(mergeDescendants = true) {
-                        contentDescription = buildString {
-                            append("Number ${item.number}")
-                            if (item.isSelected) append(", selected")
-                            if (item.isDisabled) append(", disabled")
-                        }
-                        stateDescription = buildString {
-                            when {
-                                item.isDisabled -> "Disabled"
-                                item.isSelected -> "Selected"
+        items.forEach { item ->
+            NumberBall(
+                number = item.number,
+                size = finalBallSize,
+                isSelected = item.isSelected,
+                isHighlighted = item.isHighlighted,
+                isDisabled = item.isDisabled,
+                modifier = Modifier.semantics {
+                    contentDescription = "Número ${item.number}"
+                    role = Role.Button
+                    state = when {
+                        item.isSelected -> State.Selected
+                        item.isDisabled -> State.Disabled
+                        else -> State.Enabled
                                 else -> "Not selected"
                             }
                         }

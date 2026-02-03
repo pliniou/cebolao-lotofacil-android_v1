@@ -63,22 +63,22 @@ fun GameCard(
     val sortedNumbers by remember(game.numbers) {
         derivedStateOf { game.numbers.sorted() }
     }
-    
+
     val isPinned = game.isPinned
 
     val elevation by animateDpAsState(
-        if (isPinned) AppCardDefaults.pinnedElevation else AppCardDefaults.elevation, 
-        spring(stiffness = Spring.StiffnessMedium), 
+        if (isPinned) AppCardDefaults.pinnedElevation else AppCardDefaults.elevation,
+        tween(150),
         label = "elevation"
     )
     val borderColor by animateColorAsState(
         if (isPinned) colors.primary else colors.outline.copy(alpha = 0.55f),
-        tween(250), 
+        tween(150),
         label = "borderColor"
     )
     val containerColor by animateColorAsState(
         if (isPinned) colors.secondaryContainer else colors.surface,
-        tween(250), 
+        tween(150),
         label = "containerColor"
     )
 
@@ -99,7 +99,7 @@ fun GameCard(
             ) {
                 for (number in sortedNumbers) {
                     NumberBall(
-                        number = number, 
+                        number = number,
                         size = 38.dp
                     )
                 }
@@ -161,7 +161,7 @@ private fun GameCardActions(
                 modifier = Modifier.size(40.dp)
             ) {
                 Icon(
-                    deleteIcon, 
+                    deleteIcon,
                     contentDescription = stringResource(id = R.string.delete_game),
                     tint = colors.error,
                     modifier = Modifier.size(24.dp)
@@ -170,8 +170,8 @@ private fun GameCardActions(
         }
         TextButton(onClick = onAnalyzeClick) {
             Icon(
-                analyzeIcon, 
-                null, 
+                analyzeIcon,
+                null,
                 modifier = Modifier.size(ButtonDefaults.IconSize),
                 tint = colors.primary
             )

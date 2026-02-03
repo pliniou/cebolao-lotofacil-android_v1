@@ -62,6 +62,7 @@ fun calculateTypographyScaleFactor(): Float {
 /**
  * Creates Material3 Typography with adaptive scaling.
  * All text styles will scale based on device configuration.
+ * Optimized for performance with pre-calculated font sizes.
  *
  * @param scaleFactor Multiplier for all font sizes (default calculated from device config)
  */
@@ -94,64 +95,63 @@ fun createAdaptiveTypography(scaleFactor: Float = calculateTypographyScaleFactor
             fontWeight = FontWeight.SemiBold,
             fontSize = (18 * scaleFactor).sp,
             lineHeight = (24 * scaleFactor).sp,
-            // Slightly wider tracking for a subtle retro feel.
-            letterSpacing = (0.2f * scaleFactor).sp
+            letterSpacing = 0.sp
         ),
         titleMedium = TextStyle(
             fontFamily = Inter,
             fontWeight = FontWeight.Medium,
             fontSize = (16 * scaleFactor).sp,
             lineHeight = (20 * scaleFactor).sp,
-            letterSpacing = 0.1.sp
+            letterSpacing = 0.sp
         ),
         titleSmall = TextStyle(
             fontFamily = Inter,
             fontWeight = FontWeight.Medium,
             fontSize = (14 * scaleFactor).sp,
             lineHeight = (18 * scaleFactor).sp,
-            letterSpacing = 0.1.sp
+            letterSpacing = 0.sp
         ),
         bodyLarge = TextStyle(
             fontFamily = Inter,
             fontWeight = FontWeight.Normal,
             fontSize = (16 * scaleFactor).sp,
             lineHeight = (24 * scaleFactor).sp,
-            letterSpacing = 0.5.sp
+            letterSpacing = 0.sp
         ),
         bodyMedium = TextStyle(
             fontFamily = Inter,
             fontWeight = FontWeight.Normal,
             fontSize = (14 * scaleFactor).sp,
             lineHeight = (20 * scaleFactor).sp,
-            letterSpacing = 0.25.sp
+            letterSpacing = 0.sp
         ),
         bodySmall = TextStyle(
             fontFamily = Inter,
             fontWeight = FontWeight.Normal,
             fontSize = (12 * scaleFactor).sp,
             lineHeight = (16 * scaleFactor).sp,
-            letterSpacing = 0.4.sp
+            letterSpacing = 0.sp
         ),
         labelLarge = TextStyle(
             fontFamily = Inter,
             fontWeight = FontWeight.Medium,
             fontSize = (14 * scaleFactor).sp,
             lineHeight = (20 * scaleFactor).sp,
-            letterSpacing = 0.3.sp
+            letterSpacing = 0.sp
         ),
         labelMedium = TextStyle(
             fontFamily = Inter,
             fontWeight = FontWeight.Medium,
             fontSize = (12 * scaleFactor).sp,
             lineHeight = (16 * scaleFactor).sp,
-            letterSpacing = 0.5.sp
+            letterSpacing = 0.sp
         ),
         labelSmall = TextStyle(
             fontFamily = Inter,
             fontWeight = FontWeight.Medium,
             fontSize = (11 * scaleFactor).sp,
             lineHeight = (16 * scaleFactor).sp,
-            letterSpacing = 0.5.sp
+            letterSpacing = 0.sp
         )
     )
 }

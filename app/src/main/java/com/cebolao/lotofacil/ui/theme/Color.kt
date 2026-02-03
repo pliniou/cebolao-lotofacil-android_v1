@@ -2,41 +2,41 @@ package com.cebolao.lotofacil.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Base Colors (Dark - Keeping dark theme base but tinted purple/neutral)
-val BaseBackground = Color(0xFF1A1521) // Very Dark Purple Grey
-val Surface1 = Color(0xFF241C2D) // Dark Purple Surface
-val Surface2 = Color(0xFF2E243A) // Lighter Purple Surface
-val OutlineStroke = Color(0xFF5A4B6B) // Purple-ish Outline
+// Base Colors (Dark - Modern purple theme)
+val BaseBackground = Color(0xFF12101A) // Deep, rich dark background
+val Surface1 = Color(0xFF1C1824) // Slightly lighter surface
+val Surface2 = Color(0xFF26202E) // Lighter surface for cards
+val OutlineStroke = Color(0xFF4A3F52) // Subtle outline
 
 // Text Colors
-val TextPrimary = Color(0xFFF2F0F4) // Off-white/Ghost White
-val TextSecondary = Color(0xFFC7BCCF) // Muted lavender
-val TextTertiary = Color(0xFF988C9F) 
+val TextPrimary = Color(0xFFF5F3F7) // Off-white with slight purple tint
+val TextSecondary = Color(0xFFD0C8D8) // Muted lavender
+val TextTertiary = Color(0xFF9E92A6) 
 
-// Brand Colors (Pantone 2593U / 2627U)
-val BrandPrimary = Color(0xFF803594) // Pantone 2593U (R128 G53 B148)
-val BrandSecondary = Color(0xFF702A82) // Pantone 2627U (R112 G42 B130)
+// Brand Colors (Lotofácil - Purple)
+val BrandPrimary = Color(0xFF803594) // Primary purple
+val BrandSecondary = Color(0xFF702A82) // Secondary purple
 val BrandSubtle = Color(0xFF4A2558) // Deep muted purple for backgrounds
 
 // Support Palette (Caixa-inspired)
-val CaixaTurquoise = Color(0xFF54BBAA) // ~Pantone 326C
-val CaixaOrange = Color(0xFFF39200) // ~Pantone 151C
+val CaixaTurquoise = Color(0xFF4DB8A8) // Modernized turquoise
+val CaixaOrange = Color(0xFFE88800) // Modernized orange
 
 // Status Colors
-val Success = CaixaTurquoise
-val Warning = CaixaOrange
+val Success = Color(0xFF4DB8A8) // Modernized success
+val Warning = Color(0xFFE88800) // Modernized warning
 val Error = Color(0xFFE05B5B) 
 
-// Material 3 Light Theme (Light version of the palette)
+// Material 3 Light Theme (Modernized)
 val LightPrimary = BrandPrimary
 val LightOnPrimary = Color(0xFFFFFFFF)
-val LightPrimaryContainer = Color(0xFFFAD7FF)
+val LightPrimaryContainer = Color(0xFFF5D0FF)
 val LightOnPrimaryContainer = BrandSecondary
 val LightSecondary = BrandSecondary
 val LightOnSecondary = Color(0xFFFFFFFF)
 val LightSecondaryContainer = Color(0xFFF0DBFF)
-val LightOnSecondaryContainer = Color(0xFF2B1238) // Dark purple text
-val LightTertiary = CaixaTurquoise
+val LightOnSecondaryContainer = Color(0xFF2B1238)
+val LightTertiary = Color(0xFF4DB8A8)
 val LightOnTertiary = Color(0xFFFFFFFF)
 val LightTertiaryContainer = Color(0xFFC6F8EF)
 val LightOnTertiaryContainer = Color(0xFF003730)

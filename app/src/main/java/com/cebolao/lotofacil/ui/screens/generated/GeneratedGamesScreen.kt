@@ -165,7 +165,7 @@ fun GeneratedGamesScreen(
                 }
             } else {
                 itemsIndexed(games, key = { _, game -> game.id }) { index, game ->
-                    // Optimize animation delay calculation
+                    // Optimize animation delay calculation with proper coercion
                     val animationDelay = remember(index) { 
                         ((index * AppConstants.STAGGER_DELAY_MS).coerceAtMost(AppConstants.MAX_STAGGER_DELAY_MS)).toLong() 
                     }

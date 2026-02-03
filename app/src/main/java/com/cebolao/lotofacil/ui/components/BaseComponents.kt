@@ -31,7 +31,6 @@ fun AppCard(
     content: @Composable () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
-    // If no specific background is provided, ElevatedCard defaults later, but we can respect the parameter
     val cardColors = if (backgroundColor != null || contentColor != null) {
         CardDefaults.elevatedCardColors(
             containerColor = backgroundColor ?: colors.surface,
@@ -45,7 +44,10 @@ fun AppCard(
         modifier = modifier,
         shape = shape,
         colors = cardColors,
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = elevation),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = elevation,
+            hoveredElevation = AppCardDefaults.hoverElevation
+        )
     ) {
         content()
     }
@@ -77,10 +79,10 @@ fun ClickableCard(
     val isPressed by interactionSource.collectIsPressedAsState()
     
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.97f else 1f,
+        targetValue = if (isPressed) 0.98f else 1f,
         animationSpec = spring(
-            dampingRatio = Spring.DampingRatioLowBouncy,
-            stiffness = Spring.StiffnessLow
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMediumLow
         ),
         label = "scale"
     )
@@ -101,7 +103,8 @@ fun ClickableCard(
         colors = cardColors,
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = elevation,
-            pressedElevation = if (isPressed) elevation / 2 else elevation
+            pressedElevation = if (isPressed) AppElevation.none else elevation,
+            hoveredElevation = AppCardDefaults.hoverElevation
         )
     ) {
         content()

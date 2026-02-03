@@ -39,9 +39,21 @@ fun NumberBall(
         isDisabled = isDisabled
     )
 
-    val animatedContainerColor by animateColorAsState(containerColor, tween(200), label = "containerColor")
-    val animatedContentColor by animateColorAsState(contentColor, tween(200), label = "contentColor")
-    val animatedBorderColor by animateColorAsState(borderColor, tween(200), label = "borderColor")
+    val animatedContainerColor by animateColorAsState(
+        targetValue = containerColor, 
+        animationSpec = tween(180), 
+        label = "containerColor"
+    )
+    val animatedContentColor by animateColorAsState(
+        targetValue = contentColor, 
+        animationSpec = tween(180), 
+        label = "contentColor"
+    )
+    val animatedBorderColor by animateColorAsState(
+        targetValue = borderColor, 
+        animationSpec = tween(180), 
+        label = "borderColor"
+    )
 
     Surface(
         modifier = modifier
@@ -63,7 +75,7 @@ fun NumberBall(
             },
         shape = shape,
         color = animatedContainerColor,
-        tonalElevation = if (isSelected) AppElevation.sm else AppElevation.none
+        tonalElevation = if (isSelected) AppElevation.xs else AppElevation.none
     ) {
         val formattedNumber = remember(number) { "%02d".format(number) }
 
@@ -90,24 +102,24 @@ private fun getBallColors(
 
     return when {
         isDisabled -> Triple(
-            colors.onSurface.copy(alpha = 0.12f),
-            colors.onSurface.copy(alpha = 0.38f),
-            colors.outline.copy(alpha = 0.6f)
+            colors.onSurface.copy(alpha = 0.08f),
+            colors.onSurface.copy(alpha = 0.30f),
+            colors.outline.copy(alpha = 0.5f)
         )
         isSelected -> Triple(
             colors.primary,
             colors.onPrimary,
-            colors.primary.copy(alpha = 0.9f)
+            colors.primary.copy(alpha = 0.8f)
         )
         isHighlighted -> Triple(
             colors.primaryContainer,
             colors.primary,
-            colors.primary.copy(alpha = 0.9f)
+            colors.primary.copy(alpha = 0.8f)
         )
         else -> Triple(
             colors.surfaceVariant,
             colors.onSurface,
-            colors.outline.copy(alpha = 0.75f)
+            colors.outline.copy(alpha = 0.7f)
         )
     }
 }

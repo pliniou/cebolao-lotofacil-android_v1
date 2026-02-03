@@ -17,11 +17,11 @@ val AppSpacing = Spacing()
 
 data class Elevation(
     val none: androidx.compose.ui.unit.Dp = 0.dp,
-    val xs: androidx.compose.ui.unit.Dp = 1.dp,
-    val sm: androidx.compose.ui.unit.Dp = 2.dp,
-    val md: androidx.compose.ui.unit.Dp = 4.dp,
-    val lg: androidx.compose.ui.unit.Dp = 8.dp,
-    val xl: androidx.compose.ui.unit.Dp = 12.dp
+    val xs: androidx.compose.ui.unit.Dp = 0.5.dp,
+    val sm: androidx.compose.ui.unit.Dp = 1.dp,
+    val md: androidx.compose.ui.unit.Dp = 2.dp,
+    val lg: androidx.compose.ui.unit.Dp = 4.dp,
+    val xl: androidx.compose.ui.unit.Dp = 8.dp
 )
 
 val AppElevation = Elevation()
@@ -31,11 +31,13 @@ data class CardDefaults(
     val contentSpacing: androidx.compose.ui.unit.Dp = AppSpacing.md,
     val buttonSpacing: androidx.compose.ui.unit.Dp = AppSpacing.sm,
     val elevation: androidx.compose.ui.unit.Dp = AppElevation.none,
-    val pinnedElevation: androidx.compose.ui.unit.Dp = AppElevation.xs
+    val pinnedElevation: androidx.compose.ui.unit.Dp = AppElevation.xs,
+    val hoverElevation: androidx.compose.ui.unit.Dp = AppElevation.sm
 )
 
 val AppCardDefaults = CardDefaults(
-    elevation = AppElevation.none
+    elevation = AppElevation.none,
+    hoverElevation = AppElevation.sm
 )
 
 // Composable helpers for common sizes that might be used across the app

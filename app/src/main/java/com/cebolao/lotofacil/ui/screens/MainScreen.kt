@@ -17,20 +17,40 @@ import com.cebolao.lotofacil.navigation.bottomNavDestinations
 import com.cebolao.lotofacil.navigation.navigateToDestination
 import com.cebolao.lotofacil.ui.components.AppBottomBar
 
+/**
+ * Displays the main screen with optimized performance.
+ * Uses Scaffold with bottom navigation and proper content padding.
+ * Modernized with consistent spacing and elevation.
+ */
 @Composable
-fun MainScreen() {
-    val navController = rememberNavController()
+fun MainScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    mainViewModel: MainViewModel = hiltViewModel()
+) {
+    val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
+    val colors = MaterialTheme.colorScheme
+
+    // Handle splash screen dismissal
+    if (!uiState.isReady) {
+        SplashScreen()
+        return
+    }
+
     val haptic = LocalHapticFeedback.current
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
     Scaffold(
+        modifier = modifier.fillMaxSize(),
         bottomBar = {
             AppBottomBar(
                 destinations = bottomNavDestinations,
-                currentDestination = currentDestination,
-                onDestinationClick = { destination: Destination ->
+                selectedDestination = navController.currentBackStackEntry?.destination?.route?.let { route ->
+                    bottomNavDestinations.find { it::class.qualifiedName == route }
+                } ?: bottomNavDestinations.first(),
+                onDestinationSelected = { destination ->
                     val isSelected = currentDestination
                         ?.hierarchy
                         ?.any { it.hasRoute(destination::class) } == true
@@ -41,8 +61,9 @@ fun MainScreen() {
                 }
             )
         }
-    ) { innerPadding ->
+    ) { paddingValues ->
         AppNavigation(
+            modifier = Modifier.padding(paddingValues),
             navController = navController,
             modifier = Modifier.padding(innerPadding),
             onNavigateToGeneratedGames = {

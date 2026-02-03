@@ -173,9 +173,13 @@ private fun RefreshButton(
     onClick: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
+    // Optimize refresh animation with modernized duration
     val rotationAngle by animateFloatAsState(
         targetValue = if (isRefreshing) 360f else 0f,
-        animationSpec = tween(durationMillis = AppConstants.ANIMATION_DURATION_LONG.toInt()),
+        animationSpec = tween(
+            durationMillis = AppConstants.ANIMATION_DURATION_SHORT.toInt(),
+            easing = androidx.compose.animation.core.LinearEasing
+        ),
         label = "refresh_rotation"
     )
 

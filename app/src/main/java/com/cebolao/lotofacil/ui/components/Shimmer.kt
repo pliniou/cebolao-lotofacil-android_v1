@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalDensity
 /**
  * Optimized shimmer modifier for loading states.
  * Uses proper composition locals and optimized animation specs for better performance.
+ * Modernized with reduced alpha for subtle effect.
  */
 fun Modifier.shimmer(): Modifier = composed {
     LocalDensity.current
@@ -29,7 +30,7 @@ fun Modifier.shimmer(): Modifier = composed {
         targetValue = 1000f,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 1000, // Reduced from 1200 for smoother feel
+                durationMillis = 1200,
                 easing = FastOutSlowInEasing
             ),
             repeatMode = RepeatMode.Restart
@@ -37,11 +38,11 @@ fun Modifier.shimmer(): Modifier = composed {
         label = "shimmerTranslation"
     )
 
-    // Use theme-aware colors with proper alpha values
+    // Use theme-aware colors with reduced alpha for modern look
     val shimmerColors = listOf(
-        Color.LightGray.copy(alpha = 0.4f), // Reduced alpha for better performance
-        Color.LightGray.copy(alpha = 0.1f),
-        Color.LightGray.copy(alpha = 0.4f),
+        Color.LightGray.copy(alpha = 0.25f),
+        Color.LightGray.copy(alpha = 0.08f),
+        Color.LightGray.copy(alpha = 0.25f),
     )
 
     // Optimize brush calculation

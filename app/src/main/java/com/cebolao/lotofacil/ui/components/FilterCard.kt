@@ -56,7 +56,7 @@ fun FilterCard(
 
     val elevation by animateDpAsState(
         if (enabled) AppCardDefaults.pinnedElevation else AppElevation.xs, 
-        spring(stiffness = Spring.StiffnessMedium), 
+        tween(150), 
         label = "elevation"
     )
 
@@ -77,8 +77,8 @@ fun FilterCard(
             )
             AnimatedVisibility(
                 visible = enabled,
-                enter = expandVertically(animationSpec = spring(stiffness = Spring.StiffnessMediumLow)) + fadeIn(),
-                exit = shrinkVertically(animationSpec = spring(stiffness = Spring.StiffnessMedium)) + fadeOut()
+                enter = expandVertically(animationSpec = tween(150)) + fadeIn(animationSpec = tween(150)),
+                exit = shrinkVertically(animationSpec = tween(150)) + fadeOut(animationSpec = tween(150))
             ) {
                 FilterContent(
                     filterState,

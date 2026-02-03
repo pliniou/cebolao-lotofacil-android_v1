@@ -6,7 +6,7 @@ Uma solução da Cebola Studios para gerar jogos da Lotofácil com base em estat
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.0.0-purple)
 ![Compose](https://img.shields.io/badge/Jetpack_Compose-2024.06-blueviolet)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
-![Status](https://img.shields.io/badge/Status-Pronto%20para%20Apostar-brightgreen)
+![Status](https://img.shields.io/badge/Status-Production_Ready-brightgreen)
 
 ## ✨ Funcionalidades Principais
 

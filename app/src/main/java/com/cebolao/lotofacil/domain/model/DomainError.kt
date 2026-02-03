@@ -8,10 +8,7 @@ import com.cebolao.lotofacil.core.error.AppError
  */
 sealed interface DomainError : AppError {
     
-    /**
-     * Represents a generic unknown error.
-     */
-    data class Unknown(override val cause: Throwable? = null) : DomainError
+
     
     /**
      * Functionality or data is not available (e.g., no internet for history).

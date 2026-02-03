@@ -1,30 +1,23 @@
-@file:Suppress("ConstPropertyName")
 package com.cebolao.lotofacil.ui.components
 
-import androidx.compose.foundation.clickable
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @Stable
 data class NumberBallItem(
@@ -39,23 +32,15 @@ interface StableKey {
     val key: Any
 }
 
-object NumberGridDimens {
-    val baseBallSize: Dp = 40.dp
-    val compactBallSize: Dp = 36.dp
-    val expandedBallSize: Dp = 44.dp
-    val spacing: Dp = 8.dp
-    const val maxItemsPerRow = 5
-}
-
+@SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NumberGrid(
     items: List<NumberBallItem>,
-    onNumberClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     columns: Int = 5
 ) {
-    val density = LocalDensity.current
+    LocalDensity.current
     val configuration = LocalConfiguration.current
     
     // Optimize ball size calculation with proper density consideration
@@ -69,8 +54,8 @@ fun NumberGrid(
     
     // Clamp ball size to reasonable bounds
     val finalBallSize = ballSize.coerceIn(32.dp, 48.dp)
-    
-    val haptic = LocalHapticFeedback.current
+
+    LocalHapticFeedback.current
 
     FlowRow(
         modifier = modifier.fillMaxWidth(),

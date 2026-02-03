@@ -8,13 +8,12 @@ import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.model.CheckResult
 import com.cebolao.lotofacil.domain.model.GameStatistic
 import com.cebolao.lotofacil.domain.model.LotofacilGame
-import com.cebolao.lotofacil.domain.repository.GameRepository
 import com.cebolao.lotofacil.domain.usecase.CheckGameUseCase
 import com.cebolao.lotofacil.domain.usecase.ClearUnpinnedGamesUseCase
 import com.cebolao.lotofacil.domain.usecase.DeleteGameUseCase
+import com.cebolao.lotofacil.domain.usecase.GameCheckState
 import com.cebolao.lotofacil.domain.usecase.GetSavedGamesUseCase
 import com.cebolao.lotofacil.domain.usecase.ToggleGamePinUseCase
-import com.cebolao.lotofacil.domain.usecase.GameCheckState
 import com.cebolao.lotofacil.navigation.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -35,12 +34,7 @@ import javax.inject.Inject
 /**
  * Events emitted by [GameViewModel] for navigation, dialogs and snackbars.
  */
-sealed interface GameEvent {
-    data object ShowClearDialog : GameEvent
-    data class ShowDeleteDialog(val game: LotofacilGame) : GameEvent
-    data class ShowAnalysisDialog(val result: GameAnalysisResult) : GameEvent
-    data class ShowSnackbar(@StringRes val messageRes: Int) : GameEvent
-}
+
 
 @Stable
 data class GameUiState(
@@ -78,8 +72,7 @@ class GameViewModel @Inject constructor(
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
     private val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
     val uiEvent = _uiEvent.receiveAsFlow()
-    private val _events = Channel<GameEvent>(Channel.BUFFERED)
-    val events = _events
+
     val generatedGames: StateFlow<ImmutableList<LotofacilGame>> = getSavedGamesUseCase()
         .stateIn(
             scope = viewModelScope,

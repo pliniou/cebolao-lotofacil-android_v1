@@ -25,29 +25,7 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
-    protected fun showSnackbar(message: String, actionLabel: String? = null) {
-        sendUiEvent(UiEvent.ShowSnackbar(message = message, actionLabel = actionLabel))
-    }
 
-    protected fun showSnackbar(
-        @StringRes messageResId: Int,
-        @StringRes actionLabelResId: Int? = null
-    ) {
-        sendUiEvent(
-            UiEvent.ShowSnackbar(
-                messageResId = messageResId,
-                actionLabelResId = actionLabelResId
-            )
-        )
-    }
-
-    protected fun navigateToGeneratedGames() {
-        sendUiEvent(UiEvent.NavigateToGeneratedGames)
-    }
-
-    protected fun showResetConfirmation() {
-        sendUiEvent(UiEvent.ShowResetConfirmation)
-    }
 }
 
 /**

@@ -33,15 +33,7 @@ enum class StatisticPattern(@StringRes val titleRes: Int, val icon: ImageVector)
 /**
  * Data class representing statistics chip values for UI display.
  */
-@Stable
-data class StatChipValues(
-    val sum: String,
-    val evens: String,
-    val primes: String,
-    val frame: String,
-    val portrait: String,
-    val fibonacci: String
-)
+
 
 /**
  * Holds all state required by the Home screen, including loading and error flags, the

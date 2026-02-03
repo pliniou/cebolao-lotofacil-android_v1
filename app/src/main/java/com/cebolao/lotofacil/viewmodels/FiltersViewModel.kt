@@ -33,10 +33,6 @@ data class FiltersUiState(
     val generationState: GenerationUiState = GenerationUiState.Idle
 )
 
-sealed interface FiltersEvent {
-    data class ShowSnackbar(val message: String) : FiltersEvent
-    data object NavigateToGames : FiltersEvent
-}
 
 @HiltViewModel
 class FiltersViewModel @Inject constructor(
@@ -51,8 +47,7 @@ class FiltersViewModel @Inject constructor(
     private val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    private val _events = Channel<FiltersEvent>(Channel.BUFFERED)
-    val events = _events
+
 
     init {
         loadLastDraw()
@@ -113,7 +108,6 @@ class FiltersViewModel @Inject constructor(
                     gameRepository.addGeneratedGames(result.value)
                     _uiState.update { it.copy(generationState = GenerationUiState.Success(result.value.size)) }
                     _uiEvent.send(UiEvent.NavigateToGeneratedGames)
-                    _events.send(FiltersEvent.NavigateToGames)
                 }
                 is AppResult.Failure -> {
                     val message = when (result.error) {
@@ -124,7 +118,6 @@ class FiltersViewModel @Inject constructor(
                     }
                     _uiState.update { it.copy(generationState = GenerationUiState.Error(message)) }
                     _uiEvent.send(UiEvent.ShowSnackbar(message = message))
-                    _events.send(FiltersEvent.ShowSnackbar(message))
                 }
             }
             _uiState.update { it.copy(isGenerating = false) }

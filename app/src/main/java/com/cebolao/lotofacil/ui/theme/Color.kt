@@ -18,13 +18,6 @@ val BrandPrimary = Color(0xFF803594) // Primary purple
 val BrandSecondary = Color(0xFF702A82) // Secondary purple
 val BrandSubtle = Color(0xFF4A2558) // Deep muted purple for backgrounds
 
-// Support Palette (Caixa-inspired)
-val CaixaTurquoise = Color(0xFF4DB8A8) // Modernized turquoise
-val CaixaOrange = Color(0xFFE88800) // Modernized orange
-
-// Status Colors
-val Success = Color(0xFF4DB8A8) // Modernized success
-val Warning = Color(0xFFE88800) // Modernized warning
 val Error = Color(0xFFE05B5B) 
 
 // Material 3 Light Theme (Modernized)

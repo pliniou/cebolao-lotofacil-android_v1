@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.cebolao.lotofacil.ui.theme.LocalAnimationEnabled
-import kotlinx.coroutines.delay
 
 /**
  * Um wrapper que anima a entrada de seu conteúdo na tela.

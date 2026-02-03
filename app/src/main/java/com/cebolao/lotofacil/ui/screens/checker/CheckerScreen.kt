@@ -235,8 +235,7 @@ private fun NumberGridSection(
             }
             
             NumberGrid(
-                items = gridItems,
-                onNumberClick = onNumberClicked
+                items = gridItems
             )
         }
     }

@@ -10,7 +10,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.cebolao.lotofacil.navigation.AppNavigation
 import com.cebolao.lotofacil.navigation.Destination
 import com.cebolao.lotofacil.navigation.bottomNavDestinations
@@ -29,7 +28,7 @@ fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel()
 ) {
     val uiState by mainViewModel.uiState.collectAsStateWithLifecycle()
-    val colors = MaterialTheme.colorScheme
+
 
     // Handle splash screen dismissal
     if (!uiState.isReady) {

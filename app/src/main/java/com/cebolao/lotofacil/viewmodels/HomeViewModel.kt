@@ -38,8 +38,7 @@ class HomeViewModel @Inject constructor(
     private val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    private val _events = Channel<HomeEvent>(Channel.BUFFERED)
-    val events = _events
+
 
     init {
         observeSyncStatus()
@@ -152,6 +151,4 @@ class HomeViewModel @Inject constructor(
 /**
  * Events emitted by [HomeViewModel].
  */
-sealed interface HomeEvent {
-    data class ShowSnackbar(@StringRes val messageRes: Int) : HomeEvent
-}
+

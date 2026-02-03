@@ -307,46 +307,7 @@ private fun PaddingBox(content: @Composable () -> Unit) {
 }
 
 
-@Composable
-fun HomeScreenSkeleton() {
-    val colors = MaterialTheme.colorScheme
-    
-    Column(
-        modifier = Modifier,
-        verticalArrangement = Arrangement.spacedBy(AppSpacing.xxl)
-    ) {
-        // Last Draw Skeleton
-        Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
-            Column(
-                Modifier.padding(AppSpacing.lg),
-                verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
-            ) {
-                Box(Modifier.size(150.dp, 20.dp).clip(MaterialTheme.shapes.small).shimmer())
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    for (i in 0 until 5) {
-                        Box(Modifier.size(40.dp).clip(MaterialTheme.shapes.medium).shimmer())
-                    }
-                }
-            }
-        }
 
-        // Statistics Skeleton
-        Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.md)) {
-            Box(Modifier.size(200.dp, 28.dp).clip(MaterialTheme.shapes.small).shimmer())
-            Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = colors.surface)) {
-                Column(
-                    Modifier.padding(vertical = AppSpacing.lg),
-                    verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
-                ) {
-                   Box(Modifier.fillMaxWidth().height(200.dp).shimmer())
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun StatsLoadingSkeleton() {

@@ -1,9 +1,7 @@
 package com.cebolao.lotofacil.ui.components.cards
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -71,11 +69,7 @@ fun GameCard(
         tween(150),
         label = "elevation"
     )
-    val borderColor by animateColorAsState(
-        if (isPinned) colors.primary else colors.outline.copy(alpha = 0.55f),
-        tween(150),
-        label = "borderColor"
-    )
+
     val containerColor by animateColorAsState(
         if (isPinned) colors.secondaryContainer else colors.surface,
         tween(150),

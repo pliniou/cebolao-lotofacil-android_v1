@@ -90,7 +90,16 @@ fun BarChart(
         }
     }
 
-    Canvas(modifier = modifier.height(chartHeight)) {
+    val chartDescription = stringResource(id = R.string.chart_frequency_description)
+
+    Canvas(
+        modifier = modifier
+            .height(chartHeight)
+            .semantics {
+                role = androidx.compose.ui.semantics.Role.Image
+                contentDescription = chartDescription
+            }
+    ) {
         val yAxisLabelWidth = 36.dp.toPx()
         val xAxisLabelHeight = 36.dp.toPx()
         val valueLabelHeight = 22.dp.toPx()

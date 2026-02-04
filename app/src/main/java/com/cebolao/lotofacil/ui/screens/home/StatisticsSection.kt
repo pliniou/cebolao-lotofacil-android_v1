@@ -49,6 +49,7 @@ import com.cebolao.lotofacil.ui.theme.iconMedium
 import com.cebolao.lotofacil.ui.theme.iconSmall
 import com.cebolao.lotofacil.viewmodels.StatisticPattern
 import kotlinx.collections.immutable.toImmutableList
+import com.cebolao.lotofacil.core.utils.NumberFormatUtils
 
 @Composable
 fun StatisticsSection(
@@ -78,7 +79,7 @@ fun StatisticsSection(
             )
             Text(
                 text = stringResource(id = R.string.statistics_center),
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.titleLarge,
                 color = colors.onSurface,
                 fontWeight = FontWeight.Bold
             )
@@ -129,7 +130,7 @@ fun StatisticsSection(
                                         Icon(Icons.Default.BarChart, null, tint = colors.primary)
                                         Text(
                                             text = stringResource(id = R.string.pattern_analysis_title),
-                                            style = MaterialTheme.typography.titleMedium,
+                                            style = MaterialTheme.typography.titleLarge,
                                             fontWeight = FontWeight.Bold
                                         )
                                     }
@@ -201,7 +202,7 @@ private fun ElevatedStatCard(
                 )
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
@@ -226,10 +227,10 @@ private fun GridNumbersDisplay(numbers: List<Pair<Int, Int>>, suffix: String) {
             ) {
                 NumberBall(
                     number = num, 
-                    size = 42.dp
+                    size = 48.dp
                 )
                 Text(
-                    text = "$value$suffix",
+                    text = "${NumberFormatUtils.formatInteger(value)}$suffix",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Medium
@@ -278,7 +279,7 @@ private fun DistributionCharts(
                 StatisticPattern.PORTRAIT -> stats.portraitDistribution
                 StatisticPattern.FIBONACCI -> stats.fibonacciDistribution
                 StatisticPattern.MULTIPLES_OF_3 -> stats.multiplesOf3Distribution
-            }.toList().sortedBy { it.first }.map { it.first.toString() to it.second }.toImmutableList()
+            }.toList().sortedBy { it.first }.map { NumberFormatUtils.formatInteger(it.first) to it.second }.toImmutableList()
         }
         
         val max by remember(data) { 

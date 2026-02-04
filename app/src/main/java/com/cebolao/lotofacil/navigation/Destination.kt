@@ -38,6 +38,12 @@ sealed interface Destination {
 
     @Serializable
     data object About : Destination
+
+    @Serializable
+    data object Insights : Destination
+
+    @Serializable
+    data object UserStats : Destination
 }
 
 val bottomNavDestinations = listOf(

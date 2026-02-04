@@ -120,9 +120,51 @@ class StatisticsAnalyzer @Inject constructor(
         }.eachCount()
     }
 
-    private fun calculateAverageSum(draws: List<HistoricalDraw>): Float {
+    fun calculateAverageSum(draws: List<HistoricalDraw>): Float {
         if (draws.isEmpty()) return 0f
         return draws.map { it.sum }.average().toFloat()
+    }
+
+    /**
+     * Calculates the average sum for each contest in the provided list,
+     * considering a rolling average window or simply the value per draw.
+     * Returns a timeline of (ContestNumber, Value).
+     */
+    fun getAverageSumTimeline(
+        draws: List<HistoricalDraw>,
+        windowSize: Int = 10
+    ): List<Pair<Int, Float>> {
+        if (draws.isEmpty()) return emptyList()
+        
+        // Reversed because draws are usually sorted descending by contest number
+        val sortedDraws = draws.sortedBy { it.contestNumber }
+        
+        return sortedDraws.mapIndexed { index, draw ->
+            val start = (index - windowSize + 1).coerceAtLeast(0)
+            val window = sortedDraws.subList(start, index + 1)
+            val average = window.map { it.sum }.average().toFloat()
+            draw.contestNumber to average
+        }
+    }
+
+    /**
+     * Calculates the distribution value (evens, primes, etc.) timeline.
+     */
+    fun getDistributionTimeline(
+        draws: List<HistoricalDraw>,
+        windowSize: Int = 10,
+        valueExtractor: (HistoricalDraw) -> Int
+    ): List<Pair<Int, Float>> {
+        if (draws.isEmpty()) return emptyList()
+        
+        val sortedDraws = draws.sortedBy { it.contestNumber }
+        
+        return sortedDraws.mapIndexed { index, draw ->
+            val start = (index - windowSize + 1).coerceAtLeast(0)
+            val window = sortedDraws.subList(start, index + 1)
+            val average = window.map { valueExtractor(it) }.average().toFloat()
+            draw.contestNumber to average
+        }
     }
 
     private data class DistributionResults(

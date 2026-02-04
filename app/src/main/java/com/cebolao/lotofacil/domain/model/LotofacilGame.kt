@@ -13,6 +13,8 @@ data class LotofacilGame(
     val numbers: Set<Int>,
     val isPinned: Boolean = false,
     val creationTimestamp: Long = System.currentTimeMillis(),
+    val usageCount: Int = 0,
+    val lastPlayed: Long? = null,
     val id: String = java.util.UUID.randomUUID().toString()
 ) {
     init {
@@ -37,7 +39,7 @@ data class LotofacilGame(
 
     /** Converts the game to a compact string for efficient storage. */
     fun toCompactString(): String {
-        return "${numbers.sorted().joinToString(",")}|$isPinned|$creationTimestamp|$id"
+        return "${numbers.sorted().joinToString(",")}|$isPinned|$creationTimestamp|$id|$usageCount|$lastPlayed"
     }
 
     companion object {
@@ -49,8 +51,10 @@ data class LotofacilGame(
                 val isPinned = parts.getOrNull(1)?.toBoolean() ?: false
                 val timestamp = parts.getOrNull(2)?.toLong() ?: System.currentTimeMillis()
                 val id = parts.getOrNull(3) ?: java.util.UUID.randomUUID().toString()
+                val usageCount = parts.getOrNull(4)?.toInt() ?: 0
+                val lastPlayed = parts.getOrNull(5)?.toLongOrNull()
                 if (numbers.size == 15) {
-                    LotofacilGame(numbers, isPinned, timestamp, id)
+                    LotofacilGame(numbers, isPinned, timestamp, usageCount, lastPlayed, id)
                 } else null
             } catch (_: Exception) {
                 null

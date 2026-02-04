@@ -118,14 +118,20 @@ fun FiltersScreen(
                 )
             }
 
-            // Add filter items with animation
-            filterList(
-                filterStates = uiState.filterStates,
-                lastDraw = uiState.lastDraw,
-                onFilterToggle = { type, enabled -> filtersViewModel.onFilterToggle(type, enabled) },
-                onRangeChange = { type, range -> filtersViewModel.onRangeAdjust(type, range) },
-                onInfoClick = { type -> showDialogFor = type }
-            )
+            if (uiState.lastDraw == null) {
+                items(3) {
+                    FilterCardSkeleton()
+                }
+            } else {
+                // Add filter items with animation
+                filterList(
+                    filterStates = uiState.filterStates,
+                    lastDraw = uiState.lastDraw,
+                    onFilterToggle = { type, enabled -> filtersViewModel.onFilterToggle(type, enabled) },
+                    onRangeChange = { type, range -> filtersViewModel.onRangeAdjust(type, range) },
+                    onInfoClick = { type -> showDialogFor = type }
+                )
+            }
 
             item {
                 GenerateActionsPanel(
@@ -134,5 +140,18 @@ fun FiltersScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun FilterCardSkeleton() {
+    AppCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .shimmer(),
+        backgroundColor = MaterialTheme.colorScheme.surface
+    ) {
+        // Shimmering content
     }
 }

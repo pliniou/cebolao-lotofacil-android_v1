@@ -173,6 +173,9 @@ fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
                                 }
                             )
                         }
+                        else -> {
+                             // Handled idle or other potential states
+                        }
                     }
                 }
             }

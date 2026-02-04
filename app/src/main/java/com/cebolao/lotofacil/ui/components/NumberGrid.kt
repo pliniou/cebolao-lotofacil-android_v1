@@ -40,6 +40,7 @@ fun NumberGrid(
     items: List<NumberBallItem>,
     modifier: Modifier = Modifier,
     columns: Int = 5,
+    ballSize: androidx.compose.ui.unit.Dp? = null,
     onNumberClicked: ((Int) -> Unit)? = null
 ) {
     LocalDensity.current
@@ -52,10 +53,10 @@ fun NumberGrid(
     
     val availableWidth = screenWidthDp - horizontalPadding
     val spacingTotal = spacing * (columns - 1)
-    val ballSize = (availableWidth - spacingTotal) / columns
+    val calculatedBallSize = (availableWidth - spacingTotal) / columns
     
     // Clamp ball size to reasonable bounds
-    val finalBallSize = ballSize.coerceIn(32.dp, 48.dp)
+    val finalBallSize = ballSize ?: calculatedBallSize.coerceIn(32.dp, 48.dp)
 
     LocalHapticFeedback.current
 

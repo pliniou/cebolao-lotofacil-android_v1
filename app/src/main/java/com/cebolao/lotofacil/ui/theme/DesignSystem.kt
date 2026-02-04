@@ -110,7 +110,7 @@ object AppShapes {
 
 // Composable helpers for common sizes that might be used across the app
 @Composable
-fun iconSmall() = 18.dp
+fun iconSmall() = 24.dp
 
 @Composable
 fun iconMedium() = 24.dp
@@ -122,4 +122,4 @@ fun iconLarge() = 32.dp
 fun iconExtraLarge() = 48.dp
 
 @Composable
-fun iconButtonSize() = 40.dp
+fun iconButtonSize() = 48.dp

@@ -56,16 +56,15 @@ import com.cebolao.lotofacil.ui.components.NumberBall
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.iconSmall
-import java.text.NumberFormat
+import com.cebolao.lotofacil.core.utils.NumberFormatUtils
 import java.util.Locale
 
 @Composable
 fun LastDrawSection(stats: LastDrawStats) {
-    val currencyFormat = remember { NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR")) }
 
     Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)) {
         // Main Result Card
-        LatestResultCard(stats = stats, currencyFormat = currencyFormat)
+        LatestResultCard(stats = stats)
 
         // Next Contest Card
         stats.nextContest?.let { nextContest ->
@@ -73,8 +72,7 @@ fun LastDrawSection(stats: LastDrawStats) {
                 contest = nextContest,
                 date = stats.nextDate ?: "",
                 estimate = stats.nextEstimate ?: 0.0,
-                accumulated = stats.accumulated,
-                currencyFormat = currencyFormat
+                accumulated = stats.accumulated
             )
         }
     }
@@ -82,8 +80,7 @@ fun LastDrawSection(stats: LastDrawStats) {
 
 @Composable
 private fun LatestResultCard(
-    stats: LastDrawStats,
-    currencyFormat: NumberFormat
+    stats: LastDrawStats
 ) {
     val colors = MaterialTheme.colorScheme
     
@@ -102,7 +99,7 @@ private fun LatestResultCard(
             ) {
                 Column {
                     Text(
-                        text = "${stringResource(id = R.string.last_contest)} #${stats.contest}",
+                        text = "${stringResource(id = R.string.last_contest)} #${NumberFormatUtils.formatInteger(stats.contest)}",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = colors.primary
@@ -135,7 +132,7 @@ private fun LatestResultCard(
             // Prizes Expandable
             if (stats.prizes.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(AppSpacing.md))
-                PrizeDetailsSection(stats.prizes, stats.winners, currencyFormat)
+                PrizeDetailsSection(stats.prizes, stats.winners)
             }
         }
     }
@@ -164,19 +161,18 @@ private fun QuickStatsRow(stats: LastDrawStats) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        StatItem(label = stringResource(id = R.string.sum_label), value = stats.sum.toString())
-        StatItem(label = stringResource(id = R.string.even_label), value = stats.evens.toString())
-        StatItem(label = stringResource(id = R.string.prime_label), value = stats.primes.toString())
-        StatItem(label = stringResource(id = R.string.frame_label), value = stats.frame.toString())
-        StatItem(label = stringResource(id = R.string.portrait_label), value = stats.portrait.toString())
+        StatItem(label = stringResource(id = R.string.sum_label), value = NumberFormatUtils.formatInteger(stats.sum))
+        StatItem(label = stringResource(id = R.string.even_label), value = NumberFormatUtils.formatInteger(stats.evens))
+        StatItem(label = stringResource(id = R.string.prime_label), value = NumberFormatUtils.formatInteger(stats.primes))
+        StatItem(label = stringResource(id = R.string.frame_label), value = NumberFormatUtils.formatInteger(stats.frame))
+        StatItem(label = stringResource(id = R.string.portrait_label), value = NumberFormatUtils.formatInteger(stats.portrait))
     }
 }
 
 @Composable
 private fun PrizeDetailsSection(
     prizes: List<PrizeTier>,
-    winners: List<WinnerLocation>,
-    currencyFormat: NumberFormat
+    winners: List<WinnerLocation>
 ) {
     var showPrizes by remember { mutableStateOf(false) }
     val colors = MaterialTheme.colorScheme
@@ -218,7 +214,7 @@ private fun PrizeDetailsSection(
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
             ) {
                 prizes.forEachIndexed { index, prize ->
-                    PrizeTierRow(prize, index + 1, currencyFormat)
+                    PrizeTierRow(prize, index + 1)
                 }
 
                 if (winners.isNotEmpty()) {
@@ -238,7 +234,7 @@ private fun PrizeDetailsSection(
 }
 
 @Composable
-private fun PrizeTierRow(prize: PrizeTier, tier: Int, format: NumberFormat) {
+private fun PrizeTierRow(prize: PrizeTier, tier: Int) {
     val colors = MaterialTheme.colorScheme
     
     Row(
@@ -257,14 +253,14 @@ private fun PrizeTierRow(prize: PrizeTier, tier: Int, format: NumberFormat) {
                 color = colors.onSurface
             )
             Text(
-                text = "${prize.winners} ganhadores",
+                text = "${NumberFormatUtils.formatInteger(prize.winners)} ganhadores",
                 style = MaterialTheme.typography.labelSmall,
                 color = colors.onSurfaceVariant
             )
         }
         
         Text(
-            text = format.format(prize.prizeValue),
+            text = NumberFormatUtils.formatCurrency(prize.prizeValue),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             color = if(tier == 1) colors.primary else colors.onSurface
@@ -311,7 +307,7 @@ private fun WinnerBadge(winner: WinnerLocation) {
                         .padding(horizontal = 4.dp, vertical = 2.dp)
                 ) {
                     Text(
-                        text = "${winner.winnersCount}",
+                        text = NumberFormatUtils.formatInteger(winner.winnersCount),
                         style = MaterialTheme.typography.labelSmall,
                         color = colors.onPrimary,
                         fontSize = 10.sp
@@ -327,8 +323,7 @@ private fun NextDrawCard(
     contest: Int,
     date: String,
     estimate: Double,
-    accumulated: Boolean,
-    currencyFormat: NumberFormat
+    accumulated: Boolean
 ) {
     val colors = MaterialTheme.colorScheme
     val gradientBrush = remember(accumulated) {
@@ -389,7 +384,7 @@ private fun NextDrawCard(
 
                 // Estimate Value
                 Text(
-                    text = currencyFormat.format(estimate),
+                    text = NumberFormatUtils.formatCurrency(estimate),
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Black,
                     color = colors.onSurface,
@@ -404,7 +399,7 @@ private fun NextDrawCard(
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
                 ) {
                     Text(
-                        text = stringResource(id = R.string.next_contest_format, contest),
+                        text = stringResource(id = R.string.next_contest_format, NumberFormatUtils.formatInteger(contest)),
                         style = MaterialTheme.typography.bodySmall,
                         color = colors.onSurfaceVariant
                     )

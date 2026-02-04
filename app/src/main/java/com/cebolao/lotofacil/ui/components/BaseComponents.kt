@@ -103,7 +103,7 @@ fun ClickableCard(
         colors = cardColors,
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = elevation,
-            pressedElevation = if (isPressed) AppElevation.none else elevation,
+            pressedElevation = if (isPressed) elevation * 0.5f else elevation,
             hoveredElevation = AppCardDefaults.hoverElevation
         )
     ) {

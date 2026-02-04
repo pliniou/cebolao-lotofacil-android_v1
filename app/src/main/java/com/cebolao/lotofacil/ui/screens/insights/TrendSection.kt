@@ -1,0 +1,121 @@
+package com.cebolao.lotofacil.ui.screens.insights
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ElevatedAssistChip
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.domain.usecase.TrendAnalysis
+import com.cebolao.lotofacil.domain.usecase.TrendType
+import com.cebolao.lotofacil.ui.components.AppCard
+import com.cebolao.lotofacil.ui.components.TrendChart
+import com.cebolao.lotofacil.ui.theme.AppSpacing
+
+@Composable
+fun TrendSection(
+    analysis: TrendAnalysis?,
+    selectedType: TrendType,
+    selectedWindow: Int,
+    onTypeSelected: (TrendType) -> Unit,
+    onWindowSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    AppCard(
+        modifier = modifier.fillMaxWidth(),
+        backgroundColor = MaterialTheme.colorScheme.surface
+    ) {
+        Column(modifier = Modifier.padding(AppSpacing.md)) {
+            Text(
+                text = stringResource(id = R.string.trends_title),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = stringResource(id = R.string.trends_subtitle),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            // Trend Type Selector
+            TrendTypeSelector(selectedType, onTypeSelected)
+
+            // Trend Window Selector
+            TrendWindowSelector(selectedWindow, onWindowSelected)
+
+            if (analysis != null) {
+                TrendChart(
+                    data = analysis.timeline,
+                    modifier = Modifier.padding(top = AppSpacing.lg)
+                )
+                
+                Text(
+                    text = stringResource(id = R.string.trend_avg_label, analysis.averageValue),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = AppSpacing.sm)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TrendTypeSelector(selected: TrendType, onSelect: (TrendType) -> Unit) {
+    val types = TrendType.entries
+    LazyRow(
+        contentPadding = PaddingValues(vertical = AppSpacing.md),
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+    ) {
+        items(types) { type ->
+            ElevatedAssistChip(
+                onClick = { onSelect(type) },
+                label = { 
+                    Text(stringResource(id = when(type) {
+                        TrendType.SUM -> R.string.trend_type_sum
+                        TrendType.EVENS -> R.string.trend_type_evens
+                        TrendType.PRIMES -> R.string.trend_type_primes
+                        TrendType.FRAME -> R.string.trend_type_frame
+                        TrendType.PORTRAIT -> R.string.portrait_label
+                        TrendType.FIBONACCI -> R.string.fibonacci_label
+                        TrendType.MULTIPLES_OF_3 -> R.string.multiples_of_3_label
+                    }))
+                },
+                selected = selected == type,
+                colors = androidx.compose.material3.AssistChipDefaults.elevatedAssistChipColors(
+                    containerColor = if (selected == type) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+                )
+            )
+        }
+    }
+}
+
+@Composable
+private fun TrendWindowSelector(selected: Int, onSelect: (Int) -> Unit) {
+    val windows = listOf(20, 50, 100, 200)
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        windows.forEach { window ->
+            ElevatedAssistChip(
+                onClick = { onSelect(window) },
+                label = { Text(stringResource(id = R.string.trend_window_label, window)) },
+                selected = selected == window,
+                colors = androidx.compose.material3.AssistChipDefaults.elevatedAssistChipColors(
+                    containerColor = if (selected == window) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface
+                )
+            )
+        }
+    }
+}

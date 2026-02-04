@@ -53,13 +53,15 @@ import com.cebolao.lotofacil.ui.theme.iconButtonSize
 import com.cebolao.lotofacil.ui.theme.iconExtraLarge
 import com.cebolao.lotofacil.ui.theme.iconMedium
 import com.cebolao.lotofacil.viewmodels.HomeViewModel
+import com.cebolao.lotofacil.ui.screens.home.FrequencyChartSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
     onExploreFilters: () -> Unit = {},
-    onOpenChecker: () -> Unit = {}
+    onOpenChecker: () -> Unit = {},
+    onNavigateToInsights: () -> Unit = {}
 ) {
     val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -150,6 +152,16 @@ fun HomeScreen(
                                 onTimeWindowSelected = { homeViewModel.onTimeWindowSelected(it) },
                                 onPatternSelected = { homeViewModel.onPatternSelected(it) }
                             )
+                        }
+                    }
+                    item(key = "advanced_stats_card") {
+                        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_MEDIUM + 100) {
+                            AdvancedStatsCard(onClick = onNavigateToInsights)
+                        }
+                    }
+                    item(key = "frequency_summary") {
+                        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_MEDIUM + 200) {
+                            FrequencyChartSection()
                         }
                     }
                     item(key = "explanation") {
@@ -264,6 +276,47 @@ private fun ErrorState(messageResId: Int?, onRetry: () -> Unit) {
                     fontWeight = FontWeight.Medium
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun AdvancedStatsCard(onClick: () -> Unit) {
+    val colors = MaterialTheme.colorScheme
+    AppCard(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        backgroundColor = colors.primaryContainer.copy(alpha = 0.2f)
+    ) {
+        Row(
+            modifier = Modifier.padding(AppSpacing.lg),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Analytics,
+                contentDescription = null,
+                tint = colors.primary,
+                modifier = Modifier.size(32.dp)
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(id = R.string.advanced_stats_card_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = colors.onPrimaryContainer
+                )
+                Text(
+                    text = stringResource(id = R.string.advanced_stats_card_subtitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onPrimaryContainer.copy(alpha = 0.7f)
+                )
+            }
+            Icon(
+                imageVector = androidx.compose.material.icons.automirrored.filled.ArrowForward,
+                contentDescription = null,
+                tint = colors.primary.copy(alpha = 0.5f)
+            )
         }
     }
 }

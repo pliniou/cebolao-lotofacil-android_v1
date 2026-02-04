@@ -107,6 +107,29 @@ class GameRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun recordGameUsage(gameId: String): AppResult<Unit> = gamesMutex.withLock {
+        return try {
+            _games.update { currentGames ->
+                currentGames.map { game ->
+                    if (game.id == gameId) {
+                        game.copy(
+                            usageCount = game.usageCount + 1,
+                            lastPlayed = System.currentTimeMillis()
+                        )
+                    } else game
+                }.toImmutableList()
+            }
+            val game = _games.value.find { it.id == gameId }
+            if (game?.isPinned == true) {
+                persistPinnedGames()
+            }
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            val error = ErrorMapper.toAppError(e)
+            AppResult.Failure(error)
+        }
+    }
+
     private suspend fun persistPinnedGames() {
         val pinned = _games.value.filter { it.isPinned }
         userPreferencesRepository.savePinnedGames(pinned.map { it.toCompactString() }.toSet())

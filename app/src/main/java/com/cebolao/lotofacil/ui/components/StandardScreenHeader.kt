@@ -65,14 +65,15 @@ fun StandardScreenHeader(
                     Column {
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.headlineSmall,
+                            style = MaterialTheme.typography.headlineMedium,
                             fontWeight = FontWeight.Bold,
-                            color = colors.onBackground
+                            color = colors.onBackground,
+                            modifier = Modifier.semantics { heading() }
                         )
                         subtitle?.let {
                             Text(
                                 text = it,
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyLarge,
                                 color = colors.onSurfaceVariant
                             )
                         }

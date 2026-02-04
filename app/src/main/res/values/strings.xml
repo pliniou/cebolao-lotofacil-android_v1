@@ -102,6 +102,50 @@
     <string name="analysis_period_title">Período de análise</string>
     <string name="time_window_all">Todos</string>
     <string name="time_window_last">Últimos %d</string>
+    
+    <!-- Frequency Analysis -->
+    <string name="insights_title">Insights</string>
+    <string name="frequency_analysis_title">Análise de Frequência</string>
+    <string name="frequency_chart_subtitle">Frequência de cada número em todos os concursos analisados.</string>
+    <string name="top_numbers_title">Números mais frequentes</string>
+    <string name="top_numbers_subtitle">Estes são os 5 números que mais apareceram nos sorteios.</string>
+    <string name="total_draws_analyzed_format">Total de sorteios analisados: %d</string>
+    <string name="chart_x_axis_label">Número</string>
+    <string name="chart_y_axis_label">Frequência</string>
+    
+    <string name="patterns_title">Padrões e Combinações</string>
+    <string name="patterns_subtitle">Descubra as combinações que mais se repetem.</string>
+    <string name="pattern_size_pairs">Pares</string>
+    <string name="pattern_size_triplets">Trincas</string>
+    <string name="pattern_size_quadruplets">Quadras</string>
+    <string name="pattern_info_tooltip">A análise de padrões identifica grupos de números (de 2 a 4) que apareceram juntos nos sorteios históricos com maior frequência.</string>
+    <string name="cd_info">Informações</string>
+    
+    <string name="trends_title">Tendências ao Longo do Tempo</string>
+    <string name="trends_subtitle">Acompanhe como as médias estatísticas evoluem entre os concursos.</string>
+    <string name="trend_window_label">Janela: %d concursos</string>
+    <string name="trend_avg_label">Média do período: %.2f</string>
+    <string name="trend_type_sum">Soma</string>
+    <string name="trend_type_evens">Pares</string>
+    <string name="trend_type_primes">Primos</string>
+    <string name="trend_type_frame">Moldura</string>
+    
+    <string name="stats_total_generated">Jogos Gerados</string>
+    <string name="stats_total_played">Jogos Analisados</string>
+    <string name="stats_top_numbers">Seus Números Frequentes</string>
+    <string name="stats_performance">Desempenho Geral</string>
+    <string name="stats_avg_hits">Média de acertos (todos os tempos)</string>
+    <string name="stats_empty_message">Você ainda não gerou nenhum jogo. Vá para o Gerador para começar!</string>
+    <string name="nav_user_stats">Meus Dados</string>
+    <string name="user_stats_card_title">Meus Dados e Conquistas</string>
+    <string name="user_stats_card_subtitle">Veja seu histórico de uso e números favoritos.</string>
+    
+    <string name="recency_title">Recência e Atrasos</string>
+    <string name="recency_subtitle">Veja há quantos concursos cada número não é sorteado.</string>
+    <string name="overdue_label">concursos</string>
+    <string name="advanced_stats_card_title">Estatísticas avançadas</string>
+    <string name="advanced_stats_card_subtitle">Explore tendências de frequência e números mais atrasados.</string>
+    <string name="frequency_summary_title">Resumo de Frequência</string>
     <!-- GeneratedGamesScreen -->
     <string name="clear_games_title">Limpar jogos?</string>
     <string name="clear_games_message">Isso removerá todos os jogos não fixados. Deseja continuar?</string>

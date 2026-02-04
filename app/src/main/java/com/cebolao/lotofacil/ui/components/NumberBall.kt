@@ -29,13 +29,14 @@ import androidx.compose.ui.platform.LocalContext
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppConstants
+import com.cebolao.lotofacil.core.utils.NumberFormatUtils
 
 @Stable
 @Composable
 fun NumberBall(
     number: Int,
     modifier: Modifier = Modifier,
-    size: Dp = 40.dp,
+    size: Dp = 48.dp,
     isSelected: Boolean = false,
     isHighlighted: Boolean = false,
     isDisabled: Boolean = false,
@@ -126,18 +127,18 @@ fun NumberBall(
             )
             .semantics {
                 val stateText = when {
-                    isSelectedState.value -> "selected"
-                    isHighlightedState.value -> "highlighted"
-                    isDisabledState.value -> "disabled"
-                    else -> "available"
+                    isSelectedState.value -> stringResource(id = R.string.number_state_selected_alt)
+                    isHighlightedState.value -> stringResource(id = R.string.number_state_highlighted_alt)
+                    isDisabledState.value -> stringResource(id = R.string.number_state_disabled_alt)
+                    else -> stringResource(id = R.string.number_state_available_alt)
                 }
-                contentDescription = "Number $number, state: $stateText"
+                contentDescription = "Número $number, estado: $stateText"
             },
         shape = shape,
         color = animatedContainerColor,
         tonalElevation = tonalElevation
     ) {
-        val formattedNumber = remember(number) { "%02d".format(number) }
+        val formattedNumber = remember(number) { NumberFormatUtils.formatLotteryNumber(number) }
 
         Box(contentAlignment = Alignment.Center) {
             Text(

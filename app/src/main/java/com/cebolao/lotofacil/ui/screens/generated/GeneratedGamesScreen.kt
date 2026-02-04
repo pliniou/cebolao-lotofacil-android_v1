@@ -159,9 +159,16 @@ fun GeneratedGamesScreen(
             verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
         ) {
 
-            if (isGamesEmpty) {
+            if (uiState.isLoading) {
+                items(5) {
+                    GameCardSkeleton()
+                }
+            } else if (isGamesEmpty) {
                 item {
-                    EmptyState(messageResId = R.string.empty_games_message)
+                    EmptyState(
+                        messageResId = R.string.empty_games_message,
+                        icon = Icons.AutoMirrored.Filled.ListAlt
+                    )
                 }
             } else {
                 itemsIndexed(games, key = { _, game -> game.id }) { index, game ->
@@ -198,7 +205,7 @@ private fun GameAnalysisDialog(
     ) {
         Text(
             stringResource(id = R.string.historical_performance),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
         )
         HorizontalDivider(modifier = Modifier.padding(vertical = AppSpacing.xs))
         if (result.checkResult.scoreCounts.isEmpty()) {
@@ -216,11 +223,23 @@ private fun GameAnalysisDialog(
         )
         Text(
             stringResource(id = R.string.game_stats_title),
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(top = AppSpacing.lg)
         )
         HorizontalDivider(modifier = Modifier.padding(vertical = AppSpacing.xs))
         GameStatsList(stats = result.simpleStats)
 
+    }
+}
+@Composable
+private fun GameCardSkeleton() {
+    AppCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .shimmer(),
+        backgroundColor = MaterialTheme.colorScheme.surface
+    ) {
+        // Shimmering content
     }
 }

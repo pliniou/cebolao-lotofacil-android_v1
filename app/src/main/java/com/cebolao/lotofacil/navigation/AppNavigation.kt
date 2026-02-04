@@ -10,6 +10,8 @@ import com.cebolao.lotofacil.ui.screens.checker.CheckerScreen
 import com.cebolao.lotofacil.ui.screens.filters.FiltersScreen
 import com.cebolao.lotofacil.ui.screens.generated.GeneratedGamesScreen
 import com.cebolao.lotofacil.ui.screens.home.HomeScreen
+import com.cebolao.lotofacil.ui.screens.insights.FrequencyAnalysisScreen
+import com.cebolao.lotofacil.ui.screens.stats.UserStatsScreen
 
 /**
  * Navigation utilities for type-safe navigation.
@@ -53,6 +55,9 @@ fun AppNavigation(
                 },
                 onOpenChecker = {
                     navController.navigateToDestination(Destination.Checker())
+                },
+                onNavigateToInsights = {
+                    navController.navigateToDestination(Destination.Insights)
                 }
             )
         }
@@ -76,7 +81,19 @@ fun AppNavigation(
         }
         
         composable<Destination.About> {
-            AboutScreen()
+            AboutScreen(onNavigateToUserStats = { navController.navigate(Destination.UserStats) })
+        }
+
+        composable<Destination.Insights> {
+            FrequencyAnalysisScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Destination.UserStats> {
+            UserStatsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
         }
     }
 }

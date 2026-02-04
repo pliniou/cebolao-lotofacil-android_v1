@@ -14,4 +14,5 @@ interface GameRepository {
     suspend fun clearUnpinnedGames(): AppResult<Unit>
     suspend fun togglePinState(gameToToggle: LotofacilGame): AppResult<Unit>
     suspend fun deleteGame(gameToDelete: LotofacilGame): AppResult<Unit>
+    suspend fun recordGameUsage(gameId: String): AppResult<Unit>
 }

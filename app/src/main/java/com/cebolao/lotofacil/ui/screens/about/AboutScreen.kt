@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
@@ -41,6 +42,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
@@ -52,7 +54,9 @@ import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.iconLarge
 
 @Composable
-fun AboutScreen() {
+fun AboutScreen(
+    onNavigateToUserStats: () -> Unit
+) {
     var dialogContent by remember { mutableStateOf<InfoItem?>(null) }
     val hapticFeedback = LocalHapticFeedback.current
 
@@ -132,6 +136,50 @@ fun AboutScreen() {
                     }
                 }
             }
+
+            item {
+                Spacer(modifier = Modifier.height(AppSpacing.md))
+                UserStatsCard(onNavigateToUserStats)
+            }
+        }
+    }
+}
+
+@Composable
+private fun UserStatsCard(onClick: () -> Unit) {
+    ClickableCard(
+        onClick = onClick,
+        backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+        modifier = Modifier.padding(horizontal = AppSpacing.lg)
+    ) {
+        Row(
+            modifier = Modifier.padding(AppSpacing.lg),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Person,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.width(AppSpacing.md))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = stringResource(id = R.string.user_stats_card_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = stringResource(id = R.string.user_stats_card_subtitle),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
@@ -207,6 +255,67 @@ private fun InfoCard(item: InfoItem, onClick: () -> Unit) {
                 )
             }
             Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+@Composable
+fun ProbabilitiesTable() {
+    val headers = listOf(
+        R.string.probability_table_header_prize,
+        R.string.probability_table_header_probability
+    )
+    val rows = listOf(
+        R.string.probability_15_hits to R.string.probability_15_hits_value,
+        R.string.probability_14_hits to R.string.probability_14_hits_value,
+        R.string.probability_13_hits to R.string.probability_13_hits_value,
+        R.string.probability_12_hits to R.string.probability_12_hits_value,
+        R.string.probability_11_hits to R.string.probability_11_hits_value
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(AppSpacing.md),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            headers.forEach { headerRes ->
+                Text(
+                    text = stringResource(id = headerRes),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f),
+                    textAlign = if (headerRes == headers.last()) TextAlign.End else TextAlign.Start
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(AppSpacing.xs))
+
+        rows.forEach { (labelRes, valueRes) ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = AppSpacing.xs),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = labelRes),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = stringResource(id = valueRes),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.End
+                )
+            }
         }
     }
 }

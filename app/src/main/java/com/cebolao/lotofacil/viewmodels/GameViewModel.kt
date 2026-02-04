@@ -67,11 +67,7 @@ class GameViewModel @Inject constructor(
     private val clearUnpinnedGamesUseCase: ClearUnpinnedGamesUseCase,
     private val toggleGamePinUseCase: ToggleGamePinUseCase,
     private val deleteGameUseCase: DeleteGameUseCase
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(GameUiState())
-    val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
-    private val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
-    val uiEvent = _uiEvent.receiveAsFlow()
+) : StateViewModel<GameUiState>(GameUiState()) {
 
     val generatedGames: StateFlow<ImmutableList<LotofacilGame>> = getSavedGamesUseCase()
         .stateIn(
@@ -80,35 +76,35 @@ class GameViewModel @Inject constructor(
             initialValue = persistentListOf()
         )
     fun onClearGamesRequested() {
-        viewModelScope.launch { _uiState.update { it.copy(showClearGamesDialog = true) } }
+        viewModelScope.launch { updateState { it.copy(showClearGamesDialog = true) } }
     }
     fun confirmClearUnpinned() {
         viewModelScope.launch {
             clearUnpinnedGamesUseCase()
-            _uiState.update { it.copy(showClearGamesDialog = false) }
-            _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.unpinned_games_cleared))
+            updateState { it.copy(showClearGamesDialog = false) }
+            sendUiEvent(UiEvent.ShowSnackbar(messageResId = R.string.unpinned_games_cleared))
         }
     }
     fun dismissClearDialog() {
-        _uiState.update { it.copy(showClearGamesDialog = false) }
+        updateState { it.copy(showClearGamesDialog = false) }
     }
     fun onDeleteGameRequested(game: LotofacilGame) {
-        viewModelScope.launch { _uiState.update { it.copy(gameToDelete = game) } }
+        viewModelScope.launch { updateState { it.copy(gameToDelete = game) } }
     }
     fun confirmDeleteGame(game: LotofacilGame) {
         viewModelScope.launch {
             deleteGameUseCase(game)
-            _uiState.update { it.copy(gameToDelete = null) }
-            _uiEvent.send(UiEvent.ShowSnackbar(messageResId = R.string.game_deleted_confirmation))
+            updateState { it.copy(gameToDelete = null) }
+            sendUiEvent(UiEvent.ShowSnackbar(messageResId = R.string.game_deleted_confirmation))
         }
     }
     fun dismissDeleteDialog() {
-        _uiState.update { it.copy(gameToDelete = null) }
+        updateState { it.copy(gameToDelete = null) }
     }
     fun analyzeGame(game: LotofacilGame) {
-        if (_uiState.value.analysisState is GameAnalysisUiState.Loading) return
+        if (currentState.analysisState is GameAnalysisUiState.Loading) return
         viewModelScope.launch {
-            _uiState.update { it.copy(analysisState = GameAnalysisUiState.Loading) }
+            updateState { it.copy(analysisState = GameAnalysisUiState.Loading) }
             try {
                 val checkState = checkGameUseCase(game.numbers)
                     .first { it is GameCheckState.Success || it is GameCheckState.Failure }
@@ -119,26 +115,26 @@ class GameViewModel @Inject constructor(
                             simpleStats = checkState.stats.toImmutableList(),
                             checkResult = checkState.result
                         )
-                        _uiState.update { it.copy(analysisState = GameAnalysisUiState.Success(), analysisResult = result) }
+                        updateState { it.copy(analysisState = GameAnalysisUiState.Success(), analysisResult = result) }
                     }
                     is GameCheckState.Failure -> {
                         val messageResId = when (checkState.error) {
                             is com.cebolao.lotofacil.core.error.EmptyHistoryError -> R.string.error_no_history
                             else -> R.string.error_analysis_failed
                         }
-                        _uiState.update { it.copy(analysisState = GameAnalysisUiState.Error(messageResId)) }
+                        updateState { it.copy(analysisState = GameAnalysisUiState.Error(messageResId)) }
                     }
                     else -> Unit
                 }
             } catch (_: Exception) {
                 val messageResId = R.string.error_analysis_failed
-                _uiState.update { it.copy(analysisState = GameAnalysisUiState.Error(messageResId)) }
-                _uiEvent.send(UiEvent.ShowSnackbar(messageResId = messageResId))
+                updateState { it.copy(analysisState = GameAnalysisUiState.Error(messageResId)) }
+                sendUiEvent(UiEvent.ShowSnackbar(messageResId = messageResId))
             }
         }
     }
     fun dismissAnalysisDialog() {
-        _uiState.update { it.copy(analysisResult = null, analysisState = GameAnalysisUiState.Idle) }
+        updateState { it.copy(analysisResult = null, analysisState = GameAnalysisUiState.Idle) }
     }
     fun clearUnpinned() {
         viewModelScope.launch {

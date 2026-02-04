@@ -24,7 +24,7 @@ class GameGenerator @Inject constructor(
         count: Int,
         lastDraw: Set<Int>? = null,
         maxAttempts: Int = AppConstants.MAX_GAME_GENERATION_ATTEMPTS
-    ): List<LotofacilGame> = withContext(dispatchersProvider.default) {
+    ): List<LotofacilGame> = withContext(dispatchersProvider.io) {
         val uniqueGames = mutableSetOf<Set<Int>>()
         val resultList = mutableListOf<LotofacilGame>()
         var attempts = 0

@@ -1,5 +1,7 @@
 package com.cebolao.lotofacil.data.repository
 
+import com.cebolao.lotofacil.core.error.ErrorMapper
+import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.di.ApplicationScope
 import com.cebolao.lotofacil.domain.repository.GameRepository
@@ -36,7 +38,7 @@ class GameRepositoryImpl @Inject constructor(
         .map { gamesList -> gamesList.filter { it.isPinned }.toImmutableList() }
         .stateIn(
             scope = repositoryScope,
-            started = SharingStarted.Eagerly, // Change to Eagerly for faster first-load UI
+            started = SharingStarted.Eagerly,
             initialValue = persistentListOf()
         )
 
@@ -49,43 +51,59 @@ class GameRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun addGeneratedGames(newGames: List<LotofacilGame>) {
-        gamesMutex.withLock {
+    override suspend fun addGeneratedGames(newGames: List<LotofacilGame>): AppResult<Unit> = gamesMutex.withLock {
+        return try {
             _games.update { currentGames ->
                 val currentPinned = currentGames.filter { it.isPinned }
                 (currentPinned + newGames)
-                    .distinctBy { it.numbers } // Keep uniqueness by numbers for gameplay
-                .toImmutableList()
+                    .distinctBy { it.numbers }
+                    .toImmutableList()
             }
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            val error = ErrorMapper.toAppError(e)
+            AppResult.Failure(error)
         }
     }
 
-    override suspend fun clearUnpinnedGames() {
+    override suspend fun clearUnpinnedGames(): AppResult<Unit> = try {
         _games.update { currentGames ->
             currentGames.filter { it.isPinned }.toImmutableList()
         }
+        AppResult.Success(Unit)
+    } catch (e: Exception) {
+        val error = ErrorMapper.toAppError(e)
+        AppResult.Failure(error)
     }
 
-    override suspend fun togglePinState(gameToToggle: LotofacilGame) {
-        val updatedGame = gameToToggle.copy(isPinned = !gameToToggle.isPinned)
-        gamesMutex.withLock {
+    override suspend fun togglePinState(gameToToggle: LotofacilGame): AppResult<Unit> = gamesMutex.withLock {
+        return try {
+            val updatedGame = gameToToggle.copy(isPinned = !gameToToggle.isPinned)
             _games.update { currentGames ->
                 currentGames
                     .map { if (it.id == updatedGame.id) updatedGame else it }
                     .toImmutableList()
             }
+            persistPinnedGames()
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            val error = ErrorMapper.toAppError(e)
+            AppResult.Failure(error)
         }
-        persistPinnedGames()
     }
 
-    override suspend fun deleteGame(gameToDelete: LotofacilGame) {
-        gamesMutex.withLock {
+    override suspend fun deleteGame(gameToDelete: LotofacilGame): AppResult<Unit> = gamesMutex.withLock {
+        return try {
             _games.update { currentGames ->
                 currentGames.filterNot { it.id == gameToDelete.id }.toImmutableList()
             }
-        }
-        if (gameToDelete.isPinned) {
-            persistPinnedGames()
+            if (gameToDelete.isPinned) {
+                persistPinnedGames()
+            }
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            val error = ErrorMapper.toAppError(e)
+            AppResult.Failure(error)
         }
     }
 

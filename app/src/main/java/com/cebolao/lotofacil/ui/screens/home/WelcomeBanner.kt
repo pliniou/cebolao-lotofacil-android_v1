@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.AppCard
+import com.cebolao.lotofacil.ui.theme.AppConstants
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.iconMedium
 
@@ -41,7 +42,7 @@ fun WelcomeBanner(
     val colors = MaterialTheme.colorScheme
 
     AnimateOnEntry(
-        delayMillis = 50L,
+        delayMillis = AppConstants.ANIMATION_DELAY_ENTRY,
         modifier = modifier.fillMaxWidth()
     ) {
         AppCard(

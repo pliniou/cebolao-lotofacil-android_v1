@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
  * Base ViewModel providing common functionality for UI events, navigation, and snackbars.
  */
 abstract class BaseViewModel : ViewModel() {
-    private val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
+    protected val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
     protected fun sendUiEvent(event: UiEvent) {
@@ -32,7 +32,7 @@ abstract class BaseViewModel : ViewModel() {
  * Modern state-holding ViewModel following Unidirectional Data Flow.
  */
 abstract class StateViewModel<S>(initialState: S) : BaseViewModel() {
-    private val _uiState = MutableStateFlow(initialState)
+    protected val _uiState = MutableStateFlow(initialState)
     val uiState: StateFlow<S> = _uiState.asStateFlow()
 
     protected val currentState: S get() = _uiState.value

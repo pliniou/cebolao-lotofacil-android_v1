@@ -3,14 +3,17 @@ package com.cebolao.lotofacil.ui.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,8 +24,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
+import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.theme.AppElevation
+import com.cebolao.lotofacil.ui.theme.AppConstants
 
+@Stable
 @Composable
 fun NumberBall(
     number: Int,
@@ -30,52 +38,104 @@ fun NumberBall(
     size: Dp = 40.dp,
     isSelected: Boolean = false,
     isHighlighted: Boolean = false,
-    isDisabled: Boolean = false
+    isDisabled: Boolean = false,
+    onClick: (() -> Unit)? = null
 ) {
     val shape = MaterialTheme.shapes.medium
-    val (containerColor, contentColor, borderColor) = getBallColors(
-        isSelected = isSelected,
-        isHighlighted = isHighlighted,
-        isDisabled = isDisabled
-    )
+    
+    // Memoize state values to prevent unnecessary recompositions
+    val isSelectedState = rememberUpdatedState(isSelected)
+    val isHighlightedState = rememberUpdatedState(isHighlighted)
+    val isDisabledState = rememberUpdatedState(isDisabled)
+    
+    // Get colors directly from MaterialTheme without composable context
+    val colors = MaterialTheme.colorScheme
+    val (containerColor, contentColor, borderColor) = when {
+        isDisabledState.value -> Triple(
+            colors.onSurface.copy(alpha = 0.08f),
+            colors.onSurface.copy(alpha = 0.30f),
+            colors.outline.copy(alpha = 0.5f)
+        )
+        isSelectedState.value -> Triple(
+            colors.primary,
+            colors.onPrimary,
+            colors.primary.copy(alpha = 0.8f)
+        )
+        isHighlightedState.value -> Triple(
+            colors.primaryContainer,
+            colors.primary,
+            colors.primary.copy(alpha = 0.8f)
+        )
+        else -> Triple(
+            colors.surfaceVariant,
+            colors.onSurface,
+            colors.outline.copy(alpha = 0.7f)
+        )
+    }
+    
+    // Pre-calculate semantics content outside composable context
+    val stateResId = when {
+        isSelectedState.value -> R.string.number_state_selected
+        isHighlightedState.value -> R.string.number_state_highlighted
+        isDisabledState.value -> R.string.number_state_disabled
+        else -> R.string.number_state_available
+    }
 
     val animatedContainerColor by animateColorAsState(
         targetValue = containerColor, 
-        animationSpec = tween(180), 
+        animationSpec = tween(AppConstants.ANIMATION_DURATION_NUMBER_BALL.toInt()), 
         label = "containerColor"
     )
     val animatedContentColor by animateColorAsState(
         targetValue = contentColor, 
-        animationSpec = tween(180), 
+        animationSpec = tween(AppConstants.ANIMATION_DURATION_NUMBER_BALL.toInt()), 
         label = "contentColor"
     )
     val animatedBorderColor by animateColorAsState(
         targetValue = borderColor, 
-        animationSpec = tween(180), 
+        animationSpec = tween(AppConstants.ANIMATION_DURATION_NUMBER_BALL.toInt()), 
         label = "borderColor"
     )
+
+    // Memoize border width calculation
+    val borderWidth = remember(
+        isSelectedState.value,
+        isHighlightedState.value
+    ) {
+        if (isHighlightedState.value && !isSelectedState.value) 2.dp else 1.dp
+    }
+
+    // Memoize tonal elevation
+    val tonalElevation = remember(isSelectedState.value) {
+        if (isSelectedState.value) AppElevation.xs else AppElevation.none
+    }
 
     Surface(
         modifier = modifier
             .size(size)
             .clip(shape)
             .border(
-                width = if (isHighlighted && !isSelected) 2.dp else 1.dp,
+                width = borderWidth,
                 color = animatedBorderColor,
                 shape = shape
             )
+            .then(
+                if (onClick != null && !isDisabledState.value) {
+                    Modifier.clickable { onClick?.invoke() }
+                } else Modifier
+            )
             .semantics {
-                val state = when {
-                    isSelected -> "selecionado"
-                    isHighlighted -> "destacado"
-                    isDisabled -> "desabilitado"
-                    else -> "disponível"
+                val stateText = when {
+                    isSelectedState.value -> "selected"
+                    isHighlightedState.value -> "highlighted"
+                    isDisabledState.value -> "disabled"
+                    else -> "available"
                 }
-                contentDescription = "Número $number, $state"
+                contentDescription = "Number $number, state: $stateText"
             },
         shape = shape,
         color = animatedContainerColor,
-        tonalElevation = if (isSelected) AppElevation.xs else AppElevation.none
+        tonalElevation = tonalElevation
     ) {
         val formattedNumber = remember(number) { "%02d".format(number) }
 
@@ -89,37 +149,5 @@ fun NumberBall(
                 )
             )
         }
-    }
-}
-
-@Composable
-private fun getBallColors(
-    isSelected: Boolean,
-    isHighlighted: Boolean,
-    isDisabled: Boolean
-): Triple<Color, Color, Color> {
-    val colors = MaterialTheme.colorScheme
-
-    return when {
-        isDisabled -> Triple(
-            colors.onSurface.copy(alpha = 0.08f),
-            colors.onSurface.copy(alpha = 0.30f),
-            colors.outline.copy(alpha = 0.5f)
-        )
-        isSelected -> Triple(
-            colors.primary,
-            colors.onPrimary,
-            colors.primary.copy(alpha = 0.8f)
-        )
-        isHighlighted -> Triple(
-            colors.primaryContainer,
-            colors.primary,
-            colors.primary.copy(alpha = 0.8f)
-        )
-        else -> Triple(
-            colors.surfaceVariant,
-            colors.onSurface,
-            colors.outline.copy(alpha = 0.7f)
-        )
     }
 }

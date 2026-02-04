@@ -6,6 +6,13 @@
     <string name="error_load_data_failed">Falha ao carregar dados.</string>
     <string name="error_analysis_failed">Falha na análise.</string>
     <string name="error_unknown">Erro desconhecido.</string>
+    <string name="error_network_connection">Sem conexão com o servidor. Tente novamente.</string>
+    <string name="error_persistence">Erro ao acessar armazenamento local.</string>
+    <string name="error_parsing">Erro ao processar dados remotos.</string>
+    <string name="error_history_unavailable">Histórico indisponível.</string>
+    <string name="error_unexpected">Erro inesperado.</string>
+    <string name="error_sync_failed">Erro ao sincronizar dados. Tente novamente.</string>
+    <string name="error_generating_games">Erro desconhecido ao gerar jogos.</string>
     <string name="try_again">Tentar novamente</string>
 
     <string name="studio_name">Cebola Studios</string>
@@ -264,5 +271,12 @@
     <string name="nav_games">Jogos</string>
     <string name="nav_checker">Conferidor</string>
     <string name="nav_about">Sobre</string>
+
+    <!-- Number ball states -->
+    <string name="number_state_selected">selecionado</string>
+    <string name="number_state_highlighted">destacado</string>
+    <string name="number_state_disabled">desabilitado</string>
+    <string name="number_state_available">disponível</string>
+    <string name="number_content_description">Número %1$d, %2$s</string>
     <string name="pattern_analysis_title">Analisys</string>
 </resources>

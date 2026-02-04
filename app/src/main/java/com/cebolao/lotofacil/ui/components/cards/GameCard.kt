@@ -39,6 +39,7 @@ import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.NumberBall
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+import com.cebolao.lotofacil.ui.theme.AppConstants
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -66,13 +67,13 @@ fun GameCard(
 
     val elevation by animateDpAsState(
         if (isPinned) AppCardDefaults.pinnedElevation else AppCardDefaults.elevation,
-        tween(150),
+        tween(AppConstants.ANIMATION_DURATION_ELEVATION.toInt()),
         label = "elevation"
     )
 
     val containerColor by animateColorAsState(
         if (isPinned) colors.secondaryContainer else colors.surface,
-        tween(150),
+        tween(AppConstants.ANIMATION_DURATION_COLOR_CHANGE.toInt()),
         label = "containerColor"
     )
 

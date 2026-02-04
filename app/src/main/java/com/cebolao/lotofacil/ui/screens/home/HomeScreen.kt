@@ -119,7 +119,7 @@ fun HomeScreen(
                 }
                 uiState.errorMessageResId != null -> {
                     item(key = "error") {
-                        ErrorState(messageResId = uiState.errorMessageResId!!) {
+                        ErrorState(messageResId = uiState.errorMessageResId) {
                             homeViewModel.refreshData()
                         }
                     }
@@ -137,11 +137,11 @@ fun HomeScreen(
                     }
                     item(key = "last_draw") {
                         uiState.lastDrawStats?.let { stats ->
-                            AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_SHORT.toLong()) { LastDrawSection(stats) }
+                            AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_SHORT) { LastDrawSection(stats) }
                         }
                     }
                     item(key = "statistics") {
-                        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_MEDIUM.toLong()) {
+                        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_MEDIUM) {
                             StatisticsSection(
                                 stats = uiState.statistics,
                                 isStatsLoading = uiState.isStatsLoading,
@@ -153,7 +153,7 @@ fun HomeScreen(
                         }
                     }
                     item(key = "explanation") {
-                        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_LONG.toLong()) { StatisticsExplanationCard() }
+                        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_LONG) { StatisticsExplanationCard() }
                     }
                 }
             }
@@ -233,7 +233,7 @@ private fun HomeScreenLoadingState() {
 }
 
 @Composable
-private fun ErrorState(messageResId: Int, onRetry: () -> Unit) {
+private fun ErrorState(messageResId: Int?, onRetry: () -> Unit) {
     val colors = MaterialTheme.colorScheme
     AppCard(modifier = Modifier.fillMaxWidth(), backgroundColor = colors.surface) {
         Column(
@@ -248,7 +248,7 @@ private fun ErrorState(messageResId: Int, onRetry: () -> Unit) {
                 modifier = Modifier.size(iconExtraLarge())
             )
             Text(
-                text = stringResource(id = messageResId),
+                text = messageResId?.let { stringResource(id = it) } ?: "Erro desconhecido",
                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
                 color = colors.onSurface,
                 textAlign = TextAlign.Center

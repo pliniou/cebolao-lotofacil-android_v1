@@ -28,9 +28,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.domain.model.CheckResult
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.AppConstants
 import kotlinx.collections.immutable.ImmutableMap
 
 @Composable
@@ -95,7 +97,7 @@ private fun ScoreBreakdown(scoreCounts: ImmutableMap<Int, Int>) {
             scoreCounts[score]?.let { count ->
                 val animated by animateIntAsState(
                     targetValue = count,
-                    animationSpec = tween(600),
+                    animationSpec = tween(AppConstants.ANIMATION_DURATION_SCORE_COUNT.toInt()),
                     label = "scoreCount"
                 )
                 Row(
@@ -156,7 +158,7 @@ private fun NoWinsMessage() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .padding(vertical = AppSpacing.md),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {

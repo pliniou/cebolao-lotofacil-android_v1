@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @Composable
 fun ProbabilitiesTable(modifier: Modifier = Modifier) {
@@ -45,7 +46,7 @@ private fun TableHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp),
+            .padding(vertical = AppSpacing.md),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
@@ -66,7 +67,7 @@ private fun TableRow(prize: String, probability: String, isHighlighted: Boolean)
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 10.dp),
+            .padding(vertical = AppSpacing.md),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

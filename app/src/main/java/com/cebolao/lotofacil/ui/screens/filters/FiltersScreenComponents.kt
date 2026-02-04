@@ -20,6 +20,7 @@ import com.cebolao.lotofacil.ui.components.FilterCard
 import com.cebolao.lotofacil.ui.components.FilterStatsPanel
 import com.cebolao.lotofacil.ui.components.GenerationActionsPanel
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
+import com.cebolao.lotofacil.ui.theme.AppConstants
 import com.cebolao.lotofacil.viewmodels.GenerationUiState
 
 @Composable
@@ -132,7 +133,7 @@ fun GenerateActionsPanel(
     modifier: Modifier = Modifier
 ) {
     AnimateOnEntry(
-        delayMillis = 300L,
+        delayMillis = AppConstants.ANIMATION_DELAY_FILTERS,
         modifier = modifier
     ) {
         Box {

@@ -2,12 +2,13 @@ package com.cebolao.lotofacil.ui.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -24,6 +25,7 @@ data class NumberBallItem(
     val number: Int,
     val isSelected: Boolean,
     val isDisabled: Boolean,
+    val isHighlighted: Boolean = false,  // Added highlighted property
     override val key: Any = number
 ) : StableKey
 
@@ -33,12 +35,12 @@ interface StableKey {
 }
 
 @SuppressLint("ConfigurationScreenWidthHeight")
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NumberGrid(
     items: List<NumberBallItem>,
     modifier: Modifier = Modifier,
-    columns: Int = 5
+    columns: Int = 5,
+    onNumberClicked: ((Int) -> Unit)? = null
 ) {
     LocalDensity.current
     val configuration = LocalConfiguration.current
@@ -57,13 +59,17 @@ fun NumberGrid(
 
     LocalHapticFeedback.current
 
-    FlowRow(
+    LazyVerticalGrid(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(spacing, Alignment.CenterHorizontally),
-        verticalArrangement = Arrangement.spacedBy(spacing),
-        maxItemsInEachRow = columns
+        columns = GridCells.Fixed(columns),
+        contentPadding = PaddingValues(spacing),
+        horizontalArrangement = Arrangement.spacedBy(spacing),
+        verticalArrangement = Arrangement.spacedBy(spacing)
     ) {
-        items.forEach { item ->
+        items(
+            items = items,
+            key = { it.key }
+        ) { item ->
             NumberBall(
                 number = item.number,
                 size = finalBallSize,
@@ -73,22 +79,9 @@ fun NumberGrid(
                 modifier = Modifier.semantics {
                     contentDescription = "Número ${item.number}"
                     role = Role.Button
-                    state = when {
-                        item.isSelected -> State.Selected
-                        item.isDisabled -> State.Disabled
-                        else -> State.Enabled
-                                else -> "Not selected"
-                            }
-                        }
-                    }
-            ) {
-                NumberBall(
-                    number = item.number,
-                    isSelected = item.isSelected,
-                    isDisabled = item.isDisabled,
-                    size = adaptiveBallSize
-                )
-            }
+                },
+                onClick = { onNumberClicked?.invoke(item.number) }
+            )
         }
     }
 }

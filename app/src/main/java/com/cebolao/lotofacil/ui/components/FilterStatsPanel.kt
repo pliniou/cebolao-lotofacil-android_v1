@@ -28,6 +28,8 @@ import com.cebolao.lotofacil.domain.model.RestrictivenessCategory
 import com.cebolao.lotofacil.ui.model.*
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.AppConstants
+import com.cebolao.lotofacil.ui.theme.AppShapes
 
 @Composable
 fun FilterStatsPanel(
@@ -58,7 +60,7 @@ fun FilterStatsPanel(
 private fun FilterRestrictiveness(probability: Float) {
     val animatedProbability by animateFloatAsState(
         targetValue = probability,
-        animationSpec = tween(500),
+        animationSpec = tween(AppConstants.ANIMATION_DURATION_PROBABILITY.toInt()),
         label = "probabilityAnimation"
     )
 
@@ -71,7 +73,7 @@ private fun FilterRestrictiveness(probability: Float) {
     val animatedProgressColor by animateColorAsState(targetValue = progressColor, label = "progressColor")
     val animatedTextColor by animateColorAsState(targetValue = textColor, label = "textColor")
 
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -90,7 +92,7 @@ private fun FilterRestrictiveness(probability: Float) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(6.dp)
-                .clip(MaterialTheme.shapes.small),
+                .clip(AppShapes.sm),
             color = animatedProgressColor,
             trackColor = animatedProgressColor.copy(alpha = 0.2f)
         )
@@ -99,7 +101,7 @@ private fun FilterRestrictiveness(probability: Float) {
 
 @Composable
 private fun FilterStatistics(activeFilters: List<FilterState>) {
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(AppSpacing.md)) {
         if (activeFilters.isEmpty()) {
             Text(
                 stringResource(id = R.string.no_active_filters),

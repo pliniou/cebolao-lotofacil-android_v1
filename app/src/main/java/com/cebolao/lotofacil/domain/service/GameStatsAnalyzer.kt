@@ -12,7 +12,7 @@ import javax.inject.Singleton
 class GameStatsAnalyzer @Inject constructor(private val dispatchersProvider: DispatchersProvider) {
 
     suspend fun analyze(game: LotofacilGame): List<GameStatistic> =
-        withContext(dispatchersProvider.default) {
+        withContext(dispatchersProvider.io) {
             listOf(
                 GameStatistic(GameStatisticType.SUM, game.sum),
                 GameStatistic(GameStatisticType.EVENS, game.evens),

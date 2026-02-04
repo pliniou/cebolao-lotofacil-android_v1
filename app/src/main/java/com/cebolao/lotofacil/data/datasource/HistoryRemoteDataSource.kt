@@ -9,6 +9,7 @@ import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,6 +31,9 @@ class HistoryRemoteDataSourceImpl @Inject constructor(
         private const val MAX_CONCURRENT_REQUESTS = 8
     }
 
+    // Global semaphore to limit concurrent network requests
+    private val networkSemaphore = Semaphore(MAX_CONCURRENT_REQUESTS)
+
     override suspend fun getLatestDraw(): HistoricalDraw? = withContext(dispatchersProvider.io) {
         try {
             val result = apiService.getLatestResult()
@@ -50,7 +54,16 @@ class HistoryRemoteDataSourceImpl @Inject constructor(
             range.chunked(BATCH_SIZE).flatMap { batch ->
                 batch.chunked(MAX_CONCURRENT_REQUESTS).flatMap { window ->
                     window.map { contestNumber ->
-                        async { fetchContest(contestNumber) }
+                        async { 
+                            // Acquire semaphore before making the request
+                            networkSemaphore.acquire()
+                            try {
+                                fetchContest(contestNumber)
+                            } finally {
+                                // Always release the semaphore
+                                networkSemaphore.release()
+                            }
+                        }
                     }.awaitAll().filterNotNull()
                 }
             }

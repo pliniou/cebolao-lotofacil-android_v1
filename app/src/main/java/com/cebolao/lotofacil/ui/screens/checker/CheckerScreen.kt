@@ -53,6 +53,7 @@ import com.cebolao.lotofacil.ui.components.RecentHitsChartContent
 import com.cebolao.lotofacil.ui.components.SnackbarHost
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.components.shimmer
+import com.cebolao.lotofacil.ui.theme.AppConstants
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.viewmodels.CheckerUiState
@@ -235,7 +236,8 @@ private fun NumberGridSection(
             }
             
             NumberGrid(
-                items = gridItems
+                items = gridItems,
+                onNumberClicked = onNumberClicked
             )
         }
     }
@@ -274,7 +276,7 @@ private fun CheckerSuccessContent(
             CheckResultCard(result = result)
         }
 
-        AnimateOnEntry(delayMillis = 100) {
+        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DELAY_CHECKER) {
             ElevatedCard(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = AppElevation.sm),

@@ -60,11 +60,20 @@
 # Manter nomes de classes de dados (data classes) para evitar problemas com serialização ou reflection
 -keep class com.cebolao.lotofacil.data.** { *; }
 
-# OTIMIZAÇÃO: Novas regras para evitar problemas com SnapshotStateList e kotlinx.collections.immutable
+# OTIMIZAÇÃO: Regras mais específicas para evitar problemas com SnapshotStateList e kotlinx.collections.immutable
 # Estas regras são CRUCIAIS para resolver o aviso "failed lock verification" que pode
 # degradar a performance do Compose em tempo de execução.
--keep class androidx.compose.runtime.snapshots.** { *; }
--keep class kotlinx.collections.immutable.** { *; }
+# Regras específicas em vez de manter pacotes inteiros
+-keep class androidx.compose.runtime.snapshots.SnapshotStateList { *; }
+-keep class androidx.compose.runtime.snapshots.SnapshotStateKt { *; }
+-keep class androidx.compose.runtime.snapshots.StateObject { *; }
+-keep class androidx.compose.runtime.snapshots.StateSnapshot { *; }
+-keep class kotlinx.collections.immutable.PersistentList { *; }
+-keep class kotlinx.collections.immutable.PersistentMap { *; }
+-keep class kotlinx.collections.immutable.PersistentSet { *; }
+-keep class kotlinx.collections.immutable.ImmutableList { *; }
+-keep class kotlinx.collections.immutable.ImmutableMap { *; }
+-keep class kotlinx.collections.immutable.ImmutableSet { *; }
 
 # Regra específica para resolver o aviso "failed lock verification" do SnapshotStateList,
 # conforme observado nos logs.

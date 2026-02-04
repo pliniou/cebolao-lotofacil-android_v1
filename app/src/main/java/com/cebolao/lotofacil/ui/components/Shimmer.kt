@@ -14,6 +14,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import com.cebolao.lotofacil.ui.theme.AppConstants
 
 /**
  * Optimized shimmer modifier for loading states.
@@ -30,7 +31,7 @@ fun Modifier.shimmer(): Modifier = composed {
         targetValue = 1000f,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 1200,
+                durationMillis = AppConstants.ANIMATION_DURATION_SHIMMER.toInt(),
                 easing = FastOutSlowInEasing
             ),
             repeatMode = RepeatMode.Restart

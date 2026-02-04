@@ -55,7 +55,7 @@ class GetHomeScreenDataUseCase @Inject constructor(
                     old == new
                 }
             }
-            .flowOn(dispatchersProvider.default)
+            .flowOn(dispatchersProvider.io)
     }
 
     private fun calculateLastDrawStats(lastDraw: HistoricalDraw): LastDrawStats {

@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @Composable
 fun CheckerScrollableActions(
@@ -38,8 +39,8 @@ fun CheckerScrollableActions(
     val hapticFeedback = LocalHapticFeedback.current
     
     Column(
-        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = modifier.padding(horizontal = AppSpacing.lg, vertical = AppSpacing.sm),
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

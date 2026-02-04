@@ -17,6 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.AppShapes
 
 @Composable
 fun FilterRangeSlider(
@@ -32,7 +34,7 @@ fun FilterRangeSlider(
 ) {
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -64,9 +66,9 @@ private fun ValueIndicator(
         modifier = Modifier
             .background(
                 MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                MaterialTheme.shapes.small
+                AppShapes.sm
             )
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .padding(horizontal = AppSpacing.md, vertical = AppSpacing.xs)
     ) {
         Text(
             label,

@@ -18,9 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @Composable
 fun ConfirmationDialog(
@@ -67,11 +68,11 @@ fun ConfirmationDialog(
                         color = colors.onSurfaceVariant
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(AppSpacing.sm))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.End)
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.md, Alignment.End)
                     ) {
                         if (dismissText.isNotBlank()) {
                             OutlinedButton(onClick = onDismiss) {

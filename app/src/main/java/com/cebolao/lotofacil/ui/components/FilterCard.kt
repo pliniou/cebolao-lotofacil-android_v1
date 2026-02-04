@@ -2,6 +2,7 @@ package com.cebolao.lotofacil.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -36,6 +37,7 @@ import com.cebolao.lotofacil.ui.model.titleRes
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.AppConstants
 
 @Composable
 fun FilterCard(
@@ -53,7 +55,7 @@ fun FilterCard(
 
     val elevation by animateDpAsState(
         if (enabled) AppCardDefaults.pinnedElevation else AppElevation.xs, 
-        tween(150), 
+        tween(AppConstants.ANIMATION_DURATION_ELEVATION.toInt()), 
         label = "elevation"
     )
 
@@ -74,8 +76,8 @@ fun FilterCard(
             )
             AnimatedVisibility(
                 visible = enabled,
-                enter = expandVertically(animationSpec = tween(150)) + fadeIn(animationSpec = tween(150)),
-                exit = shrinkVertically(animationSpec = tween(150)) + fadeOut(animationSpec = tween(150))
+                enter = expandVertically(animationSpec = tween(AppConstants.ANIMATION_DURATION_FILTER_PANEL.toInt())) + fadeIn(animationSpec = tween(AppConstants.ANIMATION_DURATION_FILTER_PANEL.toInt())),
+                exit = shrinkVertically(animationSpec = tween(AppConstants.ANIMATION_DURATION_FILTER_PANEL.toInt())) + fadeOut(animationSpec = tween(AppConstants.ANIMATION_DURATION_FILTER_PANEL.toInt()))
             ) {
                 FilterContent(
                     filterState,

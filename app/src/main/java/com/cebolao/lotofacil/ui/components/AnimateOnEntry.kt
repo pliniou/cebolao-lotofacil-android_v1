@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.cebolao.lotofacil.ui.theme.LocalAnimationEnabled
+import com.cebolao.lotofacil.ui.theme.AppConstants
 
 /**
  * Um wrapper que anima a entrada de seu conteúdo na tela.
@@ -56,9 +57,9 @@ fun AnimateOnEntry(
             ),
             exit = slideOutVertically(
                 targetOffsetY = { fullHeight -> fullHeight / 20 },
-                animationSpec = tween(durationMillis = 150)
+                animationSpec = tween(AppConstants.ANIMATION_DURATION_ELEVATION.toInt())
             ) + fadeOut(
-                animationSpec = tween(durationMillis = 150)
+                animationSpec = tween(AppConstants.ANIMATION_DURATION_ELEVATION.toInt())
             )
         ) {
             content()

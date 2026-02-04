@@ -19,7 +19,7 @@ class StatisticsAnalyzer @Inject constructor(
     }
 
     suspend fun analyze(draws: List<HistoricalDraw>): StatisticsReport =
-        withContext(dispatchersProvider.default) {
+        withContext(dispatchersProvider.io) {
         if (draws.isEmpty()) return@withContext StatisticsReport()
 
         coroutineScope {

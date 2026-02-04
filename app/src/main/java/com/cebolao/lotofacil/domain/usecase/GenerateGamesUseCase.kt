@@ -24,7 +24,7 @@ class GenerateGamesUseCase @Inject constructor(
     suspend operator fun invoke(
         quantity: Int,
         activeFilters: List<FilterState>
-    ): AppResult<List<LotofacilGame>> = withContext(dispatchersProvider.default) {
+    ): AppResult<List<LotofacilGame>> = withContext(dispatchersProvider.io) {
         try {
             val lastDrawNumbers = if (activeFilters.any { it.type == FilterType.REPETIDAS_CONCURSO_ANTERIOR && it.isEnabled }) {
                 historyRepository.getLastDraw()?.numbers

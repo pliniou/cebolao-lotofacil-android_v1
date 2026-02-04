@@ -45,7 +45,7 @@ class CheckGameUseCase @Inject constructor(
         emit(GameCheckState.Success(result = result, stats = simpleStats.toImmutableList()))
     }.catch { throwable ->
         emit(GameCheckState.Failure(mapErrorToAppError(throwable)))
-    }.flowOn(dispatchersProvider.default)
+    }.flowOn(dispatchersProvider.io)
 
     private fun mapErrorToAppError(throwable: Throwable): AppError = when (throwable) {
         is AppError -> throwable

@@ -1,20 +1,25 @@
 package com.cebolao.lotofacil.ui.screens
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.cebolao.lotofacil.navigation.AppNavigation
 import com.cebolao.lotofacil.navigation.Destination
 import com.cebolao.lotofacil.navigation.bottomNavDestinations
 import com.cebolao.lotofacil.navigation.navigateToDestination
 import com.cebolao.lotofacil.ui.components.AppBottomBar
+import com.cebolao.lotofacil.viewmodels.MainViewModel
 
 /**
  * Displays the main screen with optimized performance.
@@ -32,7 +37,6 @@ fun MainScreen(
 
     // Handle splash screen dismissal
     if (!uiState.isReady) {
-        SplashScreen()
         return
     }
 
@@ -64,7 +68,6 @@ fun MainScreen(
         AppNavigation(
             modifier = Modifier.padding(paddingValues),
             navController = navController,
-            modifier = Modifier.padding(innerPadding),
             onNavigateToGeneratedGames = {
                 navController.navigateToDestination(Destination.GeneratedGames)
             }

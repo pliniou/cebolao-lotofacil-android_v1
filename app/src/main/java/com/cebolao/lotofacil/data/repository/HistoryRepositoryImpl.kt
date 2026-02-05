@@ -1,5 +1,6 @@
 package com.cebolao.lotofacil.data.repository
 
+import android.util.Log
 import com.cebolao.lotofacil.core.error.ErrorMapper
 import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.data.datasource.HistoryLocalDataSource
@@ -26,6 +27,10 @@ class HistoryRepositoryImpl @Inject constructor(
     @ApplicationScope private val applicationScope: CoroutineScope
 ) : HistoryRepository {
 
+    companion object {
+        private const val TAG = "HistoryRepository"
+    }
+
     private val syncMutex = Mutex()
     private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
     override val syncStatus: StateFlow<SyncStatus> = _syncStatus.asStateFlow()
@@ -35,8 +40,14 @@ class HistoryRepositoryImpl @Inject constructor(
 
     init {
         applicationScope.launch {
-            localDataSource.populateIfNeeded()
-            _isInitialized.value = true
+            try {
+                localDataSource.populateIfNeeded()
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to initialize local history database", e)
+            } finally {
+                // Never block app startup forever even if seeding fails.
+                _isInitialized.value = true
+            }
         }
     }
 

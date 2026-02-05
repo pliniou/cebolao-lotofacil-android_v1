@@ -76,6 +76,11 @@ class HistoryLocalDataSourceImpl @Inject constructor(
                 Log.e("HistoryLocalDataSource", "Failed to read history file", e)
             }
             emptyList()
+        } catch (e: Exception) {
+            if (BuildConfig.DEBUG) {
+                Log.e("HistoryLocalDataSource", "Failed to parse history file", e)
+            }
+            emptyList()
         }
     }
 }

@@ -8,7 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ElevatedAssistChip
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -78,7 +79,7 @@ private fun TrendTypeSelector(selected: TrendType, onSelect: (TrendType) -> Unit
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
         items(types) { type ->
-            ElevatedAssistChip(
+            FilterChip(
                 onClick = { onSelect(type) },
                 label = { 
                     Text(stringResource(id = when(type) {
@@ -92,7 +93,7 @@ private fun TrendTypeSelector(selected: TrendType, onSelect: (TrendType) -> Unit
                     }))
                 },
                 selected = selected == type,
-                colors = androidx.compose.material3.AssistChipDefaults.elevatedAssistChipColors(
+                colors = FilterChipDefaults.filterChipColors(
                     containerColor = if (selected == type) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
                 )
             )
@@ -108,11 +109,11 @@ private fun TrendWindowSelector(selected: Int, onSelect: (Int) -> Unit) {
         modifier = Modifier.fillMaxWidth()
     ) {
         windows.forEach { window ->
-            ElevatedAssistChip(
+            FilterChip(
                 onClick = { onSelect(window) },
                 label = { Text(stringResource(id = R.string.trend_window_label, window)) },
                 selected = selected == window,
-                colors = androidx.compose.material3.AssistChipDefaults.elevatedAssistChipColors(
+                colors = FilterChipDefaults.filterChipColors(
                     containerColor = if (selected == window) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface
                 )
             )

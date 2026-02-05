@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Analytics
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
@@ -62,6 +63,8 @@ val Destination.titleRes: Int
         Destination.GeneratedGames -> R.string.nav_games
         is Destination.Checker -> R.string.nav_checker
         Destination.About -> R.string.nav_about
+        Destination.Insights -> R.string.insights_title
+        Destination.UserStats -> R.string.nav_user_stats
     }
 
 val Destination.selectedIcon: ImageVector
@@ -71,6 +74,8 @@ val Destination.selectedIcon: ImageVector
         Destination.GeneratedGames -> Icons.AutoMirrored.Filled.ListAlt
         is Destination.Checker -> Icons.Filled.Analytics
         Destination.About -> Icons.Filled.Info
+        Destination.Insights -> Icons.Filled.Analytics
+        Destination.UserStats -> Icons.Default.Person
     }
 
 val Destination.unselectedIcon: ImageVector
@@ -80,4 +85,6 @@ val Destination.unselectedIcon: ImageVector
         Destination.GeneratedGames -> Icons.AutoMirrored.Filled.ListAlt
         is Destination.Checker -> Icons.Outlined.Analytics
         Destination.About -> Icons.Outlined.Info
+        Destination.Insights -> Icons.Outlined.Analytics
+        Destination.UserStats -> Icons.Default.Person
     }

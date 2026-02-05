@@ -30,4 +30,9 @@ sealed interface DomainError : AppError {
     data class ValidationError(val message: String) : DomainError {
         override val cause: Throwable? = null
     }
+
+    /**
+     * An unknown error occurred.
+     */
+    data class Unknown(override val cause: Throwable? = null) : DomainError
 }

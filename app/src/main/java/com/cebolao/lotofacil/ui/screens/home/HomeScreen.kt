@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
@@ -32,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.graphicsLayer
 
 import androidx.compose.ui.res.painterResource
@@ -50,6 +52,9 @@ import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.iconButtonSize
+import com.cebolao.lotofacil.ui.components.ClickableCard
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import com.cebolao.lotofacil.ui.theme.iconExtraLarge
 import com.cebolao.lotofacil.ui.theme.iconMedium
 import com.cebolao.lotofacil.viewmodels.HomeViewModel
@@ -283,7 +288,7 @@ private fun ErrorState(messageResId: Int?, onRetry: () -> Unit) {
 @Composable
 private fun AdvancedStatsCard(onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
-    AppCard(
+    ClickableCard(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
         backgroundColor = colors.primaryContainer.copy(alpha = 0.2f)
@@ -313,7 +318,7 @@ private fun AdvancedStatsCard(onClick: () -> Unit) {
                 )
             }
             Icon(
-                imageVector = androidx.compose.material.icons.automirrored.filled.ArrowForward,
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                 contentDescription = null,
                 tint = colors.primary.copy(alpha = 0.5f)
             )

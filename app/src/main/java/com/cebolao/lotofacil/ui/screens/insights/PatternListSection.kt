@@ -138,7 +138,7 @@ private fun PatternItem(combination: Set<Int>, frequency: Int) {
 private fun PatternInfoTooltip() {
     val tooltipState = rememberTooltipState()
     TooltipBox(
-        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(androidx.compose.material3.TooltipAnchorPosition.Above),
         tooltip = {
             PlainTooltip {
                 Text(stringResource(id = R.string.pattern_info_tooltip))

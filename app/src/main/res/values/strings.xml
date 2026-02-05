@@ -112,6 +112,7 @@
     <string name="total_draws_analyzed_format">Total de sorteios analisados: %d</string>
     <string name="chart_x_axis_label">Número</string>
     <string name="chart_y_axis_label">Frequência</string>
+    <string name="chart_frequency_description">Gráfico de frequência</string>
     
     <string name="patterns_title">Padrões e Combinações</string>
     <string name="patterns_subtitle">Descubra as combinações que mais se repetem.</string>

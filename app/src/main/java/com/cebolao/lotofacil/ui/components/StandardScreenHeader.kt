@@ -1,5 +1,8 @@
 package com.cebolao.lotofacil.ui.components
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,6 +23,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.heading
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @Composable
@@ -29,6 +34,7 @@ fun StandardScreenHeader(
     subtitle: String? = null,
     icon: ImageVector? = null,
     iconPainter: Painter? = null,
+    onBackClick: (() -> Unit)? = null,
     actions: (@Composable RowScope.() -> Unit)? = null
 ) {
     val colors = MaterialTheme.colorScheme
@@ -52,7 +58,15 @@ fun StandardScreenHeader(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
                 ) {
-                    if (icon != null || iconPainter != null) {
+                    if (onBackClick != null) {
+                         androidx.compose.material3.IconButton(onClick = onBackClick) {
+                            androidx.compose.material3.Icon(
+                                imageVector = androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Voltar",
+                                tint = colors.primary
+                            )
+                        }
+                    } else if (icon != null || iconPainter != null) {
                         IconBadge(
                             icon = icon,
                             painter = iconPainter,

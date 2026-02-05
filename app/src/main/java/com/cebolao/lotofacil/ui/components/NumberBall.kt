@@ -121,18 +121,12 @@ fun NumberBall(
                 shape = shape
             )
             .then(
-                if (onClick != null && !isDisabledState.value) {
+        if (onClick != null && !isDisabledState.value) {
                     Modifier.clickable { onClick?.invoke() }
                 } else Modifier
             )
             .semantics {
-                val stateText = when {
-                    isSelectedState.value -> stringResource(id = R.string.number_state_selected_alt)
-                    isHighlightedState.value -> stringResource(id = R.string.number_state_highlighted_alt)
-                    isDisabledState.value -> stringResource(id = R.string.number_state_disabled_alt)
-                    else -> stringResource(id = R.string.number_state_available_alt)
-                }
-                contentDescription = "Número $number, estado: $stateText"
+                contentDescription = "Número $number, estado: $stateResId"
             },
         shape = shape,
         color = animatedContainerColor,

@@ -50,8 +50,8 @@ fun MainScreen(
         bottomBar = {
             AppBottomBar(
                 destinations = bottomNavDestinations,
-                selectedDestination = navController.currentBackStackEntry?.destination?.route?.let { route ->
-                    bottomNavDestinations.find { it::class.qualifiedName == route }
+                selectedDestination = bottomNavDestinations.find { destination ->
+                    currentDestination?.hierarchy?.any { it.hasRoute(destination::class) } == true
                 } ?: bottomNavDestinations.first(),
                 onDestinationSelected = { destination ->
                     val isSelected = currentDestination

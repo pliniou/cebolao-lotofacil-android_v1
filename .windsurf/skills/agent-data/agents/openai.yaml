@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Data"
+  short_description: "Camada de dados offline-first com sync resiliente."
+  default_prompt: "Use $agent-data para implementar o repositório desta feature com Room, Retrofit e WorkManager."

@@ -76,11 +76,16 @@
 
     <string name="refresh_success">Dados atualizados com sucesso!</string>
     <string name="refresh_error">Falha ao atualizar dados. Tente novamente.</string>
+    <string name="refresh_confirmation_title">Atualizar dados?</string>
+    <string name="refresh_confirmation_message">Isso vai baixar os dados mais recentes da Caixa. Deseja continuar?</string>
+    <string name="sync_failed_message">Não foi possível atualizar. Exibindo dados locais.</string>
     <string name="loading_data">Carregando dados…</string>
     <string name="today_draw_day">Hoje tem sorteio! Concurso #%1$d</string>
     <string name="next_draw_info">Próximo: #%1$d em %2$s</string>
     <string name="last_draw_info">Último sorteio: %1$s</string>
     <string name="prize_details_title">Detalhes do prêmio</string>
+    <string name="prize_details_expand">Ver detalhes</string>
+    <string name="prize_details_collapse">Ocultar detalhes</string>
 
     <string name="winners_by_state">Ganhadores por estado</string>
 
@@ -126,7 +131,10 @@
     
     <string name="trends_title">Tendências ao Longo do Tempo</string>
     <string name="trends_subtitle">Acompanhe como as médias estatísticas evoluem entre os concursos.</string>
-    <string name="trend_window_label">Janela: %d concursos</string>
+    <plurals name="trend_window_label">
+        <item quantity="one">Janela: %d concurso</item>
+        <item quantity="other">Janela: %d concursos</item>
+    </plurals>
     <string name="trend_avg_label">Média do período: %.2f</string>
     <string name="trend_type_sum">Soma</string>
     <string name="trend_type_evens">Pares</string>
@@ -201,6 +209,7 @@
     <string name="delete_game">Excluir jogo</string>
 
     <!-- Common Actions -->
+    <string name="confirm_button">Confirmar</string>
 
     <string name="reset_button">Resetar</string>
 
@@ -307,14 +316,17 @@
 
     <string name="stats_guide_title">Guia de Filtros e Estatísticas</string>
     <string name="how_filters_work">Como funcionam os filtros?</string>
+    <string name="next_draw_date">Sorteio em %s</string>
     
     <!-- Content Descriptions -->
     <string name="cd_refresh_data">Atualizar dados</string>
     <string name="cd_clear_games">Limpar jogos não fixados</string>
     <string name="next_contest_format">Próximo Concurso: #%d</string>
+    <string name="prize_tier_format">Faixa %d</string>
 
     <string name="nav_home">Início</string>
     <string name="nav_filters">Gerador</string>
+    <string name="nav_history">Histórico</string>
     <string name="nav_games">Jogos</string>
     <string name="nav_checker">Conferidor</string>
     <string name="nav_about">Sobre</string>

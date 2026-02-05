@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Domain"
+  short_description: "Núcleo de regras de negócio em Kotlin puro."
+  default_prompt: "Use $agent-domain para criar o use case e as validações de domínio desta regra de negócio."

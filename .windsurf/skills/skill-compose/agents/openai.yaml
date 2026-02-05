@@ -1,0 +1,4 @@
+interface:
+  display_name: "Skill Compose"
+  short_description: "UI em Compose com MVVM e Material 3."
+  default_prompt: "Use $skill-compose para montar a tela em Compose com UiState, eventos e navegação."

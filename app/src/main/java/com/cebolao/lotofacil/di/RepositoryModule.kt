@@ -2,11 +2,11 @@ package com.cebolao.lotofacil.di
 
 import com.cebolao.lotofacil.data.repository.GameRepositoryImpl
 import com.cebolao.lotofacil.data.repository.HistoryRepositoryImpl
+import com.cebolao.lotofacil.data.repository.StatisticsRepositoryImpl
 import com.cebolao.lotofacil.data.repository.UserPreferencesRepositoryImpl
 import com.cebolao.lotofacil.domain.repository.GameRepository
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.repository.StatisticsRepository
-import com.cebolao.lotofacil.domain.repository.StatisticsRepositoryImpl
 import com.cebolao.lotofacil.domain.repository.UserPreferencesRepository
 import dagger.Binds
 import dagger.Module

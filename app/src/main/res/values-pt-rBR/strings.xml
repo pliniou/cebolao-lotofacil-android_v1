@@ -65,8 +65,6 @@
     <!-- Game generation -->
     <string name="game_quantity">Quantidade de jogos</string>
     <string name="total_cost">Custo total</string>
-    <string name="generate_games_label">Gerar %1$d jogo</string>
-    <string name="generate_games_label_plural">Gerar %1$d jogos</string>
 
     <!-- Filters -->
     <string name="filters_header_title">Filtros</string>

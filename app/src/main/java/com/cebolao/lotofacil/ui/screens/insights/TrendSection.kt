@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.cebolao.lotofacil.R
@@ -111,7 +112,15 @@ private fun TrendWindowSelector(selected: Int, onSelect: (Int) -> Unit) {
         windows.forEach { window ->
             FilterChip(
                 onClick = { onSelect(window) },
-                label = { Text(stringResource(id = R.string.trend_window_label, window)) },
+                label = {
+                    Text(
+                        pluralStringResource(
+                            id = R.plurals.trend_window_label,
+                            count = window,
+                            window
+                        )
+                    )
+                },
                 selected = selected == window,
                 colors = FilterChipDefaults.filterChipColors(
                     containerColor = if (selected == window) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface

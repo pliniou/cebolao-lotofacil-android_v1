@@ -1,23 +1,50 @@
 ---
 name: skill-offline-first
-description: stale-while-revalidate
+description: Aplique estratégia offline-first com stale-while-revalidate no Cebolão Lotofácil. Use quando implementar leitura local prioritária, seed/migração inicial, sincronização resiliente em background e sinalização de staleness para o usuário.
 ---
 
-Regras centrais:
-- A UI deve ser guiada por dados locais (offline-first).
-- Persistência local primária é via Room (SQLite) com Flows reativos.
-- Seed inicial de concursos vem dos assets na primeira execução (fonte read-only).
-- Migração legada: caso exista `lottery_data.json` (formato antigo), migrar para o Room no startup e remover o arquivo.
-- Sync via WorkManager quando houver rede disponível (atualizar silenciosamente).
-- API remota via Retrofit; mapear DTO → entidade/domínio antes de persistir.
-- Usar backoff/retry em falhas; nunca bloquear a UI.
-- Versionar schema dos assets e documentar compatibilidade (parsers com fallback controlado).
-- Acompanhar staleness por modalidade; informar usuário quando dados estiverem desatualizados mantendo o app funcional.
-- Repositórios devem emitir atualizações via Flow após sync/seed/migração.
+# Skill Offline First
 
-Faça:
-- Priorizar integridade e consistência de dados.
-- Manter sync resiliente e observável (logs/telemetria quando aplicável).
+Garanta funcionamento confiável sem rede e atualização transparente quando a conectividade voltar.
 
-Não faça:
-- Bloquear UI em rede ou I/O longo.
+## Princípios
+
+- Guiar UI por dados locais.
+- Usar Room como fonte primária persistente.
+- Sincronizar em background com WorkManager.
+- Adotar `stale-while-revalidate`.
+
+## Fluxo de implementação
+
+1. Ler dados locais e emitir imediatamente para UI.
+2. Verificar staleness por modalidade/concurso.
+3. Disparar sync assíncrono quando houver rede.
+4. Mapear DTO para entidade/domínio antes de persistir.
+5. Atualizar Room e propagar novo estado via Flow.
+
+## Seed e migração
+
+- Carregar seed de assets na primeira execução.
+- Detectar `lottery_data.json` legado e migrar para Room.
+- Remover artefato legado após migração concluída.
+- Registrar versão de schema dos assets e fallback controlado.
+
+## Confiabilidade
+
+- Aplicar retry com backoff exponencial.
+- Garantir idempotência de sync.
+- Registrar logs/telemetria para falhas recorrentes.
+- Não bloquear UI em operações de I/O/rede.
+
+## Checklist de revisão
+
+- Aplicativo funciona com internet desligada?
+- Sync atualiza cache sem quebrar leitura local?
+- Usuário recebe indicação de dado desatualizado quando necessário?
+- Falhas de rede não causam perda de dados?
+
+## Não fazer
+
+- Tornar rede pré-condição para abrir tela principal.
+- Escrever direto no estado de UI sem persistir no local.
+- Executar migração em thread principal.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent Architect"
+  short_description: "Guia de arquitetura Clean para Android."
+  default_prompt: "Use $agent-architect para revisar a arquitetura da feature e validar limites entre UI, Domain e Data."

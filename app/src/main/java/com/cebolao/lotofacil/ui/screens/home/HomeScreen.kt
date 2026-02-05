@@ -75,13 +75,12 @@ fun HomeScreen(
         homeViewModel.uiEvent.collect { event ->
             when (event) {
                 is UiEvent.ShowSnackbar -> {
-                    event.message?.let { message ->
-                        if (message.isNotBlank()) {
-                            snackbarHostState.showSnackbar(
-                                message = message,
-                                duration = SnackbarDuration.Long
-                            )
-                        }
+                    val message = event.message
+                    if (!message.isNullOrBlank()) {
+                        snackbarHostState.showSnackbar(
+                            message = message,
+                            duration = SnackbarDuration.Long
+                        )
                     }
                 }
                 else -> {}

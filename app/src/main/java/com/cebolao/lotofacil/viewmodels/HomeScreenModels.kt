@@ -31,11 +31,6 @@ enum class StatisticPattern(@StringRes val titleRes: Int, val icon: ImageVector)
 }
 
 /**
- * Data class representing statistics chip values for UI display.
- */
-
-
-/**
  * Holds all state required by the Home screen, including loading and error flags, the
  * last draw statistics, computed summary statistics, and UI selections such as the
  * currently selected pattern and time window.

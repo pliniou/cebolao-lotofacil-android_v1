@@ -10,6 +10,8 @@
     <string name="error_persistence">Erro ao acessar armazenamento local.</string>
     <string name="error_parsing">Erro ao processar dados remotos.</string>
     <string name="error_history_unavailable">Histórico indisponível.</string>
+    <string name="error_invalid_operation">Operação inválida.</string>
+    <string name="error_validation">Erro de validação.</string>
     <string name="error_unexpected">Erro inesperado.</string>
     <string name="error_sync_failed">Erro ao sincronizar dados. Tente novamente.</string>
     <string name="error_generating_games">Erro desconhecido ao gerar jogos.</string>

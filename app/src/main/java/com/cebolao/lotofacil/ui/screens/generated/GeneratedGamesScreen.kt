@@ -189,7 +189,7 @@ fun GeneratedGamesScreen(
                             game = game,
                             onAnalyzeClick = { gameViewModel.analyzeGame(game) },
                             onPinClick = { gameViewModel.togglePinState(game) },
-                            onDeleteClick = { gameViewModel.requestDeleteGame(game) }
+                            onDeleteClick = { gameViewModel.onDeleteGameRequested(game) }
                         )
                     }
                 }

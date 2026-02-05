@@ -7,23 +7,21 @@ import com.cebolao.lotofacil.core.error.AppError
  * These should be mapped to UI messages in the Presentation Layer.
  */
 sealed interface DomainError : AppError {
-    
 
-    
     /**
      * Functionality or data is not available (e.g., no internet for history).
      */
     data object HistoryUnavailable : DomainError {
         override val cause: Throwable? = null
     }
-    
+
     /**
      * The requested operation is invalid given the current state.
      */
     data class InvalidOperation(val reason: String) : DomainError {
         override val cause: Throwable? = null
     }
-    
+
     /**
      * A specific validation error for filters or inputs.
      */

@@ -1,7 +1,6 @@
 package com.cebolao.lotofacil.viewmodels
 
 import androidx.annotation.StringRes
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
@@ -14,12 +13,12 @@ import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer
 import com.cebolao.lotofacil.domain.usecase.GetHomeScreenDataUseCase
 import com.cebolao.lotofacil.navigation.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @HiltViewModel

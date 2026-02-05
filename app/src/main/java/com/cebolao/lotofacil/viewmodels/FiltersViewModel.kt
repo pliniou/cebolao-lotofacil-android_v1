@@ -1,7 +1,6 @@
 package com.cebolao.lotofacil.viewmodels
 
 import androidx.compose.runtime.Stable
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.core.result.AppResult
@@ -13,15 +12,13 @@ import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.usecase.GenerateGamesUseCase
 import com.cebolao.lotofacil.navigation.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -137,8 +134,8 @@ class FiltersViewModel @Inject constructor(
                 is AppResult.Failure -> {
                     val messageResId = when (result.error) {
                         is DomainError.HistoryUnavailable -> R.string.error_history_unavailable
-                        is DomainError.InvalidOperation -> R.string.error_unknown // TODO: Create specific resource
-                        is DomainError.ValidationError -> R.string.error_unknown // TODO: Create specific resource
+                        is DomainError.InvalidOperation -> R.string.error_invalid_operation
+                        is DomainError.ValidationError -> R.string.error_validation
                         else -> R.string.error_generating_games
                     }
                     _uiState.update { it.copy(generationState = GenerationUiState.Error("Erro ao gerar jogos")) }

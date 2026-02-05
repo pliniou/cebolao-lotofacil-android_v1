@@ -6,6 +6,7 @@ import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.domain.model.LastDrawStats
 import com.cebolao.lotofacil.domain.model.StatisticsReport
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
+import com.cebolao.lotofacil.domain.repository.StatisticsRepository
 import com.cebolao.lotofacil.domain.repository.SyncStatus
 import com.cebolao.lotofacil.domain.service.StatisticsAnalyzer
 import com.cebolao.lotofacil.domain.usecase.GetHomeScreenDataUseCase
@@ -40,6 +41,7 @@ class HomeViewModelTest {
     private lateinit var getHomeScreenDataUseCase: GetHomeScreenDataUseCase
     private lateinit var historyRepository: HistoryRepository
     private lateinit var statisticsAnalyzer: StatisticsAnalyzer
+    private lateinit var statisticsRepository: StatisticsRepository
     private lateinit var dispatchersProvider: DispatchersProvider
     private lateinit var viewModel: HomeViewModel
 
@@ -47,8 +49,10 @@ class HomeViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         getHomeScreenDataUseCase = mock()
+
         historyRepository = mock()
         statisticsAnalyzer = mock()
+        statisticsRepository = mock()
         dispatchersProvider = mock()
 
         whenever(dispatchersProvider.default).thenReturn(testDispatcher)
@@ -78,6 +82,7 @@ class HomeViewModelTest {
             getHomeScreenDataUseCase,
             historyRepository,
             statisticsAnalyzer,
+            statisticsRepository,
             dispatchersProvider
         )
 
@@ -124,6 +129,7 @@ class HomeViewModelTest {
             getHomeScreenDataUseCase,
             historyRepository,
             statisticsAnalyzer,
+            statisticsRepository,
             dispatchersProvider
         )
 
@@ -169,6 +175,7 @@ class HomeViewModelTest {
             getHomeScreenDataUseCase,
             historyRepository,
             statisticsAnalyzer,
+            statisticsRepository,
             dispatchersProvider
         )
 
@@ -218,6 +225,7 @@ class HomeViewModelTest {
             getHomeScreenDataUseCase,
             historyRepository,
             statisticsAnalyzer,
+            statisticsRepository,
             dispatchersProvider
         )
 

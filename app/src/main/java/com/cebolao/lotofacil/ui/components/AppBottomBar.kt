@@ -11,11 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.navigation.Destination
 import com.cebolao.lotofacil.navigation.selectedIcon
 import com.cebolao.lotofacil.navigation.titleRes
 import com.cebolao.lotofacil.navigation.unselectedIcon
+import com.cebolao.lotofacil.ui.theme.AppElevation
 
 /**
  * Custom bottom navigation bar with modern styling and optimized interactions.
@@ -34,7 +34,7 @@ fun AppBottomBar(
     NavigationBar(
         modifier = modifier,
         containerColor = colors.surface,
-        tonalElevation = 3.dp
+        tonalElevation = AppElevation.lg
     ) {
         destinations.forEach { destination ->
             val selected = destination == selectedDestination
@@ -56,9 +56,10 @@ fun AppBottomBar(
                 label = {
                     Text(
                         text = stringResource(id = destination.titleRes),
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.labelMedium
                     )
                 },
+                alwaysShowLabel = true,
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = colors.primary,
                     selectedTextColor = colors.primary,

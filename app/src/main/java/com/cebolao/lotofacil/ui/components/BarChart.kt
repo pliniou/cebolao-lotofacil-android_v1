@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableList
 import kotlin.math.roundToInt
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import com.cebolao.lotofacil.R
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.role
@@ -49,6 +49,9 @@ fun BarChart(
     yAxisLabel: String? = null,
     xAxisLabel: String? = null
 ) {
+    if (data.isEmpty()) return
+
+    val safeMaxValue = maxValue.coerceAtLeast(1)
     val animatedProgress = remember { Animatable(0f) }
     LaunchedEffect(data) {
         animatedProgress.snapTo(0f)
@@ -76,42 +79,47 @@ fun BarChart(
     val textPaint = remember(textSize, onSurfaceVariant) {
         Paint().apply {
             isAntiAlias = true
-            textSize = textSize
-            color = onSurfaceVariant.toArgb()
-            textAlign = Paint.Align.RIGHT
+            this.textSize = textSize
+            this.color = onSurfaceVariant.toArgb()
+            this.textAlign = Paint.Align.RIGHT
         }
     }
     val valuePaint = remember(textSize, primaryColor) {
         Paint().apply {
             isAntiAlias = true
-            textSize = textSize
-            color = primaryColor.toArgb()
-            textAlign = Paint.Align.CENTER
+            this.textSize = textSize
+            this.color = primaryColor.toArgb()
+            this.textAlign = Paint.Align.CENTER
             isFakeBoldText = true
         }
     }
     val labelPaint = remember(textSize, onSurfaceVariant) {
         Paint().apply {
             isAntiAlias = true
-            textSize = textSize
-            color = onSurfaceVariant.toArgb()
-            textAlign = Paint.Align.CENTER
+            this.textSize = textSize
+            this.color = onSurfaceVariant.toArgb()
+            this.textAlign = Paint.Align.CENTER
         }
     }
 
-    val chartDescription = stringResource(id = R.string.chart_frequency_description, data.size, maxValue)
+    val chartDescription = pluralStringResource(
+        id = R.plurals.chart_frequency_description,
+        count = data.size,
+        data.size,
+        safeMaxValue
+    )
 
     Canvas(
         modifier = modifier
             .height(chartHeight)
             .semantics {
-                role = androidx.compose.ui.semantics.Role.Image
+                role = Role.Image
                 contentDescription = chartDescription
             }
     ) {
-        val yAxisLabelWidth = 36.dp.toPx()
-        val xAxisLabelHeight = 36.dp.toPx()
-        val valueLabelHeight = 22.dp.toPx()
+        val yAxisLabelWidth = 40.dp.toPx()
+        val xAxisLabelHeight = 34.dp.toPx()
+        val valueLabelHeight = 24.dp.toPx()
         val chartAreaWidth = size.width - yAxisLabelWidth
         val chartAreaHeight = size.height - xAxisLabelHeight - valueLabelHeight
 
@@ -120,7 +128,7 @@ fun BarChart(
             yAxisLabelWidth,
             chartAreaHeight,
             valueLabelHeight,
-            maxValue,
+            safeMaxValue,
             textPaint,
             outlineVariant
         )
@@ -136,14 +144,14 @@ fun BarChart(
                 yAxisLabelWidth = yAxisLabelWidth,
                 chartAreaHeight = chartAreaHeight,
                 topPadding = valueLabelHeight,
-                maxValue = maxValue,
+                maxValue = safeMaxValue,
                 color = tertiaryColor.copy(alpha = 0.3f)
             )
         }
 
         data.forEachIndexed { index, (label, value) ->
             val progressFactor = animatedProgress.value
-            val barHeight = (value.toFloat() / maxValue) * chartAreaHeight * progressFactor
+            val barHeight = (value.toFloat() / safeMaxValue) * chartAreaHeight * progressFactor
             val left = yAxisLabelWidth + barSpacing + index * (barWidth + barSpacing)
             val barCenterX = left + barWidth / 2
 

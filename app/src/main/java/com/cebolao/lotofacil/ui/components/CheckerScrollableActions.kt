@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.ui.theme.AppSize
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @Composable
@@ -33,18 +34,18 @@ fun CheckerScrollableActions(
     onClearClick: () -> Unit,
     onCheckClick: () -> Unit,
     modifier: Modifier = Modifier,
-    height: Dp = 48.dp,
+    height: Dp = AppSize.buttonHeightDefault,
     shape: Shape = MaterialTheme.shapes.small
 ) {
     val hapticFeedback = LocalHapticFeedback.current
     
     Column(
-        modifier = modifier.padding(horizontal = AppSpacing.lg, vertical = AppSpacing.sm),
+        modifier = modifier.padding(vertical = AppSpacing.sm),
         verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (selectedCount > 0) {
@@ -76,14 +77,14 @@ fun CheckerScrollableActions(
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier.size(AppSize.iconSmall),
                         color = MaterialTheme.colorScheme.onPrimary,
                         strokeWidth = 2.5.dp
                     )
                 } else {
                     Text(
                         text = stringResource(id = R.string.check_game_button),
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Medium
                     )
                 }

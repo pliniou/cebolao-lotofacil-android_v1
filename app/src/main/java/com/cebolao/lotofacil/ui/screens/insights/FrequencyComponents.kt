@@ -15,21 +15,24 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.input.key.Key
-import androidx.compose.input.key.KeyEventType
-import androidx.compose.input.key.key
-import androidx.compose.input.key.onKeyEvent
-import androidx.compose.input.key.type
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -119,6 +122,15 @@ private fun GaussianCurveToggle(
 ) {
     val toggleInteractionSource = remember { MutableInteractionSource() }
     val hapticFeedback = LocalHapticFeedback.current
+    val toggleStateLabel = if (showGaussCurve) {
+        stringResource(R.string.gaussian_toggle_active)
+    } else {
+        stringResource(R.string.gaussian_toggle_inactive)
+    }
+    val toggleDescription = stringResource(
+        R.string.gaussian_toggle_description,
+        toggleStateLabel
+    )
     Box(
         modifier = modifier
             .clip(CircleShape)
@@ -144,21 +156,32 @@ private fun GaussianCurveToggle(
             }
             .padding(AppSpacing.xs)
             .semantics {
-                contentDescription = stringResource(
-                    R.string.gaussian_toggle_description,
-                    if (showGaussCurve) stringResource(R.string.gaussian_toggle_active)
-                    else stringResource(R.string.gaussian_toggle_inactive)
-                )
+                contentDescription = toggleDescription
                 role = Role.Switch
             },
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = if (showGaussCurve) "∞" else "📊",
-            style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(horizontal = AppSpacing.sm, vertical = AppSpacing.xs),
-            fontWeight = FontWeight.Bold
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs),
+            modifier = Modifier.padding(horizontal = AppSpacing.sm, vertical = AppSpacing.xs)
+        ) {
+            Icon(
+                imageVector = if (showGaussCurve) Icons.Filled.Timeline else Icons.Filled.BarChart,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp)
+            )
+            Text(
+                text = if (showGaussCurve) {
+                    stringResource(id = R.string.gaussian_toggle_label_on)
+                } else {
+                    stringResource(id = R.string.gaussian_toggle_label_off)
+                },
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 
@@ -167,10 +190,7 @@ fun TopNumbersSection(
     topNumbers: List<Int>,
     modifier: Modifier = Modifier
 ) {
-    val numbersWithFrequency = remember(topNumbers) {
-        topNumbers.mapIndexed { index, number -> Pair(number, 100 - (index * 10)) }
-            .toImmutableList()
-    }
+    val rankedNumbers = remember(topNumbers) { topNumbers.toImmutableList() }
 
     AppCard(
         modifier = modifier.fillMaxWidth(),
@@ -197,7 +217,7 @@ fun TopNumbersSection(
                 horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
                 verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
             ) {
-                itemsIndexed(numbersWithFrequency, key = { _, (number, _) -> number }) { index, (number, _) ->
+                itemsIndexed(rankedNumbers, key = { _, number -> number }) { index, number ->
                     RankedNumberBall(
                         position = index + 1,
                         number = number
@@ -210,16 +230,13 @@ fun TopNumbersSection(
 
 @Composable
 private fun RankingBadge(position: Int, modifier: Modifier = Modifier) {
-    val badgeConfig = remember(position) {
-        when (position) {
-            1 -> Triple(MaterialTheme.colorScheme.primary, "🥇", true)
-            2 -> Triple(MaterialTheme.colorScheme.secondary, "🥈", true)
-            3 -> Triple(MaterialTheme.colorScheme.tertiary, "🥉", true)
-            else -> Triple(MaterialTheme.colorScheme.outline, position.toString(), false)
-        }
+    val badgeConfig = when (position) {
+        1 -> Pair(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onPrimary)
+        2 -> Pair(MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.onSecondary)
+        3 -> Pair(MaterialTheme.colorScheme.tertiary, MaterialTheme.colorScheme.onTertiary)
+        else -> Pair(MaterialTheme.colorScheme.outline, MaterialTheme.colorScheme.surface)
     }
-    
-    val (badgeColor, badgeEmoji, _) = badgeConfig
+    val (badgeColor, textColor) = badgeConfig
 
     Box(
         modifier = modifier
@@ -229,23 +246,24 @@ private fun RankingBadge(position: Int, modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = badgeEmoji,
+            text = position.toString(),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = AppAlpha.textSecondary)
+            color = textColor.copy(alpha = AppAlpha.textSecondary)
         )
     }
 }
 
 @Composable
 private fun RankedNumberBall(position: Int, number: Int, modifier: Modifier = Modifier) {
+    val rankedNumberDescription = stringResource(
+        R.string.ranked_number_description,
+        position,
+        number
+    )
     Box(modifier = modifier
         .semantics {
-            contentDescription = stringResource(
-                R.string.ranked_number_description,
-                position,
-                number
-            )
+            contentDescription = rankedNumberDescription
         }) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

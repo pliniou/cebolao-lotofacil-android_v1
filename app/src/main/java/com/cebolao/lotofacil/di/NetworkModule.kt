@@ -12,7 +12,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.Cache
-import okhttp3.CertificatePinner
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -44,25 +43,12 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideCertificatePinner(): CertificatePinner {
-        return CertificatePinner.Builder()
-            // Lotofácil API host - add certificate pins for production
-            .add(
-                "loteriascaixa-api.herokuapp.com",
-                "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="  // Replace with actual pin
-            )
-            .build()
-    }
-
-    @Provides
-    @Singleton
     fun provideRateLimiter(): RateLimiter = RateLimiter.createDefault()
 
     @Provides
     @Singleton
     fun provideOkHttpClient(
         cache: Cache,
-        certificatePinner: CertificatePinner,
         rateLimiter: RateLimiter
     ): OkHttpClient {
         val logging = HttpLoggingInterceptor().apply {
@@ -72,7 +58,6 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .cache(cache)
             .addInterceptor(logging)
-            .certificatePinner(certificatePinner)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .build()

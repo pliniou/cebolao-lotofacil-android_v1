@@ -20,12 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.text.style.TextOverflow
 import com.cebolao.lotofacil.R
+import com.cebolao.lotofacil.ui.theme.AppSize
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @Composable
@@ -72,7 +73,7 @@ fun StandardScreenHeader(
                             icon = icon,
                             painter = iconPainter,
                             contentDescription = null,
-                            size = 44.dp,
+                            size = AppSize.touchTargetMinimum,
                             iconSize = 22.dp
                         )
                     }
@@ -80,16 +81,17 @@ fun StandardScreenHeader(
                     Column {
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.headlineSmall,
                             color = colors.onBackground,
                             modifier = Modifier.semantics { heading() }
                         )
                         subtitle?.let {
                             Text(
                                 text = it,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = colors.onSurfaceVariant
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = colors.onSurfaceVariant,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -106,7 +108,7 @@ fun StandardScreenHeader(
 
             HorizontalDivider(
                 modifier = Modifier.padding(top = AppSpacing.lg),
-                color = colors.outline.copy(alpha = 0.7f)
+                color = colors.outline.copy(alpha = 0.35f)
             )
         }
     }

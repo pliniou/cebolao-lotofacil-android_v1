@@ -1,81 +1,83 @@
 package com.cebolao.lotofacil.data.datasource
 
-import com.cebolao.lotofacil.core.result.AppResult
+import android.content.Context
+import com.cebolao.lotofacil.core.coroutine.TestDispatchersProvider
 import com.cebolao.lotofacil.data.datasource.database.HistoryDao
 import com.cebolao.lotofacil.data.datasource.database.entity.HistoricalDrawEntity
+import com.cebolao.lotofacil.data.parser.HistoryParser
+import com.cebolao.lotofacil.domain.model.HistoricalDraw
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import kotlin.test.assertEquals
 
 class HistoryLocalDataSourceTest {
 
     private lateinit var dao: HistoryDao
+    private lateinit var parser: HistoryParser
+    private lateinit var context: Context
     private lateinit var dataSource: HistoryLocalDataSource
 
     @Before
     fun setup() {
         dao = mock()
-        dataSource = HistoryLocalDataSource(dao)
-    }
-
-    @Test
-    fun `getAllDrawsFlow should return flows from DAO`() = runTest {
-        val mockEntities = listOf(
-            HistoricalDrawEntity(1, "2025-01-01", "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15", ""),
-            HistoricalDrawEntity(2, "2025-01-02", "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16", "")
+        parser = mock()
+        context = mock()
+        dataSource = HistoryLocalDataSourceImpl(
+            context = context,
+            historyDao = dao,
+            dispatchersProvider = TestDispatchersProvider(),
+            parser = parser
         )
-        whenever(dao.getAllDrawsFlow()).thenReturn(flowOf(mockEntities))
-
-        val result = dataSource.getAllDrawsFlow()
-        // Verify the flow is called and converted to domain models
-        verify(dao).getAllDrawsFlow()
     }
 
     @Test
-    fun `getLatestDraw should return success with draw`() = runTest {
-        val mockEntity = HistoricalDrawEntity(1, "2025-01-01", "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15", "")
-        whenever(dao.getLatestDraw()).thenReturn(mockEntity)
+    fun `getHistory should map DAO entities to domain draws`() = runTest {
+        val entities = listOf(
+            HistoricalDrawEntity(
+                contestNumber = 100,
+                numbers = (1..15).toSet(),
+                date = "01/01/2026"
+            )
+        )
+        whenever(dao.getAll()).thenReturn(flowOf(entities))
+
+        val result = dataSource.getHistory().first()
+
+        assertEquals(1, result.size)
+        assertEquals(100, result.first().contestNumber)
+        assertEquals((1..15).toSet(), result.first().numbers)
+    }
+
+    @Test
+    fun `getLatestDraw should return mapped domain draw when available`() = runTest {
+        whenever(dao.getLatestDraw()).thenReturn(
+            HistoricalDrawEntity(
+                contestNumber = 3210,
+                numbers = (1..15).toSet(),
+                date = "02/01/2026"
+            )
+        )
 
         val result = dataSource.getLatestDraw()
-        assert(result is AppResult.Success)
 
-        verify(dao).getLatestDraw()
+        assertEquals(3210, result?.contestNumber)
+        assertEquals((1..15).toSet(), result?.numbers)
     }
 
     @Test
-    fun `getLatestDraw should return failure when DAO returns null`() = runTest {
-        whenever(dao.getLatestDraw()).thenReturn(null)
+    fun `saveNewContests should return early for empty input`() = runTest {
+        val draws = emptyList<HistoricalDraw>()
 
-        val result = dataSource.getLatestDraw()
-        assert(result is AppResult.Failure)
+        dataSource.saveNewContests(draws)
 
-        verify(dao).getLatestDraw()
-    }
-
-    @Test
-    fun `upsertDraw should save entity to DAO`() = runTest {
-        val mockEntity = HistoricalDrawEntity(1, "2025-01-01", "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15", "")
-        whenever(dao.upsertDraw(mockEntity)).thenReturn(1L)
-
-        val result = dataSource.upsertDraw(mockEntity)
-        assert(result is AppResult.Success)
-
-        verify(dao).upsertDraw(mockEntity)
-    }
-
-    @Test
-    fun `upsertDraw should return failure on exception`() = runTest {
-        val mockEntity = HistoricalDrawEntity(1, "2025-01-01", "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15", "")
-        whenever(dao.upsertDraw(mockEntity)).thenThrow(RuntimeException("DB Error"))
-
-        val result = dataSource.upsertDraw(mockEntity)
-        assert(result is AppResult.Failure)
-
-        verify(dao).upsertDraw(mockEntity)
+        verify(dao, never()).upsertAll(any())
     }
 }

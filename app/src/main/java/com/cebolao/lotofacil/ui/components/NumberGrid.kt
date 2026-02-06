@@ -12,6 +12,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
@@ -31,8 +32,8 @@ interface StableKey {
 
 @Stable
 data class GridLayoutConfig(
-    val spacing: dp,
-    val ballSize: dp
+    val spacing: Dp,
+    val ballSize: Dp
 )
 
 @SuppressLint("ConfigurationScreenWidthHeight")

@@ -4,6 +4,7 @@ import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.service.SimpleLotofacilPredictor
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
@@ -27,7 +28,7 @@ class PredictNumbersUseCase @Inject constructor(
      * @return Flow of suggested numbers
      */
     operator fun invoke(suggestionCount: Int = 15): Flow<Set<Int>> = flow {
-        val history = historyRepository.getHistory()
+        val history = historyRepository.getHistory().first()
         val suggestions = predictor.predictNumbers(history, suggestionCount)
         emit(suggestions)
     }.flowOn(dispatchersProvider.default)

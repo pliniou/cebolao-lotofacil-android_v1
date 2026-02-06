@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.service.UserStats
 import com.cebolao.lotofacil.ui.components.AppCard
@@ -163,18 +164,24 @@ private fun StatSummaryCard(
 }
 @Composable
 private fun TrendIndicator(
-    value: Double,
+    value: Float,
     modifier: Modifier = Modifier,
-    baselineValue: Double = 7.5 // Expected value for 15 numbers in 15 draws
+    baselineValue: Float = 7.5f // Expected value for 15 numbers in 15 draws
 ) {
+    val colors = MaterialTheme.colorScheme
     val (arrow, color, delta, trendLabel) = remember(value) {
         val diff = value - baselineValue
         when {
-            abs(diff) < 0.5 -> Tuple4("→", MaterialTheme.colorScheme.outline, "0%", "estável")
-            diff > 0 -> Tuple4("↑", MaterialTheme.colorScheme.primary, "+${(diff / baselineValue * 100).toInt()}%", "alta")
-            else -> Tuple4("↓", MaterialTheme.colorScheme.error, "${(diff / baselineValue * 100).toInt()}%", "baixa")
+            abs(diff) < 0.5 -> Tuple4("→", colors.outline, "0%", "estável")
+            diff > 0 -> Tuple4("↑", colors.primary, "+${(diff / baselineValue * 100).toInt()}%", "alta")
+            else -> Tuple4("↓", colors.error, "${(diff / baselineValue * 100).toInt()}%", "baixa")
         }
     }
+    val trendDescription = stringResource(
+        R.string.trend_indicator_description,
+        trendLabel,
+        delta
+    )
     
     Box(
         modifier = modifier
@@ -184,11 +191,7 @@ private fun TrendIndicator(
                 shape = RoundedCornerShape(AppSpacing.sm)
             )
             .semantics {
-                contentDescription = stringResource(
-                    R.string.trend_indicator_description,
-                    trendLabel,
-                    delta
-                )
+                contentDescription = trendDescription
                 role = Role.Image
             },
         contentAlignment = Alignment.Center
@@ -214,9 +217,4 @@ private fun TrendIndicator(
 }
 
 // Classe auxiliar para retornar 4 valores
-data class Tuple4<A, B, C, D>(val a: A, val b: B, val c: C, val d: D) {
-    operator fun component1() = a
-    operator fun component2() = b
-    operator fun component3() = c
-    operator fun component4() = d
-}
+data class Tuple4<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)

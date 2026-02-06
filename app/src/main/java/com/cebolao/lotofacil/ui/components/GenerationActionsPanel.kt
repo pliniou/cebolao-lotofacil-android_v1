@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.model.LotofacilConstants
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
+import com.cebolao.lotofacil.ui.theme.AppSize
+import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.viewmodels.GenerationUiState
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -115,7 +117,7 @@ fun GenerationActionsPanel(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp),
+                    .height(AppSize.buttonHeightDefault),
                 enabled = !isLoading,
                 shape = MaterialTheme.shapes.large
             ) {
@@ -125,7 +127,7 @@ fun GenerationActionsPanel(
                 ) { loading ->
                     if (loading) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
+                            modifier = Modifier.size(AppSize.iconMedium),
                             color = MaterialTheme.colorScheme.onPrimary,
                             strokeWidth = 2.5.dp
                         )
@@ -161,7 +163,7 @@ private fun QuantitySelector(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
         IconButton(onClick = onDecrement, enabled = isDecrementEnabled) {
             Icon(Icons.Filled.Remove, stringResource(id = R.string.decrease_quantity))

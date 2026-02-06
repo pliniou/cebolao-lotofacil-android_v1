@@ -101,8 +101,8 @@ fun ShimmerCardLoader(
  */
 @Composable
 fun ShimmerListLoader(
-    itemCount: Int = 3,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    itemCount: Int = 3
 ) {
     repeat(itemCount) {
         ShimmerCardLoader(modifier = modifier)

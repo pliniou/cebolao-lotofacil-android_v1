@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
-    id("app.cash.paparazzi")
+    alias(libs.plugins.paparazzi)
 }
 
 android {

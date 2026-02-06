@@ -3,7 +3,7 @@
 
     <string name="error_no_history">Unable to load history.</string>
     <string name="error_load_data_failed">Failed to load data.</string>
-    <string name="error_analysis_failed">Analysis failed.</string>
+    <string name="error_analysis_failed">Analysis failed.</string>`r`n    <string name="error_analysis_timeout">Analysis timed out. Please try again.</string>
     <string name="error_unknown">Unknown error.</string>
     <string name="try_again">Try again</string>
 
@@ -277,7 +277,10 @@
     <string name="position_abbr">#%1$d</string>
     
     <!-- Accessibility - Componentes -->
-    <string name="chart_frequency_description">Frequency chart with %1$d numbers, maximum value %2$d</string>
+    <plurals name="chart_frequency_description">
+        <item quantity="one">Frequency chart with %1$d number, maximum value %2$d</item>
+        <item quantity="other">Frequency chart with %1$d numbers, maximum value %2$d</item>
+    </plurals>
     <string name="prize_tier_description">Prize category %1$d, %2$s per winner</string>
     <string name="ranked_number_description">Position %1$dth, number %2$d</string>
     <string name="trend_indicator_description">Trend %1$s, variation %2$s</string>
@@ -287,4 +290,7 @@
     <string name="gaussian_toggle_description">Include gaussian curve, %1$s</string>
     <string name="gaussian_toggle_active">active</string>
     <string name="gaussian_toggle_inactive">inactive</string>
+    <string name="gaussian_toggle_label_on">Gauss</string>
+    <string name="gaussian_toggle_label_off">Bars</string>
 </resources>
+

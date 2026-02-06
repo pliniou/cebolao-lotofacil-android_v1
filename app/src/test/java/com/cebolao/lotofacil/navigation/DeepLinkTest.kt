@@ -1,10 +1,10 @@
 package com.cebolao.lotofacil.navigation
 
 import kotlinx.serialization.json.Json
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 class DeepLinkTest {
 
@@ -50,9 +50,9 @@ class DeepLinkTest {
         )
 
         for (destination in destinations) {
-            assertNotNull(destination.titleRes, "Missing titleRes for $destination")
-            assertNotNull(destination.selectedIcon, "Missing selectedIcon for $destination")
-            assertNotNull(destination.unselectedIcon, "Missing unselectedIcon for $destination")
+            assertNotNull("Missing titleRes for $destination", destination.titleRes)
+            assertNotNull("Missing selectedIcon for $destination", destination.selectedIcon)
+            assertNotNull("Missing unselectedIcon for $destination", destination.unselectedIcon)
         }
     }
 

@@ -1,7 +1,6 @@
 package com.cebolao.lotofacil.ui.screens.stats
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -42,33 +41,44 @@ fun UserStatsScreen(
             uiState.isLoading -> {
                 LoadingData(
                     message = stringResource(id = R.string.loading_data),
-                    modifier = Modifier.fillMaxSize().padding(innerPadding)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
                 )
             }
+
             uiState.errorMessageResId != null -> {
                 ErrorCard(
                     messageResId = uiState.errorMessageResId!!,
-                    modifier = Modifier.padding(innerPadding).padding(AppSpacing.lg),
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .padding(AppSpacing.lg),
                     actions = { viewModel.loadStats() }
                 )
             }
+
             uiState.stats != null && uiState.stats!!.totalGamesGenerated > 0 -> {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(innerPadding),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
                     contentPadding = PaddingValues(AppSpacing.lg),
-                    verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(AppSpacing.lg)
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
                 ) {
                     item(key = "user_stats_section") {
                         UserStatsSection(stats = uiState.stats!!)
                     }
                 }
             }
+
             else -> {
                 EmptyState(
                     messageResId = R.string.stats_empty_message,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                )
             }
         }
-
+    }
+}

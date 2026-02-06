@@ -5,9 +5,11 @@ import com.cebolao.lotofacil.domain.model.ChartDataPoint
 import com.cebolao.lotofacil.domain.model.EvolutionMetrics
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
+import java.util.Locale
 
 /**
  * UseCase to calculate advanced statistics and evolution metrics.
@@ -24,7 +26,7 @@ class GetEvolutionMetricsUseCase @Inject constructor(
      * @return Flow of evolution metrics
      */
     operator fun invoke(): Flow<EvolutionMetrics> = flow {
-        val history = historyRepository.getHistory()
+        val history = historyRepository.getHistory().first()
 
         if (history.isEmpty()) {
             emit(EvolutionMetrics())
@@ -75,7 +77,7 @@ class GetEvolutionMetricsUseCase @Inject constructor(
             appendLine("📊 Análise de Padrões:")
             append("- Número mais frequente: ${mostFrequent?.key} (${mostFrequent?.value}x)")
             append("- Número menos frequente: ${leastFrequent?.key} (${leastFrequent?.value}x)")
-            append("- Média de frequência: ${String.format("%.1f", avgNumber)}")
+            append("- Média de frequência: ${String.format(Locale.getDefault(), "%.1f", avgNumber)}")
         }
 
         emit(

@@ -107,8 +107,8 @@ class SimpleLotofacilPredictor @Inject constructor(
                 "minNumber" to minNumber,
                 "maxNumber" to maxNumber,
                 "totalAnalyzed" to totalDraws,
-                "mostFrequent" to frequencyMap.maxByOrNull { it.value }?.key,
-                "leastFrequent" to frequencyMap.minByOrNull { it.value }?.key
+                "mostFrequent" to (frequencyMap.maxByOrNull { it.value }?.key ?: 0),
+                "leastFrequent" to (frequencyMap.minByOrNull { it.value }?.key ?: 0)
             )
         }
 }

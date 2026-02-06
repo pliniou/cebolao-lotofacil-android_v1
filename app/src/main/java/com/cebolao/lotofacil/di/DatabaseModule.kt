@@ -26,9 +26,11 @@ object DatabaseModule {
             LotofacilDatabase::class.java,
             "lotofacil_db"
         )
-        .addMigrations(*LotofacilDatabase.getMigrations())
-        .fallbackToDestructiveMigration()  // Apenas em DEBUG para segurança
-        .build()
+            // Projeto ainda não está em produção: prioriza inicialização estável
+            // e evita bloqueios por migrações durante iteração.
+            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigrationOnDowngrade()
+            .build()
     }
 
     @Provides

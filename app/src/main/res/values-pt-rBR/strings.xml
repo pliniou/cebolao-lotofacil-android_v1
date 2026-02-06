@@ -5,7 +5,7 @@
     <!-- Error messages -->
     <string name="error_no_history">Não foi possível carregar o histórico.</string>
     <string name="error_load_data_failed">Falha ao carregar dados.</string>
-    <string name="error_analysis_failed">Falha na análise.</string>
+    <string name="error_analysis_failed">Falha na análise.</string>`r`n    <string name="error_analysis_timeout">A análise demorou demais. Tente novamente.</string>
     <string name="error_unknown">Erro desconhecido.</string>
     <string name="error_network_connection">Sem conexão com o servidor. Tente novamente.</string>
     <string name="error_persistence">Erro ao acessar armazenamento local.</string>
@@ -76,6 +76,8 @@
 
     <!-- Success messages -->
     <string name="refresh_success">Dados atualizados com sucesso.</string>
+    <string name="gaussian_toggle_label_on">Gauss</string>
+    <string name="gaussian_toggle_label_off">Barras</string>
 
     <!-- Navigation -->
     <string name="nav_home">Início</string>
@@ -84,3 +86,4 @@
     <string name="nav_games">Jogos</string>
     <string name="nav_about">Sobre</string>
 </resources>
+

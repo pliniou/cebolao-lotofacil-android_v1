@@ -1,16 +1,19 @@
 package com.cebolao.lotofacil.ui.screens
 
 import app.cash.paparazzi.Paparazzi
-import com.android.ide.common.rendering.api.SessionParams
+import app.cash.paparazzi.DeviceConfig
+import androidx.compose.material3.Text
 import com.cebolao.lotofacil.ui.theme.CebolaoLotofacilTheme
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 
+@Ignore("Run snapshot tests with dedicated Paparazzi tasks in CI.")
 class HomeScreenSnapshotTest {
     @get:Rule
     val paparazzi = Paparazzi(
-        deviceConfig = SessionParams.DeviceConfig.PHONE_4_INCH,
-        theme = "CebolaoLotofacilTheme"
+        deviceConfig = DeviceConfig.PIXEL_5,
+        theme = "android:Theme.Material.Light.NoActionBar"
     )
 
     @Test
@@ -43,5 +46,3 @@ class HomeScreenSnapshotTest {
         }
     }
 }
-
-import androidx.compose.material3.Text

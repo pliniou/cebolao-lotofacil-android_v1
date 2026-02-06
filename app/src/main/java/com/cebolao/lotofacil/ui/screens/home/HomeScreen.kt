@@ -24,7 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,13 +32,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.graphicsLayer
-
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.R
@@ -47,6 +46,7 @@ import com.cebolao.lotofacil.core.constants.AppConstants
 import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.AppCard
+import com.cebolao.lotofacil.ui.components.SnackbarHost
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
@@ -58,7 +58,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import com.cebolao.lotofacil.ui.theme.iconExtraLarge
 import com.cebolao.lotofacil.ui.theme.iconMedium
 import com.cebolao.lotofacil.viewmodels.HomeViewModel
-import com.cebolao.lotofacil.ui.screens.home.FrequencyChartSection
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,15 +69,18 @@ fun HomeScreen(
 ) {
     val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val resources = LocalResources.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(homeViewModel, resources) {
         homeViewModel.uiEvent.collect { event ->
             when (event) {
                 is UiEvent.ShowSnackbar -> {
-                    val message = event.message
-                    if (!message.isNullOrBlank()) {
+                    val resolvedMessage = event.message ?: event.messageResId?.let { messageResId ->
+                        resources.getString(messageResId)
+                    }
+                    if (!resolvedMessage.isNullOrBlank()) {
                         snackbarHostState.showSnackbar(
-                            message = message,
+                            message = resolvedMessage,
                             duration = SnackbarDuration.Long
                         )
                     }
@@ -264,7 +266,7 @@ private fun ErrorState(messageResId: Int?, onRetry: () -> Unit) {
                 modifier = Modifier.size(iconExtraLarge())
             )
             Text(
-                text = messageResId?.let { stringResource(id = it) } ?: "Erro desconhecido",
+                text = messageResId?.let { stringResource(id = it) } ?: stringResource(id = R.string.error_unknown),
                 style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
                 color = colors.onSurface,
                 textAlign = TextAlign.Center
@@ -324,3 +326,5 @@ private fun AdvancedStatsCard(onClick: () -> Unit) {
         }
     }
 }
+
+

@@ -49,27 +49,27 @@ fun StatisticsExplanationCard() {
                 
                 FilterExplanationItem(
                     title = stringResource(id = R.string.filter_soma_dezenas_title),
-                    description = "A soma total dos 15 números sorteados. Na Lotofácil, a maioria dos sorteios fica na faixa de 170 a 220."
+                    description = stringResource(id = R.string.stats_explanation_sum)
                 )
                 
                 FilterExplanationItem(
                     title = stringResource(id = R.string.filter_pares_title),
-                   description = "O equilíbrio entre números pares e ímpares. O padrão mais comum é 7 pares e 8 ímpares (ou vice-versa)."
+                    description = stringResource(id = R.string.stats_explanation_even_odd)
                 )
 
                 FilterExplanationItem(
                     title = stringResource(id = R.string.filter_primos_title),
-                    description = "Números que só são divisíveis por 1 e por eles mesmos (ex: 2, 3, 5, 7, 11, 13, 17, 19, 23)."
+                    description = stringResource(id = R.string.stats_explanation_primes)
                 )
 
                 FilterExplanationItem(
                     title = stringResource(id = R.string.filter_moldura_title),
-                    description = "A Moldura são os números das bordas do volante (16 números). O Retrato são os 9 números centrais."
+                    description = stringResource(id = R.string.stats_explanation_frame_portrait)
                 )
 
                 FilterExplanationItem(
-                    title = "Frequência e Atraso",
-                    description = "A Frequência mostra quais números saem mais. O Atraso indica há quantos concursos um número não é sorteado."
+                    title = stringResource(id = R.string.stats_explanation_frequency_title),
+                    description = stringResource(id = R.string.stats_explanation_frequency)
                 )
             }
         }

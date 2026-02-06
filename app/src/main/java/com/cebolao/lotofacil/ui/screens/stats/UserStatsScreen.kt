@@ -41,9 +41,9 @@ fun UserStatsScreen(
                 uiState.isLoading -> {
                     LoadingData(message = stringResource(id = R.string.loading_data))
                 }
-                uiState.error != null -> {
+                uiState.errorMessageResId != null -> {
                     ErrorCard(
-                        message = uiState.error!!,
+                        messageResId = uiState.errorMessageResId!!,
                         modifier = Modifier.padding(AppSpacing.lg),
                         actions = { viewModel.loadStats() }
                     )
@@ -68,3 +68,5 @@ fun UserStatsScreen(
         }
     }
 }
+
+

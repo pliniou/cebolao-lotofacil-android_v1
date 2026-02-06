@@ -7,5 +7,5 @@ sealed interface GenerationUiState {
     data object Idle : GenerationUiState
     data object Loading : GenerationUiState
     data class Success(val gameCount: Int) : GenerationUiState
-    data class Error(val message: String) : GenerationUiState
+    data class Error(val messageResId: Int) : GenerationUiState
 }

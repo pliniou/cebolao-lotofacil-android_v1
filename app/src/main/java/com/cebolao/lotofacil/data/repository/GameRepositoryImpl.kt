@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -44,9 +44,23 @@ class GameRepositoryImpl @Inject constructor(
 
     init {
         repositoryScope.launch {
-            userPreferencesRepository.pinnedGames.first().let { pinnedGameStrings ->
-                val loadedGames = pinnedGameStrings.mapNotNull { LotofacilGame.fromCompactString(it) }
-                _games.update { (it + loadedGames).distinctBy { g -> g.id }.toImmutableList() }
+            userPreferencesRepository.pinnedGames.collectLatest { pinnedGameStrings ->
+                val persistedPinnedGames = pinnedGameStrings
+                    .mapNotNull { LotofacilGame.fromCompactString(it) }
+                    .associateBy { it.id }
+
+                _games.update { currentGames ->
+                    val currentById = currentGames.associateBy { it.id }
+                    val updatedCurrentGames = currentGames.map { game ->
+                        game.copy(isPinned = persistedPinnedGames.containsKey(game.id))
+                    }
+                    val missingPersistedGames = persistedPinnedGames.values
+                        .filter { persisted -> persisted.id !in currentById }
+
+                    (updatedCurrentGames + missingPersistedGames)
+                        .distinctBy { it.id }
+                        .toImmutableList()
+                }
             }
         }
     }

@@ -1,8 +1,5 @@
 package com.cebolao.lotofacil.ui.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,9 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.heading
+import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @Composable
@@ -58,11 +59,11 @@ fun StandardScreenHeader(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
                 ) {
-                    if (onBackClick != null) {
+                        if (onBackClick != null) {
                          androidx.compose.material3.IconButton(onClick = onBackClick) {
                             androidx.compose.material3.Icon(
-                                imageVector = androidx.compose.material.icons.Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Voltar",
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(id = R.string.cd_navigate_back),
                                 tint = colors.primary
                             )
                         }

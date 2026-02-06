@@ -2,6 +2,7 @@ package com.cebolao.lotofacil.viewmodels
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.viewModelScope
+import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.domain.usecase.FrequencyAnalysis
 import com.cebolao.lotofacil.domain.usecase.GetFrequencyAnalysisUseCase
@@ -23,7 +24,7 @@ data class InsightsUiState(
     val selectedPatternSize: Int = 2,
     val selectedTrendType: TrendType = TrendType.SUM,
     val selectedTrendWindow: Int = 50,
-    val error: String? = null
+    val errorMessageResId: Int? = null
 )
 
 @HiltViewModel
@@ -41,13 +42,13 @@ class InsightsViewModel @Inject constructor(
 
     fun loadFrequencyAnalysis() {
         viewModelScope.launch {
-            updateState { it.copy(isLoading = true, error = null) }
+            updateState { it.copy(isLoading = true, errorMessageResId = null) }
             when (val result = getFrequencyAnalysisUseCase()) {
                 is AppResult.Success -> {
                     updateState { it.copy(isLoading = false, frequencyAnalysis = result.value) }
                 }
                 is AppResult.Failure -> {
-                    updateState { it.copy(isLoading = false, error = "Falha ao carregar análise de frequência") }
+                    updateState { it.copy(isLoading = false, errorMessageResId = R.string.error_load_data_failed) }
                 }
             }
         }
@@ -66,7 +67,7 @@ class InsightsViewModel @Inject constructor(
                     updateState { it.copy(patternAnalysis = result.value) }
                 }
                 is AppResult.Failure -> {
-                    updateState { it.copy(error = "Falha ao carregar análise de padrões") }
+                    updateState { it.copy(errorMessageResId = R.string.error_load_data_failed) }
                 }
             }
         }
@@ -91,7 +92,7 @@ class InsightsViewModel @Inject constructor(
                     updateState { it.copy(trendAnalysis = result.value) }
                 }
                 is AppResult.Failure -> {
-                    updateState { it.copy(error = "Falha ao carregar análise de tendências") }
+                    updateState { it.copy(errorMessageResId = R.string.error_load_data_failed) }
                 }
             }
         }

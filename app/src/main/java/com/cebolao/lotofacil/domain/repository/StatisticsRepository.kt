@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * Repository for managing statistics caching with persistence across process death.
+ * Repository for managing in-memory statistics caching.
  * Provides efficient access to computed statistics while avoiding expensive recalculations.
  */
 interface StatisticsRepository {

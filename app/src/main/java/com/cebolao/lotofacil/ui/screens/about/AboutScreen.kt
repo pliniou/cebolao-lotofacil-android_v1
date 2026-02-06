@@ -42,7 +42,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
@@ -256,67 +255,6 @@ private fun InfoCard(item: InfoItem, onClick: () -> Unit) {
                 )
             }
             Icon(Icons.AutoMirrored.Filled.ArrowForward, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
-}
-@Composable
-fun ProbabilitiesTable() {
-    val headers = listOf(
-        R.string.probability_table_header_prize,
-        R.string.probability_table_header_probability
-    )
-    val rows = listOf(
-        R.string.probability_15_hits to R.string.probability_15_hits_value,
-        R.string.probability_14_hits to R.string.probability_14_hits_value,
-        R.string.probability_13_hits to R.string.probability_13_hits_value,
-        R.string.probability_12_hits to R.string.probability_12_hits_value,
-        R.string.probability_11_hits to R.string.probability_11_hits_value
-    )
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(AppSpacing.md),
-        verticalArrangement = Arrangement.spacedBy(AppSpacing.xs)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            headers.forEach { headerRes ->
-                Text(
-                    text = stringResource(id = headerRes),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.weight(1f),
-                    textAlign = if (headerRes == headers.last()) TextAlign.End else TextAlign.Start
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(AppSpacing.xs))
-
-        rows.forEach { (labelRes, valueRes) ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = AppSpacing.xs),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(id = labelRes),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = stringResource(id = valueRes),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.End
-                )
-            }
         }
     }
 }

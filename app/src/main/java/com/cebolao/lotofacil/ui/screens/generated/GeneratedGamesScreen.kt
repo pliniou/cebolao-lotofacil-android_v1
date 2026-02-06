@@ -139,7 +139,7 @@ fun GeneratedGamesScreen(
                 icon = Icons.AutoMirrored.Filled.ListAlt,
                 actions = {
                     if (hasUnpinnedGames) {
-                        IconButton(onClick = { gameViewModel.clearUnpinned() }) {
+                        IconButton(onClick = { gameViewModel.onClearGamesRequested() }) {
                             Icon(
                                 Icons.Default.DeleteSweep,
                                 contentDescription = stringResource(id = R.string.cd_clear_games),
@@ -248,3 +248,5 @@ private fun GameCardSkeleton() {
         // Shimmering content
     }
 }
+
+

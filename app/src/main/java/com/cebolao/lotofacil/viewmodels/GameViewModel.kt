@@ -126,11 +126,6 @@ class GameViewModel @Inject constructor(
     fun dismissAnalysisDialog() {
         updateState { it.copy(analysisResult = null, analysisState = GameAnalysisUiState.Idle) }
     }
-    fun clearUnpinned() {
-        viewModelScope.launch {
-            clearUnpinnedGamesUseCase()
-        }
-    }
     fun togglePinState(game: LotofacilGame) {
         viewModelScope.launch {
             toggleGamePinUseCase(game)

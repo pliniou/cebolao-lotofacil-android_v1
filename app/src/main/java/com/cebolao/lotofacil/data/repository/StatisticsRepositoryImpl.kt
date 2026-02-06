@@ -6,7 +6,6 @@ import com.cebolao.lotofacil.domain.repository.StatisticsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
@@ -34,6 +33,7 @@ class StatisticsRepositoryImpl @Inject constructor() : StatisticsRepository {
                 cacheMisses = cacheStats.value.cacheMisses + 1,
                 lastUpdated = now
             )
+            updateEntryCountersLocked(now)
             return null
         }
 
@@ -42,6 +42,7 @@ class StatisticsRepositoryImpl @Inject constructor() : StatisticsRepository {
                 cacheHits = cacheStats.value.cacheHits + 1,
                 lastUpdated = now
             )
+            updateEntryCountersLocked(now)
             entry.data
         } else {
             cacheMetadata.remove(windowSize)
@@ -49,6 +50,7 @@ class StatisticsRepositoryImpl @Inject constructor() : StatisticsRepository {
                 cacheMisses = cacheStats.value.cacheMisses + 1,
                 lastUpdated = now
             )
+            updateEntryCountersLocked(now)
             null
         }
     }
@@ -60,14 +62,18 @@ class StatisticsRepositoryImpl @Inject constructor() : StatisticsRepository {
                 timestamp = System.currentTimeMillis(),
                 ttlMs = ttlMs
             )
-            cacheStats.value = cacheStats.value.copy(lastUpdated = System.currentTimeMillis())
+            val now = System.currentTimeMillis()
+            cacheStats.value = cacheStats.value.copy(lastUpdated = now)
+            updateEntryCountersLocked(now)
         }
     }
 
     override suspend fun clearCache() {
         cacheMutex.withLock {
             cacheMetadata.clear()
-            cacheStats.value = CacheStatistics(lastUpdated = System.currentTimeMillis())
+            val now = System.currentTimeMillis()
+            cacheStats.value = CacheStatistics(lastUpdated = now)
+            updateEntryCountersLocked(now)
         }
     }
 
@@ -78,14 +84,16 @@ class StatisticsRepositoryImpl @Inject constructor() : StatisticsRepository {
     }
 
     override fun getCacheStatistics(): Flow<CacheStatistics> {
-        return cacheStats.asStateFlow().map { stats ->
-            val now = System.currentTimeMillis()
-            val entries = cacheMetadata.values
-            stats.copy(
-                totalEntries = entries.size,
-                validEntries = entries.count { !it.isExpired(now) },
-                expiredEntries = entries.count { it.isExpired(now) }
-            )
-        }
+        return cacheStats.asStateFlow()
+    }
+
+    private fun updateEntryCountersLocked(now: Long) {
+        val entries = cacheMetadata.values
+        cacheStats.value = cacheStats.value.copy(
+            totalEntries = entries.size,
+            validEntries = entries.count { !it.isExpired(now) },
+            expiredEntries = entries.count { it.isExpired(now) },
+            lastUpdated = now
+        )
     }
 }

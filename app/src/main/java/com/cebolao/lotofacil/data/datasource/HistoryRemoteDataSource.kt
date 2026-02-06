@@ -9,7 +9,9 @@ import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,6 +31,8 @@ class HistoryRemoteDataSourceImpl @Inject constructor(
         private const val TAG = "HistoryRemoteDataSource"
         private const val BATCH_SIZE = 50
         private const val MAX_CONCURRENT_REQUESTS = 8
+        private const val RETRY_ATTEMPTS = 2
+        private const val RETRY_DELAY_MS = 250L
     }
 
     // Global semaphore to limit concurrent network requests
@@ -36,7 +40,7 @@ class HistoryRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getLatestDraw(): HistoricalDraw? = withContext(dispatchersProvider.io) {
         try {
-            val result = apiService.getLatestResult()
+            val result = retry { apiService.getLatestResult() }
             result.toHistoricalDraw()
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) {
@@ -54,14 +58,9 @@ class HistoryRemoteDataSourceImpl @Inject constructor(
             range.chunked(BATCH_SIZE).flatMap { batch ->
                 batch.chunked(MAX_CONCURRENT_REQUESTS).flatMap { window ->
                     window.map { contestNumber ->
-                        async { 
-                            // Acquire semaphore before making the request
-                            networkSemaphore.acquire()
-                            try {
+                        async {
+                            networkSemaphore.withPermit {
                                 fetchContest(contestNumber)
-                            } finally {
-                                // Always release the semaphore
-                                networkSemaphore.release()
                             }
                         }
                     }.awaitAll().filterNotNull()
@@ -72,7 +71,7 @@ class HistoryRemoteDataSourceImpl @Inject constructor(
 
     private suspend fun fetchContest(contestNumber: Int): HistoricalDraw? {
         return try {
-            val result = apiService.getResultByContest(contestNumber)
+            val result = retry { apiService.getResultByContest(contestNumber) }
             result.toHistoricalDraw()
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) {
@@ -80,5 +79,23 @@ class HistoryRemoteDataSourceImpl @Inject constructor(
             }
             null
         }
+    }
+
+    private suspend fun <T> retry(
+        attempts: Int = RETRY_ATTEMPTS,
+        block: suspend () -> T
+    ): T {
+        var lastError: Throwable? = null
+        repeat(attempts) { attempt ->
+            try {
+                return block()
+            } catch (t: Throwable) {
+                lastError = t
+                if (attempt < attempts - 1) {
+                    delay(RETRY_DELAY_MS * (attempt + 1))
+                }
+            }
+        }
+        throw lastError ?: IllegalStateException("Retry failed without exception")
     }
 }

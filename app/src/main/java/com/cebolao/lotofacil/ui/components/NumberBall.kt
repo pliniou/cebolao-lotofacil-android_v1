@@ -13,11 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -25,7 +23,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.platform.LocalContext
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppConstants
@@ -43,26 +40,20 @@ fun NumberBall(
     onClick: (() -> Unit)? = null
 ) {
     val shape = MaterialTheme.shapes.medium
-    
-    // Memoize state values to prevent unnecessary recompositions
-    val isSelectedState = rememberUpdatedState(isSelected)
-    val isHighlightedState = rememberUpdatedState(isHighlighted)
-    val isDisabledState = rememberUpdatedState(isDisabled)
-    
-    // Get colors directly from MaterialTheme without composable context
+
     val colors = MaterialTheme.colorScheme
     val (containerColor, contentColor, borderColor) = when {
-        isDisabledState.value -> Triple(
+        isDisabled -> Triple(
             colors.onSurface.copy(alpha = 0.08f),
             colors.onSurface.copy(alpha = 0.30f),
             colors.outline.copy(alpha = 0.5f)
         )
-        isSelectedState.value -> Triple(
+        isSelected -> Triple(
             colors.primary,
             colors.onPrimary,
             colors.primary.copy(alpha = 0.8f)
         )
-        isHighlightedState.value -> Triple(
+        isHighlighted -> Triple(
             colors.primaryContainer,
             colors.primary,
             colors.primary.copy(alpha = 0.8f)
@@ -73,14 +64,19 @@ fun NumberBall(
             colors.outline.copy(alpha = 0.7f)
         )
     }
-    
-    // Pre-calculate semantics content outside composable context
+
     val stateResId = when {
-        isSelectedState.value -> R.string.number_state_selected
-        isHighlightedState.value -> R.string.number_state_highlighted
-        isDisabledState.value -> R.string.number_state_disabled
+        isSelected -> R.string.number_state_selected
+        isHighlighted -> R.string.number_state_highlighted
+        isDisabled -> R.string.number_state_disabled
         else -> R.string.number_state_available
     }
+    val stateLabel = stringResource(id = stateResId)
+    val numberContentDescription = stringResource(
+        id = R.string.number_content_description,
+        number,
+        stateLabel
+    )
 
     val animatedContainerColor by animateColorAsState(
         targetValue = containerColor, 
@@ -98,17 +94,15 @@ fun NumberBall(
         label = "borderColor"
     )
 
-    // Memoize border width calculation
     val borderWidth = remember(
-        isSelectedState.value,
-        isHighlightedState.value
+        isSelected,
+        isHighlighted
     ) {
-        if (isHighlightedState.value && !isSelectedState.value) 2.dp else 1.dp
+        if (isHighlighted && !isSelected) 2.dp else 1.dp
     }
 
-    // Memoize tonal elevation
-    val tonalElevation = remember(isSelectedState.value) {
-        if (isSelectedState.value) AppElevation.xs else AppElevation.none
+    val tonalElevation = remember(isSelected) {
+        if (isSelected) AppElevation.xs else AppElevation.none
     }
 
     Surface(
@@ -121,12 +115,12 @@ fun NumberBall(
                 shape = shape
             )
             .then(
-        if (onClick != null && !isDisabledState.value) {
-                    Modifier.clickable { onClick?.invoke() }
+                if (onClick != null && !isDisabled) {
+                    Modifier.clickable { onClick() }
                 } else Modifier
             )
             .semantics {
-                contentDescription = "Número $number, estado: $stateResId"
+                contentDescription = numberContentDescription
             },
         shape = shape,
         color = animatedContainerColor,

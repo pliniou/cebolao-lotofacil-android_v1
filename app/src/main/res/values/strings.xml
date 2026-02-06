@@ -316,10 +316,17 @@
 
     <string name="stats_guide_title">Guia de Filtros e Estatísticas</string>
     <string name="how_filters_work">Como funcionam os filtros?</string>
+    <string name="stats_explanation_sum">A soma total dos 15 números sorteados. Na Lotofácil, a maioria dos sorteios fica na faixa de 170 a 220.</string>
+    <string name="stats_explanation_even_odd">O equilíbrio entre números pares e ímpares. O padrão mais comum é 7 pares e 8 ímpares (ou vice-versa).</string>
+    <string name="stats_explanation_primes">Números que só são divisíveis por 1 e por si mesmos (ex: 2, 3, 5, 7, 11, 13, 17, 19, 23).</string>
+    <string name="stats_explanation_frame_portrait">A moldura são os números das bordas do volante (16 números). O retrato são os 9 números centrais.</string>
+    <string name="stats_explanation_frequency_title">Frequência e atraso</string>
+    <string name="stats_explanation_frequency">A frequência mostra quais números saem mais. O atraso indica há quantos concursos um número não é sorteado.</string>
     <string name="next_draw_date">Sorteio em %s</string>
     
     <!-- Content Descriptions -->
     <string name="cd_refresh_data">Atualizar dados</string>
+    <string name="cd_navigate_back">Voltar</string>
     <string name="cd_clear_games">Limpar jogos não fixados</string>
     <string name="next_contest_format">Próximo Concurso: #%d</string>
     <string name="prize_tier_format">Faixa %d</string>
@@ -337,5 +344,5 @@
     <string name="number_state_disabled">desabilitado</string>
     <string name="number_state_available">disponível</string>
     <string name="number_content_description">Número %1$d, %2$s</string>
-    <string name="pattern_analysis_title">Analisys</string>
+    <string name="pattern_analysis_title">Análise</string>
 </resources>

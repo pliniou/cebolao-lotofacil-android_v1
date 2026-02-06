@@ -11,12 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
@@ -43,10 +37,8 @@ fun NumberGrid(
     ballSize: androidx.compose.ui.unit.Dp? = null,
     onNumberClicked: ((Int) -> Unit)? = null
 ) {
-    LocalDensity.current
     val configuration = LocalConfiguration.current
     
-    // Optimize ball size calculation with proper density consideration
     val screenWidthDp = configuration.screenWidthDp.dp
     val spacing = AppSpacing.sm
     val horizontalPadding = AppSpacing.lg * 2
@@ -55,10 +47,7 @@ fun NumberGrid(
     val spacingTotal = spacing * (columns - 1)
     val calculatedBallSize = (availableWidth - spacingTotal) / columns
     
-    // Clamp ball size to reasonable bounds
     val finalBallSize = ballSize ?: calculatedBallSize.coerceIn(32.dp, 48.dp)
-
-    LocalHapticFeedback.current
 
     LazyVerticalGrid(
         modifier = modifier.fillMaxWidth(),
@@ -77,10 +66,6 @@ fun NumberGrid(
                 isSelected = item.isSelected,
                 isHighlighted = item.isHighlighted,
                 isDisabled = item.isDisabled,
-                modifier = Modifier.semantics {
-                    contentDescription = "Número ${item.number}"
-                    role = Role.Button
-                },
                 onClick = { onNumberClicked?.invoke(item.number) }
             )
         }

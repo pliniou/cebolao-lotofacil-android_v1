@@ -138,7 +138,7 @@ class FiltersViewModel @Inject constructor(
                         is DomainError.ValidationError -> R.string.error_validation
                         else -> R.string.error_generating_games
                     }
-                    _uiState.update { it.copy(generationState = GenerationUiState.Error("Erro ao gerar jogos")) }
+                    _uiState.update { it.copy(generationState = GenerationUiState.Error(messageResId)) }
                     _uiEvent.send(UiEvent.ShowSnackbar(messageResId = messageResId))
                 }
             }

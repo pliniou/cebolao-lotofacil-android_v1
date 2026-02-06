@@ -47,9 +47,9 @@ fun FrequencyAnalysisScreen(
                         .padding(innerPadding)
                 )
             }
-            uiState.error != null -> {
+            uiState.errorMessageResId != null -> {
                 ErrorCard(
-                    message = uiState.error!!,
+                    messageResId = uiState.errorMessageResId!!,
                     modifier = Modifier
                         .padding(innerPadding)
                         .padding(AppSpacing.lg),
@@ -116,3 +116,5 @@ fun FrequencyAnalysisScreen(
         }
     }
 }
+
+

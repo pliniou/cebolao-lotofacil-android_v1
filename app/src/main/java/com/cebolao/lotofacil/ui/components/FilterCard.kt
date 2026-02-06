@@ -26,8 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.model.FilterState
@@ -148,9 +146,7 @@ private fun FilterHeader(
             checked = filterState.isEnabled,
             onCheckedChange = { onToggle() },
             enabled = dataAvailable,
-            modifier = Modifier
-                .size(40.dp)
-                .semantics { this.contentDescription = if (filterState.isEnabled) "Disable filter" else "Enable filter" }
+            modifier = Modifier.size(40.dp)
         )
     }
 }

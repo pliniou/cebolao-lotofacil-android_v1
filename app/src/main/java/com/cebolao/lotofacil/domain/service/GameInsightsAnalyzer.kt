@@ -8,18 +8,15 @@ import javax.inject.Singleton
 class GameInsightsAnalyzer @Inject constructor() {
 
     fun getNumberFrequencies(draws: List<HistoricalDraw>): Map<Int, Int> {
-        val frequencies = mutableMapOf<Int, Int>()
-        // Initialize all numbers 1-25 with 0
-        (1..25).forEach { frequencies[it] = 0 }
-        
+        val frequencies = IntArray(26)
         draws.forEach { draw ->
             draw.numbers.forEach { number ->
                 if (number in 1..25) {
-                    frequencies[number] = frequencies.getOrDefault(number, 0) + 1
+                    frequencies[number]++
                 }
             }
         }
-        return frequencies
+        return (1..25).associateWith { frequencies[it] }
     }
 
     fun getTopNumbers(frequencies: Map<Int, Int>, count: Int = 5): List<Int> {

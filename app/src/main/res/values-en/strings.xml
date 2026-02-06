@@ -249,11 +249,23 @@
     <string name="next_draw_date">Draw on %s</string>
     <string name="stats_guide_title">Filters and Statistics Guide</string>
     <string name="how_filters_work">How do filters work?</string>
+    <string name="stats_explanation_sum">The total sum of the 15 drawn numbers. In Lotofácil, most draws stay between 170 and 220.</string>
+    <string name="stats_explanation_even_odd">Balance between even and odd numbers. The most common pattern is 7 even and 8 odd numbers (or vice versa).</string>
+    <string name="stats_explanation_primes">Prime numbers are divisible only by 1 and themselves (e.g., 2, 3, 5, 7, 11, 13, 17, 19, 23).</string>
+    <string name="stats_explanation_frame_portrait">The frame contains edge numbers on the ticket (16 numbers). The portrait contains the 9 central numbers.</string>
+    <string name="stats_explanation_frequency_title">Frequency and delay</string>
+    <string name="stats_explanation_frequency">Frequency shows which numbers are drawn more often. Delay shows how many draws a number has gone without appearing.</string>
     
     <!-- Content Descriptions -->
     <string name="cd_refresh_data">Update data</string>
+    <string name="cd_navigate_back">Back</string>
     <string name="cd_clear_games">Clear unpinned games</string>
     <string name="next_contest_format">Next Draw: #%d</string>
     <string name="prize_tier_format">Tier %d</string>
-    <string name="pattern_analysis_title">Analisys</string>
+    <string name="number_state_selected">selected</string>
+    <string name="number_state_highlighted">highlighted</string>
+    <string name="number_state_disabled">disabled</string>
+    <string name="number_state_available">available</string>
+    <string name="number_content_description">Number %1$d, %2$s</string>
+    <string name="pattern_analysis_title">Analysis</string>
 </resources>

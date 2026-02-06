@@ -1,0 +1,4 @@
+interface:
+  display_name: "Android Performance Specialist"
+  short_description: "Optimize Compose runtime and memory behavior"
+  default_prompt: "Use $android-performance-specialist to profile and optimize this screen's performance."

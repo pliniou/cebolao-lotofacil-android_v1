@@ -1,9 +1,11 @@
 package com.cebolao.lotofacil.di
 
+import com.cebolao.lotofacil.data.repository.CheckHistoryRepositoryImpl
 import com.cebolao.lotofacil.data.repository.GameRepositoryImpl
 import com.cebolao.lotofacil.data.repository.HistoryRepositoryImpl
 import com.cebolao.lotofacil.data.repository.StatisticsRepositoryImpl
 import com.cebolao.lotofacil.data.repository.UserPreferencesRepositoryImpl
+import com.cebolao.lotofacil.domain.repository.CheckHistoryRepository
 import com.cebolao.lotofacil.domain.repository.GameRepository
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.repository.StatisticsRepository
@@ -41,4 +43,10 @@ abstract class RepositoryModule {
     abstract fun bindStatisticsRepository(
         statisticsRepositoryImpl: StatisticsRepositoryImpl
     ): StatisticsRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCheckHistoryRepository(
+        checkHistoryRepositoryImpl: CheckHistoryRepositoryImpl
+    ): CheckHistoryRepository
 }

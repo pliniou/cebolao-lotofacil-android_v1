@@ -69,6 +69,8 @@
     <string name="prize_details_title">Prize details</string>
     <string name="prize_details_expand">See details</string>
     <string name="prize_details_collapse">Hide details</string>
+    <string name="prize_per_winner">Prize per winner</string>
+    <string name="winners">winners</string>
     <string name="winners_by_state">Winners by state</string>
 
     <string name="cebolao_title">Cebolão</string>
@@ -87,6 +89,8 @@
     <string name="delayed_suffix"> ago</string>
     <string name="most_drawn_numbers">Most drawn numbers</string>
     <string name="frequency_suffix">x</string>
+    <string name="drawn_ago">draws ago</string>
+    <string name="trend_analysis_title">Trend Analysis</string>
     <string name="analysis_period_title">Analysis period</string>
     <string name="time_window_all">All</string>
     <string name="time_window_last">Last %d</string>
@@ -268,4 +272,19 @@
     <string name="number_state_available">available</string>
     <string name="number_content_description">Number %1$d, %2$s</string>
     <string name="pattern_analysis_title">Analysis</string>
+    
+    <!-- Ranking positions -->
+    <string name="position_abbr">#%1$d</string>
+    
+    <!-- Accessibility - Componentes -->
+    <string name="chart_frequency_description">Frequency chart with %1$d numbers, maximum value %2$d</string>
+    <string name="prize_tier_description">Prize category %1$d, %2$s per winner</string>
+    <string name="ranked_number_description">Position %1$dth, number %2$d</string>
+    <string name="trend_indicator_description">Trend %1$s, variation %2$s</string>
+    <string name="expandable_section_description">Section %1$s, %2$s. Click to toggle.</string>
+    <string name="expanded_state">expanded</string>
+    <string name="collapsed_state">collapsed</string>
+    <string name="gaussian_toggle_description">Include gaussian curve, %1$s</string>
+    <string name="gaussian_toggle_active">active</string>
+    <string name="gaussian_toggle_inactive">inactive</string>
 </resources>

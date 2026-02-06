@@ -38,37 +38,37 @@ fun UserStatsScreen(
             )
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-            when {
-                uiState.isLoading -> {
-                    LoadingData(message = stringResource(id = R.string.loading_data))
-                }
-                uiState.errorMessageResId != null -> {
-                    ErrorCard(
-                        messageResId = uiState.errorMessageResId!!,
-                        modifier = Modifier.padding(AppSpacing.lg),
-                        actions = { viewModel.loadStats() }
-                    )
-                }
-                uiState.stats != null && uiState.stats!!.totalGamesGenerated > 0 -> {
-                    LazyColumn(
-                        contentPadding = PaddingValues(AppSpacing.lg),
-                        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(AppSpacing.lg)
-                    ) {
-                        item(key = "user_stats_section") {
-                            UserStatsSection(stats = uiState.stats!!)
-                        }
+        when {
+            uiState.isLoading -> {
+                LoadingData(
+                    message = stringResource(id = R.string.loading_data),
+                    modifier = Modifier.fillMaxSize().padding(innerPadding)
+                )
+            }
+            uiState.errorMessageResId != null -> {
+                ErrorCard(
+                    messageResId = uiState.errorMessageResId!!,
+                    modifier = Modifier.padding(innerPadding).padding(AppSpacing.lg),
+                    actions = { viewModel.loadStats() }
+                )
+            }
+            uiState.stats != null && uiState.stats!!.totalGamesGenerated > 0 -> {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize().padding(innerPadding),
+                    contentPadding = PaddingValues(AppSpacing.lg),
+                    verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(AppSpacing.lg)
+                ) {
+                    item(key = "user_stats_section") {
+                        UserStatsSection(stats = uiState.stats!!)
                     }
                 }
-                else -> {
-                    EmptyState(
-                        messageResId = R.string.stats_empty_message,
+            }
+            else -> {
+                EmptyState(
+                    messageResId = R.string.stats_empty_message,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
             }
         }
-    }
-}
-
 

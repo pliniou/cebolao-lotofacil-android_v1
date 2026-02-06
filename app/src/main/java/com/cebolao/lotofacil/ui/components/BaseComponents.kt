@@ -118,14 +118,10 @@ fun SurfaceCard(
     shape: Shape = MaterialTheme.shapes.medium,
     content: @Composable () -> Unit
 ) {
-    val colors = MaterialTheme.colorScheme
-    
-    androidx.compose.material3.Surface(
+    AppCard(
         modifier = modifier,
         shape = shape,
-        tonalElevation = tonalElevation,
-        color = colors.surfaceVariant
-    ) {
-        content()
-    }
+        elevation = if (tonalElevation == AppElevation.none) AppElevation.none else AppElevation.xs,
+        content = content
+    )
 }

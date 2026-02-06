@@ -1,4 +1,0 @@
-interface:
-  display_name: "Skill Engine Developer"
-  short_description: "Engines e algoritmos de domínio para loteria."
-  default_prompt: "Use $skill-engine-developer para implementar esta engine estatística com testes de corretude."

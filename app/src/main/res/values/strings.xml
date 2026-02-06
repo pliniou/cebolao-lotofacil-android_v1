@@ -86,6 +86,8 @@
     <string name="prize_details_title">Detalhes do prêmio</string>
     <string name="prize_details_expand">Ver detalhes</string>
     <string name="prize_details_collapse">Ocultar detalhes</string>
+    <string name="prize_per_winner">Prêmio por ganhador</string>
+    <string name="winners">ganhadores</string>
 
     <string name="winners_by_state">Ganhadores por estado</string>
 
@@ -106,6 +108,7 @@
     <string name="delayed_suffix"> atrás</string>
     <string name="most_drawn_numbers">Dezenas mais sorteadas</string>
     <string name="frequency_suffix">x</string>
+    <string name="drawn_ago">sorteios atrás</string>
     <string name="analysis_period_title">Período de análise</string>
     <string name="time_window_all">Todos</string>
     <string name="time_window_last">Últimos %d</string>
@@ -154,6 +157,7 @@
     <string name="recency_title">Recência e Atrasos</string>
     <string name="recency_subtitle">Veja há quantos concursos cada número não é sorteado.</string>
     <string name="overdue_label">concursos</string>
+    <string name="trend_analysis_title">Análise de Tendências</string>
     <string name="advanced_stats_card_title">Estatísticas avançadas</string>
     <string name="advanced_stats_card_subtitle">Explore tendências de frequência e números mais atrasados.</string>
     <string name="frequency_summary_title">Resumo de Frequência</string>
@@ -345,4 +349,19 @@
     <string name="number_state_available">disponível</string>
     <string name="number_content_description">Número %1$d, %2$s</string>
     <string name="pattern_analysis_title">Análise</string>
+    
+    <!-- Ranking positions -->
+    <string name="position_abbr">%1$dº</string>
+    
+    <!-- Accessibility - Componentes -->
+    <string name="chart_frequency_description">Gráfico de frequência com %1$d números, máximo valor %2$d</string>
+    <string name="prize_tier_description">Prêmio categoria %1$d, %2$s por ganhador</string>
+    <string name="ranked_number_description">Posição %1$dª, número %2$d</string>
+    <string name="trend_indicator_description">Tendência %1$s, variação %2$s</string>
+    <string name="expandable_section_description">Seção %1$s, %2$s. Clique para alternar.</string>
+    <string name="expanded_state">expandido</string>
+    <string name="collapsed_state">colapsado</string>
+    <string name="gaussian_toggle_description">Incluir curva gaussiana, %1$s</string>
+    <string name="gaussian_toggle_active">ativo</string>
+    <string name="gaussian_toggle_inactive">inativo</string>
 </resources>

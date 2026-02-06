@@ -292,7 +292,7 @@ private fun AdvancedStatsCard(onClick: () -> Unit) {
     ClickableCard(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
-        backgroundColor = colors.primaryContainer.copy(alpha = 0.2f)
+        backgroundColor = colors.surfaceVariant  // Usar cor sólida ao invés de alpha
     ) {
         Row(
             modifier = Modifier.padding(AppSpacing.lg),

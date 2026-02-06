@@ -45,7 +45,9 @@ fun BarChart(
     chartHeight: Dp = 200.dp,
     maxValue: Int,
     showGaussCurve: Boolean = true,
-    highlightThreshold: Int? = null
+    highlightThreshold: Int? = null,
+    yAxisLabel: String? = null,
+    xAxisLabel: String? = null
 ) {
     val animatedProgress = remember { Animatable(0f) }
     LaunchedEffect(data) {
@@ -70,33 +72,34 @@ fun BarChart(
     val chartScaleFactor = density.density.coerceIn(0.85f, 1.3f)
     val baseTextSize = 10.sp * chartScaleFactor
 
-    val textPaint = remember(density, onSurfaceVariant, baseTextSize) {
+    val textSize = remember(density, baseTextSize) { density.run { baseTextSize.toPx() } }
+    val textPaint = remember(textSize, onSurfaceVariant) {
         Paint().apply {
             isAntiAlias = true
-            textSize = density.run { baseTextSize.toPx() }
+            textSize = textSize
             color = onSurfaceVariant.toArgb()
             textAlign = Paint.Align.RIGHT
         }
     }
-    val valuePaint = remember(density, primaryColor, baseTextSize) {
+    val valuePaint = remember(textSize, primaryColor) {
         Paint().apply {
             isAntiAlias = true
-            textSize = density.run { baseTextSize.toPx() }
+            textSize = textSize
             color = primaryColor.toArgb()
             textAlign = Paint.Align.CENTER
             isFakeBoldText = true
         }
     }
-    val labelPaint = remember(density, onSurfaceVariant, baseTextSize) {
+    val labelPaint = remember(textSize, onSurfaceVariant) {
         Paint().apply {
             isAntiAlias = true
-            textSize = density.run { baseTextSize.toPx() }
+            textSize = textSize
             color = onSurfaceVariant.toArgb()
             textAlign = Paint.Align.CENTER
         }
     }
 
-    val chartDescription = stringResource(id = R.string.chart_frequency_description)
+    val chartDescription = stringResource(id = R.string.chart_frequency_description, data.size, maxValue)
 
     Canvas(
         modifier = modifier
@@ -194,17 +197,14 @@ fun BarChart(
                 )
             }
 
-            // X-Axis Label
+            // X-Axis Label - Horizontal instead of 45° rotation
             val labelTextY = size.height - xAxisLabelHeight + 16.dp.toPx()
-            drawContext.canvas.nativeCanvas.save()
-            drawContext.canvas.nativeCanvas.rotate(45f, barCenterX, labelTextY)
             drawContext.canvas.nativeCanvas.drawText(
                 label,
                 barCenterX,
                 labelTextY,
                 labelPaint
             )
-            drawContext.canvas.nativeCanvas.restore()
         }
     }
 }
@@ -282,10 +282,15 @@ private fun DrawScope.drawGrid(
             pathEffect = if (i == 0) null else dashEffect
         )
         
-        // Y-Axis labels
+        // Y-Axis labels with better formatting
+        val formattedValue = if (value > 99) {
+            "${value / 100}${if (value % 100 > 0) ".${(value % 100) / 10}" else ""}x"
+        } else {
+            value.toString()
+        }
         val textY = y + (textPaint.descent() - textPaint.ascent()) / 2 - textPaint.descent()
         drawContext.canvas.nativeCanvas.drawText(
-            value.toString(),
+            formattedValue,
             yAxisLabelWidth - 6.dp.toPx(),
             textY,
             textPaint

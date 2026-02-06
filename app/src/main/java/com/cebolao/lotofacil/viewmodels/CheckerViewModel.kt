@@ -13,6 +13,7 @@ import com.cebolao.lotofacil.domain.model.LotofacilConstants
 import com.cebolao.lotofacil.domain.usecase.CheckGameUseCase
 import com.cebolao.lotofacil.domain.usecase.GameCheckPhase
 import com.cebolao.lotofacil.domain.usecase.GameCheckState
+import com.cebolao.lotofacil.domain.usecase.SaveCheckUseCase
 import com.cebolao.lotofacil.navigation.Destination
 import com.cebolao.lotofacil.navigation.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,14 +48,17 @@ sealed interface CheckerUiState {
 @HiltViewModel
 class CheckerViewModel @Inject constructor(
     private val checkGameUseCase: CheckGameUseCase,
+    private val saveCheckUseCase: SaveCheckUseCase,
     savedStateHandle: SavedStateHandle
 ) : StateViewModel<CheckerScreenState>(CheckerScreenState()) {
 
     private var checkJob: Job? = null
+    
     init {
-        try { // Wrap in try-catch in case parsing fails or route data isn't there (though using toRoute is standard)
+        // Parse route arguments de forma segura
+        runCatching {
             val args = savedStateHandle.toRoute<Destination.Checker>()
-             args.numbers?.let { arg ->
+            args.numbers?.let { arg ->
                 val numbers = arg.split(',').mapNotNull { it.toIntOrNull() }.toSet()
                 if (numbers.isNotEmpty()) {
                     updateState { it.copy(selectedNumbers = numbers) }
@@ -63,8 +67,9 @@ class CheckerViewModel @Inject constructor(
                     }
                 }
             }
-        } catch (_: Exception) {
-            // Fallback or ignore if arguments are missing/malformed (e.g. initial start)
+        }.onFailure { error ->
+            // Log error silenciosamente - argumentos opcionais
+            android.util.Log.d("CheckerViewModel", "Route parsing failed: ${error.message}")
         }
     }
 
@@ -133,6 +138,8 @@ class CheckerViewModel @Inject constructor(
                                 )
                             )
                         }
+                        // Save check to history
+                        saveCheckToHistory(numbers, state.result)
                         sendUiEvent(
                             UiEvent.ShowSnackbar(messageResId = R.string.checker_checking_success)
                         )
@@ -154,6 +161,8 @@ class CheckerViewModel @Inject constructor(
                 )
             }
             .launchIn(viewModelScope)
+        
+        jobTracker.track(checkJob!!)
     }
 
     private fun mapErrorToUiState(error: AppError): CheckerUiState {
@@ -180,5 +189,14 @@ class CheckerViewModel @Inject constructor(
 
     fun dismissClearConfirmation() {
         updateState { it.copy(showClearConfirmation = false) }
+    }
+
+    private fun saveCheckToHistory(gameNumbers: Set<Int>, result: CheckResult) {
+        saveCheckUseCase(gameNumbers, result.lastCheckedContest, result)
+            .catch { e ->
+                // Log silenciosamente - não impede operação principal
+                android.util.Log.w("CheckerViewModel", "Failed to save check history: ${e.message}")
+            }
+            .launchIn(viewModelScope)
     }
 }

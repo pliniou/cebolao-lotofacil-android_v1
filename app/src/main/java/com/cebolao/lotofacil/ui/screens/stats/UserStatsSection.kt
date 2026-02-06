@@ -1,24 +1,35 @@
 package com.cebolao.lotofacil.ui.screens.stats
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.Role
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.service.UserStats
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.NumberBall
+import com.cebolao.lotofacil.ui.theme.AppAlpha
 import com.cebolao.lotofacil.ui.theme.AppSpacing
+import kotlin.math.abs
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -101,12 +112,20 @@ fun UserStatsSection(
                         text = stringResource(id = R.string.stats_avg_hits),
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    Text(
-                        text = "%.2f".format(stats.averageHits),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Black
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
+                        modifier = Modifier.fillMaxWidth(0.5f)
+                    ) {
+                        Text(
+                            text = "%.2f".format(stats.averageHits),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Black
+                        )
+                        
+                        TrendIndicator(value = stats.averageHits)
+                    }
                 }
             }
         }
@@ -141,4 +160,63 @@ private fun StatSummaryCard(
             )
         }
     }
+}
+@Composable
+private fun TrendIndicator(
+    value: Double,
+    modifier: Modifier = Modifier,
+    baselineValue: Double = 7.5 // Expected value for 15 numbers in 15 draws
+) {
+    val (arrow, color, delta, trendLabel) = remember(value) {
+        val diff = value - baselineValue
+        when {
+            abs(diff) < 0.5 -> Tuple4("→", MaterialTheme.colorScheme.outline, "0%", "estável")
+            diff > 0 -> Tuple4("↑", MaterialTheme.colorScheme.primary, "+${(diff / baselineValue * 100).toInt()}%", "alta")
+            else -> Tuple4("↓", MaterialTheme.colorScheme.error, "${(diff / baselineValue * 100).toInt()}%", "baixa")
+        }
+    }
+    
+    Box(
+        modifier = modifier
+            .size(40.dp)
+            .background(
+                color = color.copy(alpha = AppAlpha.textDisabled),
+                shape = RoundedCornerShape(AppSpacing.sm)
+            )
+            .semantics {
+                contentDescription = stringResource(
+                    R.string.trend_indicator_description,
+                    trendLabel,
+                    delta
+                )
+                role = Role.Image
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(AppSpacing.xs)
+        ) {
+            Text(
+                text = arrow,
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = color
+            )
+            Text(
+                text = delta,
+                style = MaterialTheme.typography.labelSmall,
+                color = color,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
+
+// Classe auxiliar para retornar 4 valores
+data class Tuple4<A, B, C, D>(val a: A, val b: B, val c: C, val d: D) {
+    operator fun component1() = a
+    operator fun component2() = b
+    operator fun component3() = c
+    operator fun component4() = d
 }

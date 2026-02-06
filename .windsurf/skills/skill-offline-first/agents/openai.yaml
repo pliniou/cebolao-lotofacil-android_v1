@@ -1,4 +1,0 @@
-interface:
-  display_name: "Skill Offline First"
-  short_description: "Offline-first com stale-while-revalidate e Room."
-  default_prompt: "Use $skill-offline-first para aplicar leitura local prioritária e sync resiliente nesta feature."

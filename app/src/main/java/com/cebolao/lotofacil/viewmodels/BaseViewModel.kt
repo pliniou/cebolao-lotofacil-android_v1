@@ -19,13 +19,18 @@ abstract class BaseViewModel : ViewModel() {
     protected val _uiEvent = Channel<UiEvent>(Channel.BUFFERED)
     val uiEvent = _uiEvent.receiveAsFlow()
 
+    protected val jobTracker = JobTracker()
+
     protected fun sendUiEvent(event: UiEvent) {
         viewModelScope.launch {
             _uiEvent.send(event)
         }
     }
 
-
+    override fun onCleared() {
+        super.onCleared()
+        jobTracker.cancelAll()
+    }
 }
 
 /**

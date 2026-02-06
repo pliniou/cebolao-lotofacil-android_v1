@@ -2,6 +2,7 @@ package com.cebolao.lotofacil.di
 
 import android.content.Context
 import com.cebolao.lotofacil.BuildConfig
+import com.cebolao.lotofacil.core.security.RateLimiter
 import com.cebolao.lotofacil.data.network.ApiService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -11,6 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.Cache
+import okhttp3.CertificatePinner
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -42,7 +44,27 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(cache: Cache): OkHttpClient {
+    fun provideCertificatePinner(): CertificatePinner {
+        return CertificatePinner.Builder()
+            // Lotofácil API host - add certificate pins for production
+            .add(
+                "loteriascaixa-api.herokuapp.com",
+                "sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="  // Replace with actual pin
+            )
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRateLimiter(): RateLimiter = RateLimiter.createDefault()
+
+    @Provides
+    @Singleton
+    fun provideOkHttpClient(
+        cache: Cache,
+        certificatePinner: CertificatePinner,
+        rateLimiter: RateLimiter
+    ): OkHttpClient {
         val logging = HttpLoggingInterceptor().apply {
             level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
             else HttpLoggingInterceptor.Level.NONE
@@ -50,6 +72,7 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .cache(cache)
             .addInterceptor(logging)
+            .certificatePinner(certificatePinner)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .build()

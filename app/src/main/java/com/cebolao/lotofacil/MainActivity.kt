@@ -11,6 +11,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,6 +21,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.core.constants.AppConstants
+import com.cebolao.lotofacil.ui.components.PerformanceMetricsButton
 import com.cebolao.lotofacil.ui.screens.MainScreen
 import com.cebolao.lotofacil.ui.theme.CebolaoLotofacilTheme
 import com.cebolao.lotofacil.viewmodels.MainViewModel
@@ -80,9 +82,16 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (uiState.isReady) {
-                        val navController = androidx.navigation.compose.rememberNavController()
-                        MainScreen(navController = navController)
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        if (uiState.isReady) {
+                            val navController = androidx.navigation.compose.rememberNavController()
+                            MainScreen(navController = navController)
+                        }
+                        
+                        // Debug metrics overlay (only in debug builds)
+                        PerformanceMetricsButton(
+                            isDebugBuild = BuildConfig.DEBUG
+                        )
                     }
                 }
             }

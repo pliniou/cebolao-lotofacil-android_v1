@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +52,12 @@ import com.cebolao.lotofacil.viewmodels.StatisticPattern
 import kotlinx.collections.immutable.toImmutableList
 import com.cebolao.lotofacil.core.utils.NumberFormatUtils
 
+@Stable
+data class TimeWindowConfig(
+    val windows: kotlinx.collections.immutable.ImmutableList<Int>,
+    val labels: kotlinx.collections.immutable.ImmutableList<String>
+)
+
 @Composable
 fun StatisticsSection(
     stats: StatisticsReport?,
@@ -62,6 +69,13 @@ fun StatisticsSection(
     modifier: Modifier = Modifier
 ) {
     val colors = MaterialTheme.colorScheme
+    
+    val timeWindowConfig = remember {
+        TimeWindowConfig(
+            windows = listOf(7, 30, 60, 90).toImmutableList(),
+            labels = listOf("7 dias", "30 dias", "60 dias", "90 dias").toImmutableList()
+        )
+    }
     
     Column(
         modifier = modifier,
@@ -283,7 +297,7 @@ private fun DistributionCharts(
         }
         
         val max by remember(data) { 
-            derivedStateOf { (data.maxOfOrNull { it.second } ?: 1) }
+            derivedStateOf { data.maxOfOrNull { it.second }?.coerceAtLeast(1) ?: 1 }
         }
 
         AnimatedContent(targetState = data, label = "chart") { list ->

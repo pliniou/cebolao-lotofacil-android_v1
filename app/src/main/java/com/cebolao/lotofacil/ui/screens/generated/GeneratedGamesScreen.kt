@@ -75,11 +75,11 @@ fun GeneratedGamesScreen(
         }
     }
     
-    // Optimize expensive calculations with derivedStateOf
-    val hasUnpinnedGames by remember {
+    // Optimize expensive calculations with derivedStateOf - specify dependencies
+    val hasUnpinnedGames by remember(games) {
         derivedStateOf { games.any { !it.isPinned } }
     }
-    val isGamesEmpty by remember {
+    val isGamesEmpty by remember(games) {
         derivedStateOf { games.isEmpty() }
     }
 

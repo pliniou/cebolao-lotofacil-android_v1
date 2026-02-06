@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -41,6 +42,7 @@ class HomeViewModel @Inject constructor(
         super.onCleared()
         syncStatusJob?.cancel()
         statsJob?.cancel()
+        jobTracker.cancelAll()
     }
 
     private fun observeSyncStatus() {
@@ -57,7 +59,10 @@ class HomeViewModel @Inject constructor(
         updateState { it.copy(isScreenLoading = true, errorMessageResId = null) }
 
         viewModelScope.launch {
-            val result = getHomeScreenDataUseCase().first { it is AppResult.Success }
+            val result = withTimeoutOrNull(5000L) {
+                getHomeScreenDataUseCase().first { it is AppResult.Success }
+            }
+            
             if (result is AppResult.Success) {
                 val data = result.value
                 val lastDraw = data.history.firstOrNull()
@@ -137,7 +142,11 @@ class HomeViewModel @Inject constructor(
                     return@launch
                 }
 
-                val allHistory = cachedHistory.ifEmpty { historyRepository.getHistory().first() }
+                val allHistory = cachedHistory.ifEmpty {
+                    withTimeoutOrNull(5000L) {
+                        historyRepository.getHistory().first()
+                    } ?: emptyList()
+                }
                 val draws = if (window > 0) allHistory.take(window) else allHistory
                 val newStats = statisticsAnalyzer.analyze(draws)
 
@@ -148,6 +157,7 @@ class HomeViewModel @Inject constructor(
                 sendUiEvent(UiEvent.ShowSnackbar(messageResId = R.string.error_load_data_failed))
             }
         }
+        jobTracker.track(statsJob!!)
     }
 
     fun onPatternSelected(pattern: StatisticPattern) {

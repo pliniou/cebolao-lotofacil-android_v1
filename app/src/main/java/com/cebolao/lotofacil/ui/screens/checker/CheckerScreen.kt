@@ -71,7 +71,7 @@ fun CheckerScreen(
     val listState = rememberLazyListState()
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
     
-    val isButtonEnabled by remember(screenState) {
+    val isButtonEnabled by remember(screenState.selectedNumbers.size, screenState.uiState) {
         derivedStateOf {
             screenState.selectedNumbers.size == LotofacilConstants.GAME_SIZE && screenState.uiState !is CheckerUiState.Loading
         }

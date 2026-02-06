@@ -32,7 +32,7 @@ fun AnimateOnEntry(
 ) {
     val animationsEnabled = LocalAnimationEnabled.current
     
-    // Optimize state management with proper remember keys
+    // Optimize state management with proper remember key
     var isVisible by remember(delayMillis) { mutableStateOf(false) }
 
     LaunchedEffect(delayMillis) {

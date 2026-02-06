@@ -41,6 +41,9 @@ archCoreTesting = "2.2.0"
 mockitoCore = "5.14.2"
 mockitoKotlin = "5.4.0"
 turbine = "1.2.0"
+paparazzi = "1.3.4"
+# Machine Learning
+tensorflowLite = "2.16.0"
 
 [libraries]
 # AndroidX Core
@@ -94,10 +97,13 @@ testing-unit-arch-core = { group = "androidx.arch.core", name = "core-testing", 
 testing-unit-mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockitoCore" }
 testing-unit-mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockitoKotlin" }
 testing-unit-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+testing-unit-paparazzi = { group = "app.cash.paparazzi", name = "paparazzi", version.ref = "paparazzi" }
 # Testing - Android
 testing-android-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
 testing-android-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 testing-android-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+# Machine Learning
+tensorflow-lite = { group = "org.tensorflow", name = "tensorflow-lite", version.ref = "tensorflowLite" }
 # Debug Tools
 androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
@@ -136,7 +142,8 @@ testing-unit = [
     "testing-unit-arch-core",
     "testing-unit-mockito-core",
     "testing-unit-mockito-kotlin",
-    "testing-unit-turbine"
+    "testing-unit-turbine",
+    "testing-unit-paparazzi"
 ]
 testing-android = [
     "testing-android-junit",

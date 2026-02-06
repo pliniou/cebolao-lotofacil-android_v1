@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -49,6 +50,10 @@ fun FiltersScreen(
     val context = LocalContext.current
     var showDialogFor by remember { mutableStateOf<FilterType?>(null) }
     var showResetConfirmation by remember { mutableStateOf(false) }
+    
+    // Derived state para evitar recomposições desnecessárias com dependencies explícitas
+    val activeFiltersCount by remember(uiState.filterStates) { derivedStateOf { uiState.filterStates.count { it.isEnabled } } }
+    val successProbability by remember(uiState.successProbability) { derivedStateOf { uiState.successProbability } }
 
     LaunchedEffect(Unit) {
         filtersViewModel.uiEvent.collect { event ->
@@ -121,7 +126,7 @@ fun FiltersScreen(
             item(key = "active_filters") {
                 ActiveFiltersPanel(
                     activeFilters = uiState.filterStates.filter { it.isEnabled },
-                    successProbability = uiState.successProbability
+                    successProbability = successProbability
                 )
             }
 

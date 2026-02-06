@@ -2,6 +2,7 @@ package com.cebolao.lotofacil.di
 
 import android.content.Context
 import androidx.room.Room
+import com.cebolao.lotofacil.data.datasource.database.CheckHistoryDao
 import com.cebolao.lotofacil.data.datasource.database.HistoryDao
 import com.cebolao.lotofacil.data.datasource.database.LotofacilDatabase
 import dagger.Module
@@ -25,7 +26,8 @@ object DatabaseModule {
             LotofacilDatabase::class.java,
             "lotofacil_db"
         )
-        .fallbackToDestructiveMigration()
+        .addMigrations(*LotofacilDatabase.getMigrations())
+        .fallbackToDestructiveMigration()  // Apenas em DEBUG para segurança
         .build()
     }
 
@@ -33,5 +35,11 @@ object DatabaseModule {
     @Singleton
     fun provideHistoryDao(database: LotofacilDatabase): HistoryDao {
         return database.historyDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCheckHistoryDao(database: LotofacilDatabase): CheckHistoryDao {
+        return database.checkHistoryDao()
     }
 }

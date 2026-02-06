@@ -48,6 +48,7 @@ import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
 import com.cebolao.lotofacil.ui.components.ClickableCard
 import com.cebolao.lotofacil.ui.components.InfoDialog
+import com.cebolao.lotofacil.ui.components.LazyImage
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppSpacing
@@ -153,7 +154,7 @@ fun AboutScreen(
 private fun UserStatsCard(onClick: () -> Unit) {
     ClickableCard(
         onClick = onClick,
-        backgroundColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+        backgroundColor = MaterialTheme.colorScheme.surfaceVariant,  // Usar cor sólida
         modifier = Modifier.padding(horizontal = AppSpacing.lg)
     ) {
         Row(
@@ -208,24 +209,29 @@ private fun StudioHero() {
             .padding(bottom = AppSpacing.xxl),
         contentAlignment = Alignment.Center
     ) {
-        // Studio Hero as background/decorative element
-        Image(
-            painter = painterResource(R.drawable.ic_studiohero),
+        // Studio Hero as background/decorative element - lazy loaded
+        LazyImage(
+            painterResourceId = R.drawable.ic_studiohero,
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(180.dp)
                 .alpha(0.15f),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            delayMillis = 100L,
+            showPlaceholder = false
         )
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(R.drawable.ic_cebolalogo),
+            // Cebola logo with optimized size
+            LazyImage(
+                painterResourceId = R.drawable.ic_cebolalogo,
                 contentDescription = stringResource(id = R.string.studio_logo_description),
-                modifier = Modifier.size(80.dp)
+                modifier = Modifier.size(80.dp),
+                delayMillis = 50L,
+                showPlaceholder = false
             )
         }
     }

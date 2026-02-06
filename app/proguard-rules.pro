@@ -60,11 +60,11 @@
 # Manter nomes de classes de dados (data classes) para evitar problemas com serialização ou reflection
 -keep class com.cebolao.lotofacil.data.** { *; }
 
-# OTIMIZAÇÃO: Regras mais específicas para evitar problemas com SnapshotStateList e kotlinx.collections.immutable
+# OTIMIZAÇÃO: Regras consolidadas para evitar problemas com SnapshotStateList e kotlinx.collections.immutable
 # Estas regras são CRUCIAIS para resolver o aviso "failed lock verification" que pode
 # degradar a performance do Compose em tempo de execução.
-# Regras específicas em vez de manter pacotes inteiros
 -keep class androidx.compose.runtime.snapshots.SnapshotStateList { *; }
+-keepclassmembers class androidx.compose.runtime.snapshots.SnapshotStateList { *; }
 -keep class androidx.compose.runtime.snapshots.SnapshotStateKt { *; }
 -keep class androidx.compose.runtime.snapshots.StateObject { *; }
 -keep class androidx.compose.runtime.snapshots.StateSnapshot { *; }
@@ -74,13 +74,6 @@
 -keep class kotlinx.collections.immutable.ImmutableList { *; }
 -keep class kotlinx.collections.immutable.ImmutableMap { *; }
 -keep class kotlinx.collections.immutable.ImmutableSet { *; }
-
-# Regra específica para resolver o aviso "failed lock verification" do SnapshotStateList,
-# conforme observado nos logs.
--keep class androidx.compose.runtime.snapshots.SnapshotStateList { *; }
--keepclassmembers class androidx.compose.runtime.snapshots.SnapshotStateList {
-    *;
-}
 
 # LIMPEZA: Removidas regras desnecessárias para 'j$.util.*' que causavam avisos no build,
 # pois o desugaring moderno (coreLibraryDesugaring) não as requer mais.

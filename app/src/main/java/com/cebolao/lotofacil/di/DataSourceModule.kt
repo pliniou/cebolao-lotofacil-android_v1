@@ -1,5 +1,7 @@
 package com.cebolao.lotofacil.di
 
+import com.cebolao.lotofacil.data.datasource.CheckHistoryLocalDataSource
+import com.cebolao.lotofacil.data.datasource.CheckHistoryLocalDataSourceImpl
 import com.cebolao.lotofacil.data.datasource.HistoryLocalDataSource
 import com.cebolao.lotofacil.data.datasource.HistoryLocalDataSourceImpl
 import com.cebolao.lotofacil.data.datasource.HistoryRemoteDataSource
@@ -25,4 +27,10 @@ abstract class DataSourceModule {
     abstract fun bindHistoryRemoteDataSource(
         historyRemoteDataSourceImpl: HistoryRemoteDataSourceImpl
     ): HistoryRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindCheckHistoryLocalDataSource(
+        checkHistoryLocalDataSourceImpl: CheckHistoryLocalDataSourceImpl
+    ): CheckHistoryLocalDataSource
 }

@@ -20,11 +20,18 @@ val Inter = FontFamily(
 )
 
 /**
- * Calculates an adaptive scale factor based on screen configuration.
+ * Calculates an adaptive scale factor based on screen configuration and accessibility settings.
  * This ensures text remains readable and properly sized across different devices
- * (phones, tablets, foldables) while respecting user accessibility settings.
+ * (phones, tablets, foldables) while respecting user accessibility settings for font size.
  *
- * @return Scale factor in range [0.85f, 1.15f]
+ * Font size scaling from Android Settings > Accessibility > Display > Font Size:
+ * - Small: 0.85f
+ * - Normal: 1.0f (default)
+ * - Large: 1.15f
+ * - Larger: 1.3f
+ * - Largest: 1.5f
+ *
+ * @return Scale factor in range [0.85f, 1.5f]
  */
 @Composable
 fun calculateTypographyScaleFactor(): Float {
@@ -53,8 +60,12 @@ fun calculateTypographyScaleFactor(): Float {
         else -> 1.0f
     }
     
+    // Accessibility font size scaling (fontScale from Configuration)
+    // fontScale ranges from 0.85 to 1.5 based on user settings
+    val accessibilityScaling = configuration.fontScale.coerceIn(0.85f, 1.5f)
+    
     // Combine factors and constrain to safe range
-    val finalScale = (baseScaleFactor * densityAdjustment).coerceIn(0.85f, 1.15f)
+    val finalScale = (baseScaleFactor * densityAdjustment * accessibilityScaling).coerceIn(0.75f, 1.75f)
     
     return finalScale
 }

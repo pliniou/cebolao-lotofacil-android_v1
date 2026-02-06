@@ -68,11 +68,13 @@ fun RecencySection(
 
 @Composable
 private fun OverdueItem(number: Int, count: Int) {
-    val color = when {
-        count <= 1 -> Color(0xFF4CAF50) // Green - Recent
-        count <= 3 -> Color(0xFFFFC107) // Amber - Getting late
-        count <= 6 -> Color(0xFFFF9800) // Orange - Overdue
-        else -> Color(0xFFF44336) // Red - Highly Overdue
+    val (color, label) = remember(count) {
+        when {
+            count <= 1 -> Pair(Color(0xFF4CAF50), "0-1")
+            count <= 3 -> Pair(Color(0xFFFFC107), "2-3")
+            count <= 6 -> Pair(Color(0xFFFF9800), "4-6")
+            else -> Pair(Color(0xFFF44336), "+7")
+        }
     }
 
     Column(
@@ -93,7 +95,7 @@ private fun OverdueItem(number: Int, count: Int) {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = count.toString(),
+                text = label,
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
                 color = color
@@ -101,7 +103,7 @@ private fun OverdueItem(number: Int, count: Int) {
         }
         
         Text(
-            text = stringResource(id = R.string.overdue_label),
+            text = stringResource(id = R.string.drawn_ago),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

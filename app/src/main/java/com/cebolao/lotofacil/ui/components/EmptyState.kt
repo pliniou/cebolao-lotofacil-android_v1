@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -54,12 +55,13 @@ fun EmptyState(
                         tint = colors.primary
                     )
                 } else {
-                    IconBadge(
-                        painter = painterResource(id = R.drawable.ic_cebolalogo),
+                    // Use lazy-loaded image for better performance
+                    LazyImage(
+                        painterResourceId = R.drawable.ic_cebolalogo,
                         contentDescription = null,
-                        size = iconSize + 12.dp,
-                        iconSize = iconSize,
-                        tint = androidx.compose.ui.graphics.Color.Unspecified
+                        modifier = Modifier.size(iconSize + 12.dp),
+                        delayMillis = 75L,
+                        showPlaceholder = false
                     )
                 }
 

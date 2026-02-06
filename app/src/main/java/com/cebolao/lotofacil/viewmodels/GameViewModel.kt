@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 
 @Stable
@@ -96,8 +97,11 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { it.copy(analysisState = GameAnalysisUiState.Loading) }
             try {
-                val checkState = checkGameUseCase(game.numbers)
-                    .first { it is GameCheckState.Success || it is GameCheckState.Failure }
+                val checkState = withTimeoutOrNull(5000L) {
+                    checkGameUseCase(game.numbers)
+                        .first { it is GameCheckState.Success || it is GameCheckState.Failure }
+                }
+                
                 when (checkState) {
                     is GameCheckState.Success -> {
                         val result = GameAnalysisResult(
@@ -113,6 +117,11 @@ class GameViewModel @Inject constructor(
                             else -> R.string.error_analysis_failed
                         }
                         updateState { it.copy(analysisState = GameAnalysisUiState.Error(messageResId)) }
+                    }
+                    null -> {
+                        // Timeout occurred
+                        updateState { it.copy(analysisState = GameAnalysisUiState.Error(R.string.error_analysis_timeout)) }
+                        sendUiEvent(UiEvent.ShowSnackbar(messageResId = R.string.error_analysis_timeout))
                     }
                     else -> Unit
                 }

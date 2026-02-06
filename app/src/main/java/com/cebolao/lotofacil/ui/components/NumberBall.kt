@@ -4,8 +4,15 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.input.key.Key
+import androidx.compose.input.key.KeyEventType
+import androidx.compose.input.key.key
+import androidx.compose.input.key.onKeyEvent
+import androidx.compose.input.key.type
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -16,8 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -78,19 +89,22 @@ fun NumberBall(
         stateLabel
     )
 
+    val animationDuration = remember { AppConstants.ANIMATION_DURATION_NUMBER_BALL.toInt() }
+    val hapticFeedback = LocalHapticFeedback.current
+    
     val animatedContainerColor by animateColorAsState(
         targetValue = containerColor, 
-        animationSpec = tween(AppConstants.ANIMATION_DURATION_NUMBER_BALL.toInt()), 
+        animationSpec = tween(animationDuration), 
         label = "containerColor"
     )
     val animatedContentColor by animateColorAsState(
         targetValue = contentColor, 
-        animationSpec = tween(AppConstants.ANIMATION_DURATION_NUMBER_BALL.toInt()), 
+        animationSpec = tween(animationDuration), 
         label = "contentColor"
     )
     val animatedBorderColor by animateColorAsState(
         targetValue = borderColor, 
-        animationSpec = tween(AppConstants.ANIMATION_DURATION_NUMBER_BALL.toInt()), 
+        animationSpec = tween(animationDuration), 
         label = "borderColor"
     )
 
@@ -105,6 +119,8 @@ fun NumberBall(
         if (isSelected) AppElevation.xs else AppElevation.none
     }
 
+    val interactionSource = remember { MutableInteractionSource() }
+
     Surface(
         modifier = modifier
             .size(size)
@@ -116,11 +132,26 @@ fun NumberBall(
             )
             .then(
                 if (onClick != null && !isDisabled) {
-                    Modifier.clickable { onClick() }
+                    Modifier
+                        .clickable(interactionSource, indication = null) { 
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onClick() 
+                        }
+                        .focusable(interactionSource = interactionSource)
+                        .onKeyEvent { keyEvent ->
+                            if (keyEvent.key == Key.Enter || keyEvent.key == Key.Spacebar) {
+                                if (keyEvent.type == KeyEventType.KeyUp) {
+                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    onClick()
+                                    true
+                                } else false
+                            } else false
+                        }
                 } else Modifier
             )
             .semantics {
                 contentDescription = numberContentDescription
+                role = Role.Button
             },
         shape = shape,
         color = animatedContainerColor,

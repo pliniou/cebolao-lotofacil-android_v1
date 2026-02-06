@@ -20,10 +20,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRandom(): java.util.Random = java.util.Random()
-
-    @Provides
-    @Singleton
     @ApplicationScope
     fun provideApplicationScope(dispatchersProvider: DispatchersProvider): CoroutineScope =
         CoroutineScope(SupervisorJob() + dispatchersProvider.default)

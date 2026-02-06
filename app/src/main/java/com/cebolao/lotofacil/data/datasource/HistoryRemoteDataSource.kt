@@ -3,13 +3,13 @@ package com.cebolao.lotofacil.data.datasource
 import android.util.Log
 import com.cebolao.lotofacil.BuildConfig
 import com.cebolao.lotofacil.core.coroutine.DispatchersProvider
+import com.cebolao.lotofacil.core.utils.retryExponentialBackoff
 import com.cebolao.lotofacil.data.network.ApiService
 import com.cebolao.lotofacil.data.network.toHistoricalDraw
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
@@ -85,17 +85,12 @@ class HistoryRemoteDataSourceImpl @Inject constructor(
         attempts: Int = RETRY_ATTEMPTS,
         block: suspend () -> T
     ): T {
-        var lastError: Throwable? = null
-        repeat(attempts) { attempt ->
-            try {
-                return block()
-            } catch (t: Throwable) {
-                lastError = t
-                if (attempt < attempts - 1) {
-                    delay(RETRY_DELAY_MS * (attempt + 1))
-                }
-            }
-        }
-        throw lastError ?: IllegalStateException("Retry failed without exception")
+        return retryExponentialBackoff(
+            maxRetries = attempts - 1,  // maxRetries não inclui a tentativa inicial
+            initialDelayMs = RETRY_DELAY_MS,
+            multiplier = 2.0,
+            maxDelayMs = 5000L,
+            block = block
+        )
     }
 }

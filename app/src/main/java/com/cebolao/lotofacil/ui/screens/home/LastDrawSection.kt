@@ -55,8 +55,14 @@ import com.cebolao.lotofacil.domain.model.WinnerLocation
 import com.cebolao.lotofacil.ui.components.NumberBall
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
+import com.cebolao.lotofacil.ui.theme.AppAlpha
+import com.cebolao.lotofacil.ui.theme.AppSize
 import com.cebolao.lotofacil.ui.theme.iconSmall
 import com.cebolao.lotofacil.core.utils.NumberFormatUtils
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.Role
 import java.util.Locale
 
 @Composable
@@ -141,13 +147,15 @@ private fun LatestResultCard(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun FlowNumbersGrid(numbers: List<Int>) {
+    val sortedNumbers = remember(numbers) { numbers.sorted() }
+    
     FlowRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm, Alignment.CenterHorizontally),
         verticalArrangement = Arrangement.spacedBy(AppSpacing.sm),
         maxItemsInEachRow = 5
     ) {
-        for (number in numbers) {
+        for (number in sortedNumbers) {
             NumberBall(
                 number = number
             )
@@ -157,15 +165,20 @@ private fun FlowNumbersGrid(numbers: List<Int>) {
 
 @Composable
 private fun QuickStatsRow(stats: LastDrawStats) {
+    val cachedSum = remember(stats.sum) { NumberFormatUtils.formatInteger(stats.sum) }
+    val cachedAverage = remember(stats.average) { String.format("%.1f", stats.average) }
+    val cachedHighest = remember(stats.highest) { NumberFormatUtils.formatInteger(stats.highest) }
+    val cachedLowest = remember(stats.lowest) { NumberFormatUtils.formatInteger(stats.lowest) }
+    
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        StatItem(label = stringResource(id = R.string.sum_label), value = NumberFormatUtils.formatInteger(stats.sum))
-        StatItem(label = stringResource(id = R.string.even_label), value = NumberFormatUtils.formatInteger(stats.evens))
-        StatItem(label = stringResource(id = R.string.prime_label), value = NumberFormatUtils.formatInteger(stats.primes))
-        StatItem(label = stringResource(id = R.string.frame_label), value = NumberFormatUtils.formatInteger(stats.frame))
-        StatItem(label = stringResource(id = R.string.portrait_label), value = NumberFormatUtils.formatInteger(stats.portrait))
+        StatItem(label = stringResource(id = R.string.sum_label), value = cachedSum)
+        StatItem(label = stringResource(id = R.string.even_label), value = remember(stats.evens) { NumberFormatUtils.formatInteger(stats.evens) })
+        StatItem(label = stringResource(id = R.string.prime_label), value = remember(stats.primes) { NumberFormatUtils.formatInteger(stats.primes) })
+        StatItem(label = stringResource(id = R.string.frame_label), value = remember(stats.frame) { NumberFormatUtils.formatInteger(stats.frame) })
+        StatItem(label = stringResource(id = R.string.portrait_label), value = remember(stats.portrait) { NumberFormatUtils.formatInteger(stats.portrait) })
     }
 }
 
@@ -211,10 +224,13 @@ private fun PrizeDetailsSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = AppSpacing.sm),
-                verticalArrangement = Arrangement.spacedBy(AppSpacing.sm)
+                verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
             ) {
                 prizes.forEachIndexed { index, prize ->
-                    PrizeTierRow(prize, index + 1)
+                    PrizeTierCard(
+                        prize = prize,
+                        tier = index + 1
+                    )
                 }
 
                 if (winners.isNotEmpty()) {
@@ -234,37 +250,122 @@ private fun PrizeDetailsSection(
 }
 
 @Composable
-private fun PrizeTierRow(prize: PrizeTier, tier: Int) {
+private fun PrizeTierCard(prize: PrizeTier, tier: Int) {
     val colors = MaterialTheme.colorScheme
     
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(colors.surfaceVariant.copy(alpha = 0.3f), MaterialTheme.shapes.small)
-            .padding(AppSpacing.md),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column {
-            Text(
-                text = prize.description,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = colors.onSurface
+    // Determine tier-specific styling
+    val (tierColor, tierElevation, tierIcon) = remember(tier) {
+        when (tier) {
+            1 -> Triple(
+                colors.primary,
+                AppElevation.lg,
+                "🥇"
             )
-            Text(
-                text = "${NumberFormatUtils.formatInteger(prize.winners)} ganhadores",
-                style = MaterialTheme.typography.labelSmall,
-                color = colors.onSurfaceVariant
+            2 -> Triple(
+                colors.secondary,
+                AppElevation.md,
+                "🥈"
+            )
+            3 -> Triple(
+                colors.tertiary,
+                AppElevation.sm,
+                "🥉"
+            )
+            else -> Triple(
+                colors.outline,
+                AppElevation.xs,
+                "${tier}º"
             )
         }
-        
-        Text(
-            text = NumberFormatUtils.formatCurrency(prize.prizeValue),
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold,
-            color = if(tier == 1) colors.primary else colors.onSurface
-        )
+    }
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics {
+                contentDescription = stringResource(
+                    R.string.prize_tier_description,
+                    tier,
+                    NumberFormatUtils.formatCurrency(prize.prizeValue)
+                )
+                role = Role.Region
+            },
+        elevation = CardDefaults.cardElevation(defaultElevation = tierElevation),
+        colors = CardDefaults.cardColors(
+            containerColor = tierColor.copy(alpha = 0.08f)
+        ),
+        border = BorderStroke(1.5.dp, tierColor.copy(alpha = 0.3f))
+    ) {
+        Column(
+            modifier = Modifier.padding(AppSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
+        ) {
+            // Header with tier indicator
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(AppSpacing.md),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    // Tier badge
+                    Box(
+                        modifier = Modifier
+                            .size(AppSize.numberBallSmall)
+                            .background(tierColor, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = tierIcon,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        )
+                    }
+                    
+                    // Prize description
+                    Column {
+                        Text(
+                            text = prize.description,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = tierColor
+                        )
+                        Text(
+                            text = "${NumberFormatUtils.formatInteger(prize.winners)} ${stringResource(id = R.string.winners)}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = colors.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 2.dp)
+                        )
+                    }
+                }
+            }
+            
+            // Prize value - highlighted
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(tierColor.copy(alpha = 0.1f), MaterialTheme.shapes.small)
+                    .padding(AppSpacing.md),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(id = R.string.prize_per_winner),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = colors.onSurfaceVariant
+                )
+                Text(
+                    text = NumberFormatUtils.formatCurrency(prize.prizeValue),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Black,
+                    color = tierColor
+                )
+            }
+        }
     }
 }
 
@@ -347,16 +448,17 @@ private fun NextDrawCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(1.dp, if (accumulated) colors.error.copy(0.3f) else colors.primary.copy(0.3f)),
+        border = BorderStroke(1.dp, if (accumulated) colors.error else colors.primary),
         elevation = CardDefaults.cardElevation(defaultElevation = AppElevation.sm)
     ) {
-        Box(modifier = Modifier.background(gradientBrush)) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(AppSpacing.lg),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+        // Remover Box intermediário - aplicar gradient diretamente na Column com Modifier.background
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(gradientBrush)
+                .padding(AppSpacing.lg),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
                 // Header Label
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

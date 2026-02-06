@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.ui.components.EmptyState
 import com.cebolao.lotofacil.ui.components.ErrorCard
+import com.cebolao.lotofacil.ui.components.ExpandableSection
 import com.cebolao.lotofacil.ui.components.LoadingData
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
 import com.cebolao.lotofacil.ui.theme.AppSpacing
@@ -69,34 +70,59 @@ fun FrequencyAnalysisScreen(
                     contentPadding = PaddingValues(AppSpacing.lg),
                     verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
                 ) {
+                    item(key = "frequency_chart") {
+                        ExpandableSection(
+                            title = stringResource(id = R.string.frequency_analysis_title),
+                            isExpandedByDefault = true
+                        ) {
+                            FrequencyBarChart(frequencies = analysis.frequencies)
+                        }
+                    }
+
                     item(key = "top_numbers") {
-                        TopNumbersSection(topNumbers = analysis.topNumbers)
+                        ExpandableSection(
+                            title = stringResource(id = R.string.top_numbers_title),
+                            isExpandedByDefault = false
+                        ) {
+                            TopNumbersSection(topNumbers = analysis.topNumbers)
+                        }
                     }
 
                     item(key = "recency") {
-                        RecencySection(overdueNumbers = analysis.overdueNumbers)
+                        ExpandableSection(
+                            title = stringResource(id = R.string.recency_title),
+                            isExpandedByDefault = false
+                        ) {
+                            RecencySection(overdueNumbers = analysis.overdueNumbers)
+                        }
                     }
 
                     item(key = "pattern_list") {
-                        PatternListSection(
-                            analysis = uiState.patternAnalysis,
-                            selectedSize = uiState.selectedPatternSize,
-                            onSizeSelected = { viewModel.onPatternSizeSelected(it) }
-                        )
+                        ExpandableSection(
+                            title = stringResource(id = R.string.patterns_title),
+                            isExpandedByDefault = false
+                        ) {
+                            PatternListSection(
+                                analysis = uiState.patternAnalysis,
+                                selectedSize = uiState.selectedPatternSize,
+                                onSizeSelected = { viewModel.onPatternSizeSelected(it) }
+                            )
+                        }
                     }
 
                     item(key = "trend") {
-                        TrendSection(
-                            analysis = uiState.trendAnalysis,
-                            selectedType = uiState.selectedTrendType,
-                            selectedWindow = uiState.selectedTrendWindow,
-                            onTypeSelected = { viewModel.onTrendTypeSelected(it) },
-                            onWindowSelected = { viewModel.onTrendWindowSelected(it) }
-                        )
-                    }
-                    
-                    item(key = "frequency_chart") {
-                        FrequencyBarChart(frequencies = analysis.frequencies)
+                        ExpandableSection(
+                            title = stringResource(id = R.string.trend_analysis_title),
+                            isExpandedByDefault = false
+                        ) {
+                            TrendSection(
+                                analysis = uiState.trendAnalysis,
+                                selectedType = uiState.selectedTrendType,
+                                selectedWindow = uiState.selectedTrendWindow,
+                                onTypeSelected = { viewModel.onTrendTypeSelected(it) },
+                                onWindowSelected = { viewModel.onTrendWindowSelected(it) }
+                            )
+                        }
                     }
                     
                     item(key = "total_draws") {

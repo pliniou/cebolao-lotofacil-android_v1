@@ -14,8 +14,6 @@ import com.cebolao.lotofacil.navigation.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import java.time.LocalDate
@@ -57,38 +55,34 @@ class HomeViewModel @Inject constructor(
 
     private fun loadInitialData() {
         updateState { it.copy(isScreenLoading = true, errorMessageResId = null) }
-        
-        getHomeScreenDataUseCase()
-            .onEach { result ->
-                when (result) {
-                    is AppResult.Success -> {
-                        val data = result.value
-                        val lastDraw = data.history.firstOrNull()
-                        cachedHistory = data.history
 
-                        val nextDrawStats = data.lastDrawStats
-                        updateState {
-                            it.copy(
-                                isScreenLoading = false,
-                                errorMessageResId = null,
-                                lastDrawStats = data.lastDrawStats,
-                                statistics = data.initialStats,
-                                lastUpdateTime = lastDraw?.date,
-                                nextDrawDate = nextDrawStats?.nextDate,
-                                nextDrawContest = nextDrawStats?.nextContest,
-                                isTodayDrawDay = checkIsTodayDrawDay(nextDrawStats?.nextDate)
-                            )
-                        }
-                    }
-                    is AppResult.Failure -> {
-                        updateState {
-                            it.copy(isScreenLoading = false, errorMessageResId = R.string.error_load_data_failed)
-                        }
-                        sendUiEvent(UiEvent.ShowSnackbar(messageResId = R.string.error_load_data_failed))
-                    }
+        viewModelScope.launch {
+            val result = getHomeScreenDataUseCase().first { it is AppResult.Success }
+            if (result is AppResult.Success) {
+                val data = result.value
+                val lastDraw = data.history.firstOrNull()
+                cachedHistory = data.history
+
+                val nextDrawStats = data.lastDrawStats
+                updateState {
+                    it.copy(
+                        isScreenLoading = false,
+                        errorMessageResId = null,
+                        lastDrawStats = data.lastDrawStats,
+                        statistics = data.initialStats,
+                        lastUpdateTime = lastDraw?.date,
+                        nextDrawDate = nextDrawStats?.nextDate,
+                        nextDrawContest = nextDrawStats?.nextContest,
+                        isTodayDrawDay = checkIsTodayDrawDay(nextDrawStats?.nextDate)
+                    )
                 }
+            } else {
+                updateState {
+                    it.copy(isScreenLoading = false, errorMessageResId = R.string.error_load_data_failed)
+                }
+                sendUiEvent(UiEvent.ShowSnackbar(messageResId = R.string.error_load_data_failed))
             }
-            .launchIn(viewModelScope)
+        }
     }
 
     private fun checkIsTodayDrawDay(nextDate: String?): Boolean {

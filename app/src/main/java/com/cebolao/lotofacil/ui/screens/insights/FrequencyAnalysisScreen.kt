@@ -25,12 +25,14 @@ import com.cebolao.lotofacil.viewmodels.InsightsViewModel
 
 @Composable
 fun FrequencyAnalysisScreen(
+    modifier: Modifier = Modifier,
     viewModel: InsightsViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
+        modifier = modifier.fillMaxSize(),
         topBar = {
             StandardScreenHeader(
                 title = stringResource(id = R.string.insights_title),
@@ -67,15 +69,15 @@ fun FrequencyAnalysisScreen(
                     contentPadding = PaddingValues(AppSpacing.lg),
                     verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
                 ) {
-                    item {
+                    item(key = "top_numbers") {
                         TopNumbersSection(topNumbers = analysis.topNumbers)
                     }
 
-                    item {
+                    item(key = "recency") {
                         RecencySection(overdueNumbers = analysis.overdueNumbers)
                     }
 
-                    item {
+                    item(key = "pattern_list") {
                         PatternListSection(
                             analysis = uiState.patternAnalysis,
                             selectedSize = uiState.selectedPatternSize,
@@ -83,7 +85,7 @@ fun FrequencyAnalysisScreen(
                         )
                     }
 
-                    item {
+                    item(key = "trend") {
                         TrendSection(
                             analysis = uiState.trendAnalysis,
                             selectedType = uiState.selectedTrendType,
@@ -93,11 +95,11 @@ fun FrequencyAnalysisScreen(
                         )
                     }
                     
-                    item {
+                    item(key = "frequency_chart") {
                         FrequencyBarChart(frequencies = analysis.frequencies)
                     }
                     
-                    item {
+                    item(key = "total_draws") {
                         Text(
                             text = stringResource(id = R.string.total_draws_analyzed_format, analysis.totalDraws),
                             style = MaterialTheme.typography.bodySmall,

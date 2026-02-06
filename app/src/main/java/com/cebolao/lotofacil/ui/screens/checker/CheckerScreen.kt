@@ -62,7 +62,10 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
+fun CheckerScreen(
+    modifier: Modifier = Modifier,
+    checkerViewModel: CheckerViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
     val screenState by checkerViewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
@@ -95,7 +98,7 @@ fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             StandardScreenHeader(
                 title = stringResource(id = R.string.check_game_title),
@@ -118,14 +121,14 @@ fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
             ),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
         ) {
-            item {
+            item(key = "number_grid") {
                 NumberGridSection(
                     selectedNumbers = screenState.selectedNumbers,
                     onNumberClicked = checkerViewModel::onNumberClicked
                 )
             }
 
-            item {
+            item(key = "actions") {
                 CheckerScrollableActions(
                     selectedCount = screenState.selectedNumbers.size,
                     isLoading = screenState.uiState is CheckerUiState.Loading,
@@ -135,7 +138,7 @@ fun CheckerScreen(checkerViewModel: CheckerViewModel = hiltViewModel()) {
                 )
             }
 
-            item {
+            item(key = "result") {
                 val currentUiState = screenState.uiState
                 AnimatedContent(
                     targetState = currentUiState,

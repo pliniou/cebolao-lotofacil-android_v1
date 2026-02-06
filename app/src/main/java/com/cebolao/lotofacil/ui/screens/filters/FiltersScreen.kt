@@ -39,6 +39,7 @@ import com.cebolao.lotofacil.ui.components.shimmer
 
 @Composable
 fun FiltersScreen(
+    modifier: Modifier = Modifier,
     filtersViewModel: FiltersViewModel = hiltViewModel(),
     onNavigateToGeneratedGames: () -> Unit
 ) {
@@ -102,7 +103,7 @@ fun FiltersScreen(
                 onResetFilters = { filtersViewModel.requestResetAllFilters() }
             )
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -117,7 +118,7 @@ fun FiltersScreen(
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(AppSpacing.xl)
         ) {
 
-            item {
+            item(key = "active_filters") {
                 ActiveFiltersPanel(
                     activeFilters = uiState.filterStates.filter { it.isEnabled },
                     successProbability = uiState.successProbability
@@ -139,7 +140,7 @@ fun FiltersScreen(
                 )
             }
 
-            item {
+            item(key = "generate_actions") {
                 GenerateActionsPanel(
                     generationState = uiState.generationState,
                     onGenerate = { quantity -> filtersViewModel.generateGames(quantity) }

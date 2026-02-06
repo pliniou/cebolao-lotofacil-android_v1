@@ -52,6 +52,7 @@ import com.cebolao.lotofacil.viewmodels.GameViewModel
 
 @Composable
 fun GeneratedGamesScreen(
+    modifier: Modifier = Modifier,
     gameViewModel: GameViewModel = hiltViewModel()
 ) {
     val games by gameViewModel.generatedGames.collectAsStateWithLifecycle()
@@ -130,7 +131,7 @@ fun GeneratedGamesScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             StandardScreenHeader(

@@ -79,7 +79,7 @@ private fun TrendTypeSelector(selected: TrendType, onSelect: (TrendType) -> Unit
         contentPadding = PaddingValues(vertical = AppSpacing.md),
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm)
     ) {
-        items(types) { type ->
+        items(types, key = { it.name }) { type ->
             FilterChip(
                 onClick = { onSelect(type) },
                 label = { 

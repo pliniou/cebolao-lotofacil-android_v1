@@ -275,7 +275,7 @@ private fun WinnersByStateGrid(winners: List<WinnerLocation>) {
         horizontalArrangement = Arrangement.spacedBy(AppSpacing.sm),
         contentPadding = PaddingValues(horizontal = AppSpacing.xs)
     ) {
-        items(winners.take(10)) { winner ->
+        items(winners.take(10), key = { "${it.city}-${it.state}" }) { winner ->
             WinnerBadge(winner)
         }
     }

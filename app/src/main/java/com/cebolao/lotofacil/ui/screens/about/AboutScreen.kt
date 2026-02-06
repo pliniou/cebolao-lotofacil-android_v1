@@ -55,6 +55,7 @@ import com.cebolao.lotofacil.ui.theme.iconLarge
 
 @Composable
 fun AboutScreen(
+    modifier: Modifier = Modifier,
     onNavigateToUserStats: () -> Unit
 ) {
     var dialogContent by remember { mutableStateOf<InfoItem?>(null) }
@@ -88,7 +89,7 @@ fun AboutScreen(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         topBar = {
             StandardScreenHeader(
                 title = stringResource(id = R.string.studio_name),
@@ -106,11 +107,11 @@ fun AboutScreen(
             ),
             verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
         ) {
-            item {
+            item(key = "studio_hero") {
                 StudioHero()
             }
             
-            item {
+            item(key = "guide_section_header") {
                 SectionHeader(stringResource(R.string.about_section_guide))
             }
             
@@ -123,7 +124,7 @@ fun AboutScreen(
                 }
             }
 
-            item {
+            item(key = "legal_section_header") {
                 Spacer(modifier = Modifier.height(AppSpacing.md))
                 SectionHeader(stringResource(R.string.about_section_legal))
             }
@@ -137,8 +138,11 @@ fun AboutScreen(
                 }
             }
 
-            item {
+            item(key = "user_stats_spacer") {
                 Spacer(modifier = Modifier.height(AppSpacing.md))
+            }
+
+            item(key = "user_stats_card") {
                 UserStatsCard(onNavigateToUserStats)
             }
         }
@@ -241,7 +245,7 @@ private fun InfoCard(item: InfoItem, onClick: () -> Unit) {
         ) {
             Icon(
                 item.icon, 
-                null, 
+                contentDescription = stringResource(id = item.titleResId), 
                 tint = MaterialTheme.colorScheme.primary, 
                 modifier = Modifier.size(iconLarge())
             )

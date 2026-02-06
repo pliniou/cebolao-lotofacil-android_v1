@@ -23,12 +23,14 @@ import com.cebolao.lotofacil.viewmodels.UserStatsViewModel
 
 @Composable
 fun UserStatsScreen(
+    modifier: Modifier = Modifier,
     viewModel: UserStatsViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
+        modifier = modifier.fillMaxSize(),
         topBar = {
             StandardScreenHeader(
                 title = stringResource(id = R.string.nav_user_stats),
@@ -53,7 +55,7 @@ fun UserStatsScreen(
                         contentPadding = PaddingValues(AppSpacing.lg),
                         verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(AppSpacing.lg)
                     ) {
-                        item {
+                        item(key = "user_stats_section") {
                             UserStatsSection(stats = uiState.stats!!)
                         }
                     }

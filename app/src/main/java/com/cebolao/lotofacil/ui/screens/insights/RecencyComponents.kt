@@ -58,7 +58,7 @@ fun RecencySection(
                     .padding(top = AppSpacing.lg),
                 horizontalArrangement = Arrangement.spacedBy(AppSpacing.md)
             ) {
-                items(sortedOverdue) { (number, count) ->
+                items(sortedOverdue, key = { it.first }) { (number, count) ->
                     OverdueItem(number = number, count = count)
                 }
             }

@@ -26,16 +26,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.model.FilterState
 import com.cebolao.lotofacil.domain.model.FilterType
 import com.cebolao.lotofacil.ui.model.icon
 import com.cebolao.lotofacil.ui.model.titleRes
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
-import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.AppConstants
+import com.cebolao.lotofacil.ui.theme.AppElevation
+import com.cebolao.lotofacil.ui.theme.AppSize
 
 @Composable
 fun FilterCard(
@@ -106,7 +106,7 @@ private fun FilterHeader(
                 stringResource(filterState.type.titleRes)
             ),
             tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(AppSize.iconMedium)
         )
         
         Column(
@@ -130,7 +130,7 @@ private fun FilterHeader(
         
         IconButton(
             onClick = onInfoClick,
-            modifier = Modifier.size(40.dp)
+            modifier = Modifier.size(AppSize.touchTargetMinimum)
         ) {
             Icon(
                 imageVector = Icons.Outlined.Info,
@@ -138,15 +138,14 @@ private fun FilterHeader(
                     id = R.string.filter_info_content_description,
                     stringResource(filterState.type.titleRes)
                 ),
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(AppSize.iconSmall)
             )
         }
-        
+
         Switch(
             checked = filterState.isEnabled,
             onCheckedChange = { onToggle() },
-            enabled = dataAvailable,
-            modifier = Modifier.size(40.dp)
+            enabled = dataAvailable
         )
     }
 }

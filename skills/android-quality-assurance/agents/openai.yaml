@@ -1,0 +1,4 @@
+interface:
+  display_name: "Android Quality Assurance"
+  short_description: "Plan and verify tests for regression safety"
+  default_prompt: "Use $android-quality-assurance to review risk and define test coverage for this change."

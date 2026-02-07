@@ -1,7 +1,6 @@
 package com.cebolao.lotofacil.ui.screens.stats
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -68,9 +67,12 @@ fun UserStatsScreenContent(
             state.isLoading -> {
                 LoadingData(
                     message = stringResource(id = R.string.loading_data),
-                    modifier = Modifier.fillMaxSize().padding(innerPadding)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
                 )
             }
+<<<<<<< HEAD
             state.errorMessageResId != null -> {
                 ErrorCard(
                     messageResId = state.errorMessageResId!!,
@@ -79,20 +81,43 @@ fun UserStatsScreenContent(
                 )
             }
             state.stats != null && state.stats!!.totalGamesGenerated > 0 -> {
+=======
+
+            uiState.errorMessageResId != null -> {
+                ErrorCard(
+                    messageResId = uiState.errorMessageResId!!,
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .padding(AppSpacing.lg),
+                    actions = { viewModel.loadStats() }
+                )
+            }
+
+            uiState.stats != null && uiState.stats!!.totalGamesGenerated > 0 -> {
+>>>>>>> 7ff0420c3946b4c7d18d48cef0333dc484501e7f
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(innerPadding),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
                     contentPadding = PaddingValues(AppSpacing.lg),
-                    verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(AppSpacing.lg)
+                    verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
                 ) {
                     item(key = "user_stats_section") {
                         UserStatsSection(stats = state.stats!!)
                     }
                 }
             }
+
             else -> {
                 EmptyState(
                     messageResId = R.string.stats_empty_message,
+<<<<<<< HEAD
                     modifier = Modifier.fillMaxSize()
+=======
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+>>>>>>> 7ff0420c3946b4c7d18d48cef0333dc484501e7f
                 )
             }
         }

@@ -5,6 +5,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import java.util.Random
 import javax.inject.Singleton
 
 @Module
@@ -13,4 +14,8 @@ object UtilityModule {
     @Provides
     @Singleton
     fun provideHistoryParser(): HistoryParser = HistoryParser()
+
+    @Provides
+    @Singleton
+    fun provideRandom(): Random = Random()
 }

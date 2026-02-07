@@ -1,14 +1,12 @@
 package com.cebolao.lotofacil.navigation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.compose.runtime.mutableStateOf
-import androidx.navigation.NavHostController
-import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import kotlin.test.assertEquals
 
 class NavigationTest {
 
@@ -22,7 +20,7 @@ class NavigationTest {
     }
 
     @Test
-    fun `each destination has valid title resource`() = runTest {
+    fun `each destination has valid title resource`() {
         val destinations = listOf(
             Destination.Home,
             Destination.Filters,
@@ -34,12 +32,12 @@ class NavigationTest {
         )
 
         destinations.forEach { destination ->
-            assert(destination.titleRes > 0, "Invalid titleRes for $destination")
+            assertTrue("Invalid titleRes for $destination", destination.titleRes > 0)
         }
     }
 
     @Test
-    fun `each destination has selected icon`() = runTest {
+    fun `each destination has selected icon`() {
         val destinations = listOf(
             Destination.Home,
             Destination.Filters,
@@ -52,12 +50,12 @@ class NavigationTest {
 
         destinations.forEach { destination ->
             val icon = destination.selectedIcon
-            assertNotNull(icon, "Missing selectedIcon for $destination")
+            assertNotNull("Missing selectedIcon for $destination", icon)
         }
     }
 
     @Test
-    fun `each destination has unselected icon`() = runTest {
+    fun `each destination has unselected icon`() {
         val destinations = listOf(
             Destination.Home,
             Destination.Filters,
@@ -70,7 +68,7 @@ class NavigationTest {
 
         destinations.forEach { destination ->
             val icon = destination.unselectedIcon
-            assertNotNull(icon, "Missing unselectedIcon for $destination")
+            assertNotNull("Missing unselectedIcon for $destination", icon)
         }
     }
 
@@ -84,10 +82,6 @@ class NavigationTest {
     @Test
     fun `checker destination default numbers is null`() {
         val destination = Destination.Checker()
-        assert(destination.numbers == null)
-    }
-
-    private fun assertNotNull(value: Any?, message: String) {
-        assert(value != null) { message }
+        assertNull(destination.numbers)
     }
 }

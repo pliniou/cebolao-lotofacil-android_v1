@@ -1,124 +1,126 @@
 package com.cebolao.lotofacil.core.testing
 
 import com.cebolao.lotofacil.core.result.AppResult
-import com.cebolao.lotofacil.domain.model.FilterState
-import com.cebolao.lotofacil.domain.model.FilterType
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.domain.model.LotofacilGame
+import com.cebolao.lotofacil.domain.model.StatisticsReport
+import com.cebolao.lotofacil.domain.repository.CacheStatistics
 import com.cebolao.lotofacil.domain.repository.GameRepository
 import com.cebolao.lotofacil.domain.repository.HistoryRepository
 import com.cebolao.lotofacil.domain.repository.StatisticsRepository
+import com.cebolao.lotofacil.domain.repository.SyncStatus
 import com.cebolao.lotofacil.domain.repository.UserPreferencesRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-/**
- * Fake repositories para testes de ViewModel e UseCase.
- * Simula comportamento real sem dependências externas.
- */
 class FakeGameRepository : GameRepository {
-    private val games = mutableListOf<LotofacilGame>()
+    private val _games = MutableStateFlow<ImmutableList<LotofacilGame>>(persistentListOf())
+    private val _pinnedGames = MutableStateFlow<ImmutableList<LotofacilGame>>(persistentListOf())
 
-    override suspend fun saveGame(game: LotofacilGame): AppResult<Unit> {
-        games.add(game)
+    override val games: StateFlow<ImmutableList<LotofacilGame>> = _games.asStateFlow()
+    override val pinnedGames: StateFlow<ImmutableList<LotofacilGame>> = _pinnedGames.asStateFlow()
+
+    override suspend fun addGeneratedGames(newGames: List<LotofacilGame>): AppResult<Unit> {
+        _games.value = (_games.value + newGames).distinctBy { it.id }.toImmutableList()
+        refreshPinnedGames()
         return AppResult.Success(Unit)
-    }
-
-    override suspend fun deleteGame(gameId: String): AppResult<Unit> {
-        games.removeAll { it.id == gameId }
-        return AppResult.Success(Unit)
-    }
-
-    override suspend fun toggleGamePin(gameId: String): AppResult<Unit> {
-        return AppResult.Success(Unit)
-    }
-
-    override fun getSavedGamesFlow(): Flow<ImmutableList<LotofacilGame>> {
-        return flowOf(games.toImmutableList())
     }
 
     override suspend fun clearUnpinnedGames(): AppResult<Unit> {
-        games.removeAll { !it.isPinned }
+        _games.value = _games.value.filter { it.isPinned }.toImmutableList()
+        refreshPinnedGames()
         return AppResult.Success(Unit)
     }
 
-    override suspend fun getSavedGamesCount(): AppResult<Int> {
-        return AppResult.Success(games.size)
+    override suspend fun togglePinState(gameToToggle: LotofacilGame): AppResult<Unit> {
+        _games.value = _games.value.map { game ->
+            if (game.id == gameToToggle.id) game.copy(isPinned = !game.isPinned) else game
+        }.toImmutableList()
+        refreshPinnedGames()
+        return AppResult.Success(Unit)
+    }
+
+    override suspend fun deleteGame(gameToDelete: LotofacilGame): AppResult<Unit> {
+        _games.value = _games.value.filterNot { it.id == gameToDelete.id }.toImmutableList()
+        refreshPinnedGames()
+        return AppResult.Success(Unit)
+    }
+
+    override suspend fun recordGameUsage(gameId: String): AppResult<Unit> {
+        _games.value = _games.value.map { game ->
+            if (game.id == gameId) {
+                game.copy(usageCount = game.usageCount + 1, lastPlayed = System.currentTimeMillis())
+            } else {
+                game
+            }
+        }.toImmutableList()
+        return AppResult.Success(Unit)
+    }
+
+    private fun refreshPinnedGames() {
+        _pinnedGames.value = _games.value.filter { it.isPinned }.toImmutableList()
     }
 }
 
-class FakeHistoryRepository : HistoryRepository {
-    private val history = mutableListOf<HistoricalDraw>()
+class FakeHistoryRepository(initialHistory: List<HistoricalDraw> = emptyList()) : HistoryRepository {
+    private val historyState = MutableStateFlow(initialHistory)
 
-    init {
-        // Popula com dados de teste
-        history.add(
-            HistoricalDraw(
-                contestNumber = 1,
-                date = "2025-01-01",
-                numbers = setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15),
-                prizesByScore = mapOf()
-            )
-        )
-    }
+    private val _syncStatus = MutableStateFlow<SyncStatus>(SyncStatus.Idle)
+    override val syncStatus: StateFlow<SyncStatus> = _syncStatus.asStateFlow()
 
-    override fun getHistoryFlow(): Flow<List<HistoricalDraw>> {
-        return flowOf(history)
-    }
+    private val _isInitialized = MutableStateFlow(true)
+    override val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
 
-    override suspend fun getLatestDraw(): AppResult<HistoricalDraw> {
-        return if (history.isNotEmpty()) {
-            AppResult.Success(history.last())
-        } else {
-            AppResult.Failure(com.cebolao.lotofacil.core.error.AppError.EmptyHistoryError("No history"))
-        }
-    }
+    override fun getHistory(): Flow<List<HistoricalDraw>> = historyState.asStateFlow()
 
-    override suspend fun upsertDraw(draw: HistoricalDraw): AppResult<Unit> {
-        history.add(draw)
+    override suspend fun getLastDraw(): HistoricalDraw? = historyState.value.maxByOrNull { it.contestNumber }
+
+    override suspend fun syncHistory(): AppResult<Unit> {
+        _syncStatus.value = SyncStatus.Success
         return AppResult.Success(Unit)
     }
 
-    override suspend fun syncHistory(): AppResult<Int> {
-        return AppResult.Success(history.size)
+    fun setHistory(history: List<HistoricalDraw>) {
+        historyState.value = history
     }
 }
 
-class FakeUserPreferencesRepository : UserPreferencesRepository {
-    private var filters = listOf(
-        FilterState(FilterType.WITHOUT_REPETITIVE, true, 0..0),
-        FilterState(FilterType.EVEN_ODD_BALANCE, true, 0..0),
-        FilterState(FilterType.SEQUENTIAL, false, 0..0)
-    )
+class FakeUserPreferencesRepository(initialPinned: Set<String> = emptySet()) : UserPreferencesRepository {
+    private val pinnedState = MutableStateFlow(initialPinned)
 
-    override fun getFilterPreferences(): Flow<com.cebolao.lotofacil.domain.model.FilterPreferences> {
-        return flowOf(
-            com.cebolao.lotofacil.domain.model.FilterPreferences(filters.toImmutableList())
-        )
-    }
+    override val pinnedGames: Flow<Set<String>> = pinnedState.asStateFlow()
 
-    override suspend fun saveFilterPreferences(filters: List<FilterState>): AppResult<Unit> {
-        this.filters = filters
-        return AppResult.Success(Unit)
+    override suspend fun savePinnedGames(games: Set<String>) {
+        pinnedState.value = games
     }
 }
 
 class FakeStatisticsRepository : StatisticsRepository {
-    override fun getStatisticsFlow(): Flow<List<com.cebolao.lotofacil.domain.model.GameStatistic>> {
-        return flowOf(emptyList())
+    private val cache = mutableMapOf<Int, StatisticsReport>()
+    private val cacheStats = MutableStateFlow(CacheStatistics())
+
+    override suspend fun getCachedStatistics(windowSize: Int): StatisticsReport? = cache[windowSize]
+
+    override suspend fun cacheStatistics(windowSize: Int, statistics: StatisticsReport, ttlMs: Long) {
+        cache[windowSize] = statistics
+        cacheStats.value = cacheStats.value.copy(
+            totalEntries = cache.size,
+            validEntries = cache.size,
+            lastUpdated = System.currentTimeMillis()
+        )
     }
 
-    override suspend fun getFrequencyAnalysis(): AppResult<List<com.cebolao.lotofacil.domain.model.GameStatistic>> {
-        return AppResult.Success(emptyList())
+    override suspend fun clearCache() {
+        cache.clear()
+        cacheStats.value = CacheStatistics(lastUpdated = System.currentTimeMillis())
     }
 
-    override suspend fun getPatternAnalysis(): AppResult<List<com.cebolao.lotofacil.domain.model.GameStatistic>> {
-        return AppResult.Success(emptyList())
-    }
+    override fun getCacheStatistics(): Flow<CacheStatistics> = cacheStats.asStateFlow()
 
-    override suspend fun getTrendAnalysis(): AppResult<List<com.cebolao.lotofacil.domain.model.GameStatistic>> {
-        return AppResult.Success(emptyList())
-    }
+    override suspend fun hasValidCache(windowSize: Int): Boolean = cache.containsKey(windowSize)
 }

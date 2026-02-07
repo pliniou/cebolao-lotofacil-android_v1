@@ -73,7 +73,7 @@ private val LightColors = lightColorScheme(
 @Composable
 fun CebolaoLotofacilTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     animationsEnabled: Boolean = true,
     content: @Composable () -> Unit
 ) {

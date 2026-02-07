@@ -2,7 +2,6 @@ package com.cebolao.lotofacil.data.datasource.database.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
 import com.cebolao.lotofacil.domain.model.CheckHistory
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -50,29 +49,10 @@ fun CheckHistory.toEntity() = CheckHistoryEntity(
 private val json = Json { ignoreUnknownKeys = true }
 
 fun serializeScoreCounts(scores: Map<Int, Int>): String = json.encodeToString(scores)
-fun deserializeScoreCounts(json: String): Map<Int, Int> {
+fun deserializeScoreCounts(rawJson: String): Map<Int, Int> {
     return try {
-        Companion.json.decodeFromString(json)
+        json.decodeFromString(rawJson)
     } catch (e: Exception) {
         emptyMap()
-    }
-}
-
-// TypeConverter for Room
-class CheckHistoryConverters {
-    private val json = Json { ignoreUnknownKeys = true }
-
-    @TypeConverter
-    fun fromIntSet(value: Set<Int>): String {
-        return json.encodeToString(value)
-    }
-
-    @TypeConverter
-    fun toIntSet(value: String): Set<Int> {
-        return try {
-            json.decodeFromString(value)
-        } catch (e: Exception) {
-            emptySet()
-        }
     }
 }

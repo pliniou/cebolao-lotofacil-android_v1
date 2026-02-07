@@ -1,0 +1,4 @@
+interface:
+  display_name: "Android Application Architect"
+  short_description: "Guard Clean Architecture and MVVM boundaries"
+  default_prompt: "Use $android-application-architect to review architectural boundaries for this Android change."

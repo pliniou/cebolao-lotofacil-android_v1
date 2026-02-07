@@ -63,8 +63,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.Role
-import java.util.Locale
-
 @Composable
 fun LastDrawSection(stats: LastDrawStats) {
 
@@ -166,9 +164,6 @@ private fun FlowNumbersGrid(numbers: List<Int>) {
 @Composable
 private fun QuickStatsRow(stats: LastDrawStats) {
     val cachedSum = remember(stats.sum) { NumberFormatUtils.formatInteger(stats.sum) }
-    val cachedAverage = remember(stats.average) { String.format("%.1f", stats.average) }
-    val cachedHighest = remember(stats.highest) { NumberFormatUtils.formatInteger(stats.highest) }
-    val cachedLowest = remember(stats.lowest) { NumberFormatUtils.formatInteger(stats.lowest) }
     
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -252,6 +247,11 @@ private fun PrizeDetailsSection(
 @Composable
 private fun PrizeTierCard(prize: PrizeTier, tier: Int) {
     val colors = MaterialTheme.colorScheme
+    val tierDescription = stringResource(
+        R.string.prize_tier_description,
+        tier,
+        NumberFormatUtils.formatCurrency(prize.prizeValue)
+    )
     
     // Determine tier-specific styling
     val (tierColor, tierElevation, tierIcon) = remember(tier) {
@@ -283,12 +283,8 @@ private fun PrizeTierCard(prize: PrizeTier, tier: Int) {
         modifier = Modifier
             .fillMaxWidth()
             .semantics {
-                contentDescription = stringResource(
-                    R.string.prize_tier_description,
-                    tier,
-                    NumberFormatUtils.formatCurrency(prize.prizeValue)
-                )
-                role = Role.Region
+                contentDescription = tierDescription
+                role = Role.Image
             },
         elevation = CardDefaults.cardElevation(defaultElevation = tierElevation),
         colors = CardDefaults.cardColors(
@@ -518,7 +514,6 @@ private fun NextDrawCard(
             }
         }
     }
-}
 
 @Composable
 private fun StatItem(label: String, value: String) {

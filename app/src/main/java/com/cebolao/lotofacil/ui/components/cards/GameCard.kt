@@ -33,13 +33,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.cebolao.lotofacil.R
 import com.cebolao.lotofacil.domain.model.LotofacilGame
 import com.cebolao.lotofacil.ui.components.AppCard
 import com.cebolao.lotofacil.ui.components.NumberBall
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppConstants
+import com.cebolao.lotofacil.ui.theme.AppSize
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -95,7 +95,7 @@ fun GameCard(
                 for (number in sortedNumbers) {
                     NumberBall(
                         number = number,
-                        size = 38.dp
+                        size = AppSize.numberBallSmall
                     )
                 }
             }
@@ -142,24 +142,24 @@ private fun GameCardActions(
         Row(horizontalArrangement = Arrangement.spacedBy(AppSpacing.xs)) {
             IconButton(
                 onClick = onPinClick,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(AppSize.touchTargetMinimum)
             ) {
                 Icon(
                     imageVector = if (isPinned) pinIcon else pinIconOutlined,
                     contentDescription = if (isPinned) stringResource(id = R.string.unpin_game) else stringResource(id = R.string.pin_game),
                     tint = if (isPinned) colors.primary else colors.onSurfaceVariant,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(AppSize.iconMedium)
                 )
             }
             IconButton(
                 onClick = onDeleteClick,
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(AppSize.touchTargetMinimum)
             ) {
                 Icon(
                     deleteIcon,
                     contentDescription = stringResource(id = R.string.delete_game),
                     tint = colors.error,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(AppSize.iconMedium)
                 )
             }
         }

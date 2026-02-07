@@ -1,0 +1,4 @@
+interface:
+  display_name: "Android Release Manager"
+  short_description: "Enforce release gates and rollout readiness"
+  default_prompt: "Use $android-release-manager to prepare and validate the next Android release."

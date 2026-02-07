@@ -1,54 +1,44 @@
 package com.cebolao.lotofacil.domain.usecase
 
-import app.cash.turbine.test
-import com.cebolao.lotofacil.core.coroutine.TestDispatchersProvider
-import com.cebolao.lotofacil.core.result.AppResult
-import com.cebolao.lotofacil.core.testing.FakeSavedGamesRepository
+import com.cebolao.lotofacil.core.testing.FakeGameRepository
 import com.cebolao.lotofacil.domain.model.LotofacilGame
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class GetSavedGamesUseCaseTest {
 
-    private lateinit var gameRepository: com.cebolao.lotofacil.domain.repository.GameRepository
-    private lateinit var dispatchersProvider: TestDispatchersProvider
+    private lateinit var gameRepository: FakeGameRepository
     private lateinit var useCase: GetSavedGamesUseCase
 
     @Before
     fun setup() {
-        gameRepository = com.cebolao.lotofacil.core.testing.FakeGameRepository()
-        dispatchersProvider = TestDispatchersProvider()
-        useCase = GetSavedGamesUseCase(gameRepository, dispatchersProvider)
+        gameRepository = FakeGameRepository()
+        useCase = GetSavedGamesUseCase(gameRepository)
     }
 
     @Test
-    fun `getSavedGames should return empty list when no games saved`() = runTest {
-        useCase().test {
-            val result = awaitItem()
-            assertEquals(AppResult.Success(emptyList<LotofacilGame>()), result)
-            awaitComplete()
-        }
+    fun `invoke should return empty list when there are no games`() = runTest {
+        val result = useCase().first()
+        assertEquals(0, result.size)
     }
 
     @Test
-    fun `getSavedGames should return saved games`() = runTest {
-        val game1 = LotofacilGame((1..15).toSet())
-        val game2 = LotofacilGame((2..16).toSet())
+    fun `invoke should sort pinned first then by creation timestamp desc`() = runTest {
+        val oldUnpinned = LotofacilGame(numbers = (1..15).toSet(), creationTimestamp = 100L)
+        val newerUnpinned = LotofacilGame(numbers = (2..16).toSet(), creationTimestamp = 200L)
+        val toPin = LotofacilGame(numbers = (3..17).toSet(), creationTimestamp = 50L)
 
-        val repository = gameRepository as com.cebolao.lotofacil.core.testing.FakeGameRepository
-        repository.saveGame(game1)
-        repository.saveGame(game2)
+        gameRepository.addGeneratedGames(listOf(oldUnpinned, newerUnpinned, toPin))
+        gameRepository.togglePinState(toPin)
 
-        useCase().test {
-            val result = awaitItem()
-            assert(result is AppResult.Success)
-            if (result is AppResult.Success) {
-                assertEquals(2, result.data.size)
-            }
-            awaitComplete()
-        }
+        val result = useCase().first()
+
+        assertEquals(3, result.size)
+        assertEquals(toPin.id, result[0].id)
+        assertEquals(newerUnpinned.id, result[1].id)
+        assertEquals(oldUnpinned.id, result[2].id)
     }
 }

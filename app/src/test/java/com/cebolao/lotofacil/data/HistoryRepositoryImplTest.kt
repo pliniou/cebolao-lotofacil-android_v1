@@ -1,85 +1,113 @@
 package com.cebolao.lotofacil.data.repository
 
-import com.cebolao.lotofacil.core.coroutine.TestDispatchersProvider
-import com.cebolao.lotofacil.core.error.AppError
+import com.cebolao.lotofacil.core.error.UnknownError
 import com.cebolao.lotofacil.core.result.AppResult
 import com.cebolao.lotofacil.data.datasource.HistoryLocalDataSource
 import com.cebolao.lotofacil.data.datasource.HistoryRemoteDataSource
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
-import kotlinx.coroutines.flow.Flow
+import com.cebolao.lotofacil.domain.repository.SyncStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import kotlin.test.assertEquals
 
 class HistoryRepositoryImplTest {
 
     private lateinit var localDataSource: HistoryLocalDataSource
     private lateinit var remoteDataSource: HistoryRemoteDataSource
-    private lateinit var dispatchersProvider: TestDispatchersProvider
-    private lateinit var repository: HistoryRepositoryImpl
+    private lateinit var applicationScope: CoroutineScope
 
     @Before
     fun setup() {
         localDataSource = mock()
         remoteDataSource = mock()
-        dispatchersProvider = TestDispatchersProvider()
-        repository = HistoryRepositoryImpl(
+        applicationScope = CoroutineScope(Dispatchers.Unconfined)
+    }
+
+    @Test
+    fun `init should populate local database and mark initialized`() = runTest {
+        whenever(localDataSource.populateIfNeeded()).thenReturn(Unit)
+
+        val repository = HistoryRepositoryImpl(
             localDataSource = localDataSource,
             remoteDataSource = remoteDataSource,
-            dispatchersProvider = dispatchersProvider
+            applicationScope = applicationScope
         )
+
+        verify(localDataSource).populateIfNeeded()
+        assertTrue(repository.isInitialized.value)
     }
 
     @Test
-    fun `getHistoryFlow should return local data`() = runTest {
-        val mockDraws = listOf(
-            HistoricalDraw(1, "2025-01-01", setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15), mapOf()),
-            HistoricalDraw(2, "2025-01-02", setOf(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16), mapOf())
-        )
-        whenever(localDataSource.getAllDrawsFlow()).thenReturn(flowOf(mockDraws))
+    fun `getHistory should delegate to local data source`() = runTest {
+        val draws = listOf(HistoricalDraw(contestNumber = 100, numbers = (1..15).toSet()))
+        whenever(localDataSource.populateIfNeeded()).thenReturn(Unit)
+        whenever(localDataSource.getHistory()).thenReturn(flowOf(draws))
 
-        val result = repository.getHistoryFlow()
-        assertEquals(flowOf(mockDraws).collect { }, result.collect { })
+        val repository = HistoryRepositoryImpl(localDataSource, remoteDataSource, applicationScope)
 
-        verify(localDataSource).getAllDrawsFlow()
+        val result = repository.getHistory().first()
+
+        assertEquals(draws, result)
+        verify(localDataSource).getHistory()
     }
 
     @Test
-    fun `getLatestDraw should return the most recent draw`() = runTest {
-        val mockDraw = HistoricalDraw(1, "2025-01-01", setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15), mapOf())
-        whenever(localDataSource.getLatestDraw()).thenReturn(AppResult.Success(mockDraw))
+    fun `getLastDraw should delegate to local data source`() = runTest {
+        val latest = HistoricalDraw(contestNumber = 2200, numbers = (1..15).toSet())
+        whenever(localDataSource.populateIfNeeded()).thenReturn(Unit)
+        whenever(localDataSource.getLatestDraw()).thenReturn(latest)
 
-        val result = repository.getLatestDraw()
-        assertEquals(AppResult.Success(mockDraw), result)
+        val repository = HistoryRepositoryImpl(localDataSource, remoteDataSource, applicationScope)
 
+        val result = repository.getLastDraw()
+
+        assertEquals(latest, result)
         verify(localDataSource).getLatestDraw()
     }
 
     @Test
-    fun `getLatestDraw should return failure when no data exists`() = runTest {
+    fun `syncHistory should fetch and persist new contests when remote is newer`() = runTest {
+        val remoteLatest = HistoricalDraw(contestNumber = 3002, numbers = (1..15).toSet())
+        val newDraws = listOf(
+            HistoricalDraw(contestNumber = 3001, numbers = (1..15).toSet()),
+            HistoricalDraw(contestNumber = 3002, numbers = (2..16).toSet())
+        )
+        whenever(localDataSource.populateIfNeeded()).thenReturn(Unit)
         whenever(localDataSource.getLatestDraw()).thenReturn(
-            AppResult.Failure(AppError.EmptyHistoryError("No draws found"))
+            HistoricalDraw(contestNumber = 3000, numbers = (1..15).toSet())
         )
+        whenever(remoteDataSource.getLatestDraw()).thenReturn(remoteLatest)
+        whenever(remoteDataSource.getDrawsInRange(3001..3002)).thenReturn(newDraws)
 
-        val result = repository.getLatestDraw()
-        assert(result is AppResult.Failure)
+        val repository = HistoryRepositoryImpl(localDataSource, remoteDataSource, applicationScope)
 
-        verify(localDataSource).getLatestDraw()
+        val result = repository.syncHistory()
+
+        assertTrue(result is AppResult.Success)
+        verify(localDataSource).saveNewContests(newDraws)
+        assertTrue(repository.syncStatus.value is SyncStatus.Success)
     }
 
     @Test
-    fun `upsertDraw should save draw to local datasource`() = runTest {
-        val mockDraw = HistoricalDraw(1, "2025-01-01", setOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15), mapOf())
-        whenever(localDataSource.upsertDraw(mockDraw)).thenReturn(AppResult.Success(Unit))
+    fun `syncHistory should return failure when remote throws`() = runTest {
+        whenever(localDataSource.populateIfNeeded()).thenReturn(Unit)
+        whenever(remoteDataSource.getLatestDraw()).thenThrow(RuntimeException("network down"))
 
-        val result = repository.upsertDraw(mockDraw)
-        assertEquals(AppResult.Success(Unit), result)
+        val repository = HistoryRepositoryImpl(localDataSource, remoteDataSource, applicationScope)
 
-        verify(localDataSource).upsertDraw(mockDraw)
+        val result = repository.syncHistory()
+
+        assertTrue(result is AppResult.Failure)
+        assertTrue((result as AppResult.Failure).error is UnknownError)
+        assertTrue(repository.syncStatus.value is SyncStatus.Failed)
     }
 }

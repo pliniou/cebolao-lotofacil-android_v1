@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import kotlinx.coroutines.delay
+import java.util.Locale
 
 data class PerformanceMetrics(
     val memoryUsage: Long = 0,
@@ -74,7 +75,7 @@ fun PerformanceMetricsOverlay(
             activityManager?.getMemoryInfo(memInfo)
             val availableMemory = memInfo.availMem / 1048576
             
-            val nativeMemory = Debug.getNativeHeap()[0].nativePss / 1024
+            val nativeMemory = Debug.getNativeHeapAllocatedSize() / 1048576
             
             metrics = PerformanceMetrics(
                 memoryUsage = usedMemory,
@@ -146,7 +147,7 @@ fun PerformanceMetricsOverlay(
             MetricCard(
                 title = "⚡ Performance",
                 metrics = listOf(
-                    "Frame Time" to "${String.format("%.2f", metrics.frameTime)} ms",
+                    "Frame Time" to "${String.format(Locale.getDefault(), "%.2f", metrics.frameTime)} ms",
                     "Recompositions" to "${metrics.recompositionCount}",
                     "Status" to if (metrics.frameTime <= 16.67f) "✅ 60 FPS" else "⚠️ Dropping frames"
                 )

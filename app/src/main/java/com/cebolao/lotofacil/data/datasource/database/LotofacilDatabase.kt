@@ -3,7 +3,6 @@ package com.cebolao.lotofacil.data.datasource.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.cebolao.lotofacil.data.datasource.database.entity.CheckHistoryConverters
 import com.cebolao.lotofacil.data.datasource.database.entity.CheckHistoryEntity
 import com.cebolao.lotofacil.data.datasource.database.entity.Converters
 import com.cebolao.lotofacil.data.datasource.database.entity.HistoricalDrawEntity
@@ -13,7 +12,7 @@ import com.cebolao.lotofacil.data.datasource.database.entity.HistoricalDrawEntit
     version = 3,
     exportSchema = false
 )
-@TypeConverters(Converters::class, CheckHistoryConverters::class)
+@TypeConverters(Converters::class)
 abstract class LotofacilDatabase : RoomDatabase() {
     abstract fun historyDao(): HistoryDao
     abstract fun checkHistoryDao(): CheckHistoryDao

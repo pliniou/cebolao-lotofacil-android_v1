@@ -3,7 +3,6 @@ package com.cebolao.lotofacil.data.datasource.database.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
-import androidx.room.TypeConverters
 import com.cebolao.lotofacil.domain.model.HistoricalDraw
 import com.cebolao.lotofacil.domain.model.PrizeTier
 import com.cebolao.lotofacil.domain.model.WinnerLocation
@@ -11,7 +10,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Entity(tableName = "historical_draws")
-@TypeConverters(Converters::class)
 data class HistoricalDrawEntity(
     @PrimaryKey
     val contestNumber: Int,

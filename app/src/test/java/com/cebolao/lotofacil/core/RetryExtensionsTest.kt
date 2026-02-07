@@ -1,9 +1,9 @@
 package com.cebolao.lotofacil.core.utils
 
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class RetryExtensionsTest {
 
@@ -38,7 +38,7 @@ class RetryExtensionsTest {
                 attempts++
                 throw RuntimeException("Persistent failure")
             }
-            assertTrue(false, "Should have thrown exception")
+            assertTrue("Should have thrown exception", false)
         } catch (e: RuntimeException) {
             assertEquals("Persistent failure", e.message)
             assertEquals(3, attempts) // initial + 2 retries

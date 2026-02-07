@@ -1,4 +1,0 @@
-interface:
-  display_name: "Android Data Engineer"
-  short_description: "Implement offline-first cache and sync flows"
-  default_prompt: "Use $android-data-engineer to implement repository sync and offline-first behavior."

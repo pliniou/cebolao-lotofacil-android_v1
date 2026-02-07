@@ -1,4 +1,0 @@
-interface:
-  display_name: "Android Domain Expert"
-  short_description: "Design and validate business-rule use cases"
-  default_prompt: "Use $android-domain-expert to implement and verify domain rules for this feature."

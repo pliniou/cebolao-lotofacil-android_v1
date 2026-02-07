@@ -1,4 +1,0 @@
-interface:
-  display_name: "Android UI Developer"
-  short_description: "Deliver Compose screens with accessible UX"
-  default_prompt: "Use $android-ui-developer to implement this screen with MVVM Compose best practices."

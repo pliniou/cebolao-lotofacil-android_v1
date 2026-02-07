@@ -21,7 +21,6 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.core.constants.AppConstants
-import com.cebolao.lotofacil.ui.components.PerformanceMetricsButton
 import com.cebolao.lotofacil.ui.screens.MainScreen
 import com.cebolao.lotofacil.ui.theme.CebolaoLotofacilTheme
 import com.cebolao.lotofacil.viewmodels.MainViewModel
@@ -87,11 +86,6 @@ class MainActivity : ComponentActivity() {
                             val navController = androidx.navigation.compose.rememberNavController()
                             MainScreen(navController = navController)
                         }
-                        
-                        // Debug metrics overlay (only in debug builds)
-                        PerformanceMetricsButton(
-                            isDebugBuild = BuildConfig.DEBUG
-                        )
                     }
                 }
             }

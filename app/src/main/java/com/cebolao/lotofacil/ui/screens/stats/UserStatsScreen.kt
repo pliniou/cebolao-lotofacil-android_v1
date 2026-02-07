@@ -29,6 +29,32 @@ fun UserStatsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // Delegate to Content composable
+    UserStatsScreenContent(
+        state = uiState,
+        modifier = modifier,
+        onNavigateBack = onNavigateBack,
+        onAction = { action ->
+            when (action) {
+                is UserStatsAction.LoadStats -> viewModel.loadStats()
+            }
+        }
+    )
+}
+
+// ==================== SEALED ACTIONS ====================
+sealed class UserStatsAction {
+    object LoadStats : UserStatsAction()
+}
+
+// ==================== STATELESS CONTENT ====================
+@Composable
+fun UserStatsScreenContent(
+    state: UserStatsUiState,
+    modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit = {},
+    onAction: (UserStatsAction) -> Unit = {}
+) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -39,36 +65,36 @@ fun UserStatsScreen(
         }
     ) { innerPadding ->
         when {
-            uiState.isLoading -> {
+            state.isLoading -> {
                 LoadingData(
                     message = stringResource(id = R.string.loading_data),
                     modifier = Modifier.fillMaxSize().padding(innerPadding)
                 )
             }
-            uiState.errorMessageResId != null -> {
+            state.errorMessageResId != null -> {
                 ErrorCard(
-                    messageResId = uiState.errorMessageResId!!,
+                    messageResId = state.errorMessageResId!!,
                     modifier = Modifier.padding(innerPadding).padding(AppSpacing.lg),
-                    actions = { viewModel.loadStats() }
+                    actions = { onAction(UserStatsAction.LoadStats) }
                 )
             }
-            uiState.stats != null && uiState.stats!!.totalGamesGenerated > 0 -> {
+            state.stats != null && state.stats!!.totalGamesGenerated > 0 -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(innerPadding),
                     contentPadding = PaddingValues(AppSpacing.lg),
                     verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(AppSpacing.lg)
                 ) {
                     item(key = "user_stats_section") {
-                        UserStatsSection(stats = uiState.stats!!)
+                        UserStatsSection(stats = state.stats!!)
                     }
                 }
             }
             else -> {
                 EmptyState(
                     messageResId = R.string.stats_empty_message,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
-
+    }
+}

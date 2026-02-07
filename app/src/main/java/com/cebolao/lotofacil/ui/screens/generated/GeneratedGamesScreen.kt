@@ -59,7 +59,6 @@ fun GeneratedGamesScreen(
     val uiState by gameViewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
-    val colors = MaterialTheme.colorScheme
 
     LaunchedEffect(Unit) {
         gameViewModel.uiEvent.collect { event ->
@@ -74,8 +73,54 @@ fun GeneratedGamesScreen(
             }
         }
     }
-    
-    // Optimize expensive calculations with derivedStateOf - specify dependencies
+
+    // Delegate to Content composable
+    GeneratedGamesScreenContent(
+        games = games,
+        state = uiState,
+        snackbarHostState = snackbarHostState,
+        modifier = modifier,
+        onAction = { action ->
+            when (action) {
+                is GeneratedGamesAction.ClearGamesRequested -> gameViewModel.onClearGamesRequested()
+                is GeneratedGamesAction.ConfirmClearUnpinned -> gameViewModel.confirmClearUnpinned()
+                is GeneratedGamesAction.DismissClearDialog -> gameViewModel.dismissClearDialog()
+                is GeneratedGamesAction.ConfirmDeleteGame -> gameViewModel.confirmDeleteGame(action.game)
+                is GeneratedGamesAction.DismissDeleteDialog -> gameViewModel.dismissDeleteDialog()
+                is GeneratedGamesAction.AnalyzeGame -> gameViewModel.analyzeGame(action.game)
+                is GeneratedGamesAction.TogglePinState -> gameViewModel.togglePinState(action.game)
+                is GeneratedGamesAction.DeleteGameRequested -> gameViewModel.onDeleteGameRequested(action.game)
+                is GeneratedGamesAction.DismissAnalysisDialog -> gameViewModel.dismissAnalysisDialog()
+            }
+        }
+    )
+}
+
+// ==================== SEALED ACTIONS ====================
+sealed class GeneratedGamesAction {
+    object ClearGamesRequested : GeneratedGamesAction()
+    object ConfirmClearUnpinned : GeneratedGamesAction()
+    object DismissClearDialog : GeneratedGamesAction()
+    data class ConfirmDeleteGame(val game: GameViewModel) : GeneratedGamesAction()
+    object DismissDeleteDialog : GeneratedGamesAction()
+    data class AnalyzeGame(val game: GameViewModel) : GeneratedGamesAction()
+    data class TogglePinState(val game: GameViewModel) : GeneratedGamesAction()
+    data class DeleteGameRequested(val game: GameViewModel) : GeneratedGamesAction()
+    object DismissAnalysisDialog : GeneratedGamesAction()
+}
+
+// ==================== STATELESS CONTENT ====================
+@Composable
+fun GeneratedGamesScreenContent(
+    games: List<GameViewModel> = emptyList(),
+    state: GameAnalysisUiState,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    modifier: Modifier = Modifier,
+    onAction: (GeneratedGamesAction) -> Unit = {}
+) {
+    val colors = MaterialTheme.colorScheme
+
+    // Optimize expensive calculations with derivedStateOf
     val hasUnpinnedGames by remember(games) {
         derivedStateOf { games.any { !it.isPinned } }
     }
@@ -83,34 +128,34 @@ fun GeneratedGamesScreen(
         derivedStateOf { games.isEmpty() }
     }
 
-    if (uiState.showClearGamesDialog) {
+    if (state.showClearGamesDialog) {
         ConfirmationDialog(
             title = stringResource(id = R.string.clear_games_title),
             message = stringResource(id = R.string.clear_games_message),
             confirmText = stringResource(id = R.string.clear_button),
             dismissText = stringResource(id = R.string.cancel_button),
-            onConfirm = { gameViewModel.confirmClearUnpinned() },
-            onDismiss = { gameViewModel.dismissClearDialog() }
+            onConfirm = { onAction(GeneratedGamesAction.ConfirmClearUnpinned) },
+            onDismiss = { onAction(GeneratedGamesAction.DismissClearDialog) }
         )
     }
 
-    uiState.gameToDelete?.let { game ->
+    state.gameToDelete?.let { game ->
         ConfirmationDialog(
             title = stringResource(id = R.string.delete_game_title),
             message = stringResource(id = R.string.delete_game_message),
             confirmText = stringResource(id = R.string.delete_button),
             dismissText = stringResource(id = R.string.cancel_button),
-            onConfirm = { gameViewModel.confirmDeleteGame(game) },
-            onDismiss = { gameViewModel.dismissDeleteDialog() }
+            onConfirm = { onAction(GeneratedGamesAction.ConfirmDeleteGame(game)) },
+            onDismiss = { onAction(GeneratedGamesAction.DismissDeleteDialog) }
         )
     }
 
-    when (val state = uiState.analysisState) {
+    when (val analysisState = state.analysisState) {
         is GameAnalysisUiState.Success -> {
-            uiState.analysisResult?.let { result ->
+            state.analysisResult?.let { result ->
                 GameAnalysisDialog(
                     result = result,
-                    onDismissRequest = { gameViewModel.dismissAnalysisDialog() }
+                    onDismissRequest = { onAction(GeneratedGamesAction.DismissAnalysisDialog) }
                 )
             }
         }
@@ -120,11 +165,11 @@ fun GeneratedGamesScreen(
         is GameAnalysisUiState.Error -> {
             ConfirmationDialog(
                 title = stringResource(id = R.string.analysis_error_title),
-                message = stringResource(id = state.messageResId),
+                message = stringResource(id = analysisState.messageResId),
                 confirmText = stringResource(id = R.string.close_button),
                 dismissText = "",
-                onConfirm = { gameViewModel.dismissAnalysisDialog() },
-                onDismiss = { gameViewModel.dismissAnalysisDialog() }
+                onConfirm = { onAction(GeneratedGamesAction.DismissAnalysisDialog) },
+                onDismiss = { onAction(GeneratedGamesAction.DismissAnalysisDialog) }
             )
         }
         is GameAnalysisUiState.Idle -> {}
@@ -140,7 +185,7 @@ fun GeneratedGamesScreen(
                 icon = Icons.AutoMirrored.Filled.ListAlt,
                 actions = {
                     if (hasUnpinnedGames) {
-                        IconButton(onClick = { gameViewModel.onClearGamesRequested() }) {
+                        IconButton(onClick = { onAction(GeneratedGamesAction.ClearGamesRequested) }) {
                             Icon(
                                 Icons.Default.DeleteSweep,
                                 contentDescription = stringResource(id = R.string.cd_clear_games),
@@ -165,7 +210,7 @@ fun GeneratedGamesScreen(
             verticalArrangement = Arrangement.spacedBy(AppSpacing.md)
         ) {
 
-            if (uiState.isLoading) {
+            if (state.isLoading) {
                 items(5) {
                     GameCardSkeleton()
                 }
@@ -178,19 +223,15 @@ fun GeneratedGamesScreen(
                 }
             } else {
                 itemsIndexed(games, key = { _, game -> game.id }) { index, game ->
-                    // Optimize animation delay calculation with proper coercion
                     val animationDelay = remember(index) { 
                         ((index * AppConstants.STAGGER_DELAY_MS).coerceAtMost(AppConstants.MAX_STAGGER_DELAY_MS)).toLong() 
                     }
                     AnimateOnEntry(delayMillis = animationDelay) {
-                        // GameCard internally uses standard components, but we wrap it in ElevatedCard here if GameCard isn't elevated yet,
-                        // or we rely on GameCard being updated. Let's assume GameCard is a shared component we might need to update.
-                        // For now, focusing on the Screen layout which looks correct.
                         GameCard(
                             game = game,
-                            onAnalyzeClick = { gameViewModel.analyzeGame(game) },
-                            onPinClick = { gameViewModel.togglePinState(game) },
-                            onDeleteClick = { gameViewModel.onDeleteGameRequested(game) }
+                            onAnalyzeClick = { onAction(GeneratedGamesAction.AnalyzeGame(game)) },
+                            onPinClick = { onAction(GeneratedGamesAction.TogglePinState(game)) },
+                            onDeleteClick = { onAction(GeneratedGamesAction.DeleteGameRequested(game)) }
                         )
                     }
                 }

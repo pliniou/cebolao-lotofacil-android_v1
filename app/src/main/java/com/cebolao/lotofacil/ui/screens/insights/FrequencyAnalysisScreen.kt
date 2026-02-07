@@ -32,6 +32,38 @@ fun FrequencyAnalysisScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // Delegate to Content composable
+    FrequencyAnalysisScreenContent(
+        state = uiState,
+        modifier = modifier,
+        onNavigateBack = onNavigateBack,
+        onAction = { action ->
+            when (action) {
+                is FrequencyAnalysisAction.LoadFrequencyAnalysis -> viewModel.loadFrequencyAnalysis()
+                is FrequencyAnalysisAction.PatternSizeSelected -> viewModel.onPatternSizeSelected(action.size)
+                is FrequencyAnalysisAction.TrendTypeSelected -> viewModel.onTrendTypeSelected(action.type)
+                is FrequencyAnalysisAction.TrendWindowSelected -> viewModel.onTrendWindowSelected(action.window)
+            }
+        }
+    )
+}
+
+// ==================== SEALED ACTIONS ====================
+sealed class FrequencyAnalysisAction {
+    object LoadFrequencyAnalysis : FrequencyAnalysisAction()
+    data class PatternSizeSelected(val size: Int) : FrequencyAnalysisAction()
+    data class TrendTypeSelected(val type: String) : FrequencyAnalysisAction()
+    data class TrendWindowSelected(val window: String) : FrequencyAnalysisAction()
+}
+
+// ==================== STATELESS CONTENT ====================
+@Composable
+fun FrequencyAnalysisScreenContent(
+    state: InsightsUiState,
+    modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit = {},
+    onAction: (FrequencyAnalysisAction) -> Unit = {}
+) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -42,7 +74,7 @@ fun FrequencyAnalysisScreen(
         }
     ) { innerPadding ->
         when {
-            uiState.isLoading -> {
+            state.isLoading -> {
                 LoadingData(
                     message = stringResource(id = R.string.loading_data),
                     modifier = Modifier
@@ -50,19 +82,19 @@ fun FrequencyAnalysisScreen(
                         .padding(innerPadding)
                 )
             }
-            uiState.errorMessageResId != null -> {
+            state.errorMessageResId != null -> {
                 ErrorCard(
-                    messageResId = uiState.errorMessageResId!!,
+                    messageResId = state.errorMessageResId!!,
                     modifier = Modifier
                         .padding(innerPadding)
                         .padding(AppSpacing.lg),
                     actions = {
-                        viewModel.loadFrequencyAnalysis()
+                        onAction(FrequencyAnalysisAction.LoadFrequencyAnalysis)
                     }
                 )
             }
-            uiState.frequencyAnalysis != null -> {
-                val analysis = uiState.frequencyAnalysis!!
+            state.frequencyAnalysis != null -> {
+                val analysis = state.frequencyAnalysis!!
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -103,9 +135,9 @@ fun FrequencyAnalysisScreen(
                             isExpandedByDefault = false
                         ) {
                             PatternListSection(
-                                analysis = uiState.patternAnalysis,
-                                selectedSize = uiState.selectedPatternSize,
-                                onSizeSelected = { viewModel.onPatternSizeSelected(it) }
+                                analysis = state.patternAnalysis,
+                                selectedSize = state.selectedPatternSize,
+                                onSizeSelected = { size -> onAction(FrequencyAnalysisAction.PatternSizeSelected(size)) }
                             )
                         }
                     }
@@ -116,11 +148,11 @@ fun FrequencyAnalysisScreen(
                             isExpandedByDefault = false
                         ) {
                             TrendSection(
-                                analysis = uiState.trendAnalysis,
-                                selectedType = uiState.selectedTrendType,
-                                selectedWindow = uiState.selectedTrendWindow,
-                                onTypeSelected = { viewModel.onTrendTypeSelected(it) },
-                                onWindowSelected = { viewModel.onTrendWindowSelected(it) }
+                                analysis = state.trendAnalysis,
+                                selectedType = state.selectedTrendType,
+                                selectedWindow = state.selectedTrendWindow,
+                                onTypeSelected = { type -> onAction(FrequencyAnalysisAction.TrendTypeSelected(type)) },
+                                onWindowSelected = { window -> onAction(FrequencyAnalysisAction.TrendWindowSelected(window)) }
                             )
                         }
                     }

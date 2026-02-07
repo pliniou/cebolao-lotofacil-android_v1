@@ -62,12 +62,45 @@ fun AboutScreen(
     var dialogContent by remember { mutableStateOf<InfoItem?>(null) }
     val hapticFeedback = LocalHapticFeedback.current
 
+    // Delegate to Content composable
+    AboutScreenContent(
+        modifier = modifier,
+        dialogContent = dialogContent,
+        hapticFeedback = hapticFeedback,
+        onNavigateToUserStats = onNavigateToUserStats,
+        onAction = { action ->
+            when (action) {
+                is AboutAction.ShowDialog -> {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    dialogContent = action.item
+                }
+                is AboutAction.DismissDialog -> {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                    dialogContent = null
+                }
+            }
+        }
+    )
+}
+
+// ==================== SEALED ACTIONS ====================
+sealed class AboutAction {
+    data class ShowDialog(val item: InfoItem) : AboutAction()
+    object DismissDialog : AboutAction()
+}
+
+// ==================== STATELESS CONTENT ====================
+@Composable
+fun AboutScreenContent(
+    modifier: Modifier = Modifier,
+    dialogContent: InfoItem? = null,
+    hapticFeedback: androidx.compose.ui.hapticfeedback.HapticFeedback = LocalHapticFeedback.current,
+    onNavigateToUserStats: () -> Unit = {},
+    onAction: (AboutAction) -> Unit = {}
+) {
     dialogContent?.let { item ->
         InfoDialog(
-            onDismissRequest = { 
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
-                dialogContent = null 
-            },
+            onDismissRequest = { onAction(AboutAction.DismissDialog) },
             dialogTitle = stringResource(id = item.titleResId),
             icon = item.icon
         ) { item.content() }
@@ -119,8 +152,7 @@ fun AboutScreen(
             items(guideItems, key = { it.titleResId }) { info ->
                 AnimateOnEntry {
                     InfoCard(info) {
-                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        dialogContent = info
+                        onAction(AboutAction.ShowDialog(info))
                     }
                 }
             }
@@ -133,8 +165,7 @@ fun AboutScreen(
             items(legalItems, key = { it.titleResId }) { info ->
                 AnimateOnEntry {
                     InfoCard(info) {
-                        hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                        dialogContent = info
+                        onAction(AboutAction.ShowDialog(info))
                     }
                 }
             }

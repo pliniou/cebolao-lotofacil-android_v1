@@ -50,10 +50,6 @@ fun FiltersScreen(
     val context = LocalContext.current
     var showDialogFor by remember { mutableStateOf<FilterType?>(null) }
     var showResetConfirmation by remember { mutableStateOf(false) }
-    
-    // Derived state para evitar recomposições desnecessárias com dependencies explícitas
-    val activeFiltersCount by remember(uiState.filterStates) { derivedStateOf { uiState.filterStates.count { it.isEnabled } } }
-    val successProbability by remember(uiState.successProbability) { derivedStateOf { uiState.successProbability } }
 
     LaunchedEffect(Unit) {
         filtersViewModel.uiEvent.collect { event ->
@@ -74,10 +70,66 @@ fun FiltersScreen(
         }
     }
 
+    // Delegate to Content composable
+    FiltersScreenContent(
+        state = uiState,
+        snackbarHostState = snackbarHostState,
+        haptic = haptic,
+        modifier = modifier,
+        showDialogFor = showDialogFor,
+        onShowDialog = { showDialogFor = it },
+        showResetConfirmation = showResetConfirmation,
+        onShowResetConfirmation = { showResetConfirmation = it },
+        onAction = { action ->
+            when (action) {
+                is FiltersAction.RequestResetAllFilters -> filtersViewModel.requestResetAllFilters()
+                is FiltersAction.ConfirmResetAllFilters -> {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    filtersViewModel.confirmResetAllFilters()
+                    showResetConfirmation = false
+                }
+                is FiltersAction.OnFilterToggle -> filtersViewModel.onFilterToggle(action.type, action.enabled)
+                is FiltersAction.OnRangeChange -> filtersViewModel.onRangeAdjust(action.type, action.range)
+                is FiltersAction.GenerateGames -> filtersViewModel.generateGames(action.quantity)
+            }
+        }
+    )
+}
+
+// ==================== SEALED ACTIONS ====================
+sealed class FiltersAction {
+    object RequestResetAllFilters : FiltersAction()
+    object ConfirmResetAllFilters : FiltersAction()
+    data class OnFilterToggle(val type: FilterType, val enabled: Boolean) : FiltersAction()
+    data class OnRangeChange(val type: FilterType, val range: IntRange) : FiltersAction()
+    data class GenerateGames(val quantity: Int) : FiltersAction()
+}
+
+// ==================== STATELESS CONTENT ====================
+@Composable
+fun FiltersScreenContent(
+    state: FiltersUiState,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    haptic: HapticFeedback = LocalHapticFeedback.current,
+    modifier: Modifier = Modifier,
+    showDialogFor: FilterType? = null,
+    onShowDialog: (FilterType?) -> Unit = {},
+    showResetConfirmation: Boolean = false,
+    onShowResetConfirmation: (Boolean) -> Unit = {},
+    onAction: (FiltersAction) -> Unit = {}
+) {
+    // Derived state para evitar recomposições desnecessárias
+    val activeFiltersCount by remember(state.filterStates) { 
+        derivedStateOf { state.filterStates.count { it.isEnabled } } 
+    }
+    val successProbability by remember(state.successProbability) { 
+        derivedStateOf { state.successProbability } 
+    }
+
     // Filter info dialog
     showDialogFor?.let { type ->
         InfoDialog(
-            onDismissRequest = { showDialogFor = null },
+            onDismissRequest = { onShowDialog(null) },
             dialogTitle = stringResource(type.titleRes),
             icon = type.icon
         ) {
@@ -92,12 +144,8 @@ fun FiltersScreen(
             message = stringResource(id = R.string.reset_filters_message),
             confirmText = stringResource(id = R.string.reset_button),
             dismissText = stringResource(id = R.string.cancel_button),
-            onConfirm = {
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                filtersViewModel.confirmResetAllFilters()
-                showResetConfirmation = false
-            },
-            onDismiss = { showResetConfirmation = false }
+            onConfirm = { onAction(FiltersAction.ConfirmResetAllFilters) },
+            onDismiss = { onShowResetConfirmation(false) }
         )
     }
 
@@ -105,7 +153,7 @@ fun FiltersScreen(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             FiltersHeader(
-                onResetFilters = { filtersViewModel.requestResetAllFilters() }
+                onResetFilters = { onAction(FiltersAction.RequestResetAllFilters) }
             )
         },
         modifier = modifier.fillMaxSize()
@@ -125,30 +173,34 @@ fun FiltersScreen(
 
             item(key = "active_filters") {
                 ActiveFiltersPanel(
-                    activeFilters = uiState.filterStates.filter { it.isEnabled },
+                    activeFilters = state.filterStates.filter { it.isEnabled },
                     successProbability = successProbability
                 )
             }
 
-            if (uiState.lastDraw == null) {
+            if (state.lastDraw == null) {
                 items(3) {
                     FilterCardSkeleton()
                 }
             } else {
-                // Add filter items with animation
+                // Add filter items
                 filterList(
-                    filterStates = uiState.filterStates,
-                    lastDraw = uiState.lastDraw,
-                    onFilterToggle = { type, enabled -> filtersViewModel.onFilterToggle(type, enabled) },
-                    onRangeChange = { type, range -> filtersViewModel.onRangeAdjust(type, range) },
-                    onInfoClick = { type -> showDialogFor = type }
+                    filterStates = state.filterStates,
+                    lastDraw = state.lastDraw,
+                    onFilterToggle = { type, enabled -> 
+                        onAction(FiltersAction.OnFilterToggle(type, enabled)) 
+                    },
+                    onRangeChange = { type, range -> 
+                        onAction(FiltersAction.OnRangeChange(type, range)) 
+                    },
+                    onInfoClick = { type -> onShowDialog(type) }
                 )
             }
 
             item(key = "generate_actions") {
                 GenerateActionsPanel(
-                    generationState = uiState.generationState,
-                    onGenerate = { quantity -> filtersViewModel.generateGames(quantity) }
+                    generationState = state.generationState,
+                    onGenerate = { quantity -> onAction(FiltersAction.GenerateGames(quantity)) }
                 )
             }
         }

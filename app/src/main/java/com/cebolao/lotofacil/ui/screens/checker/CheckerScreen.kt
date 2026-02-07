@@ -68,14 +68,7 @@ fun CheckerScreen(
 ) {
     val context = LocalContext.current
     val screenState by checkerViewModel.uiState.collectAsStateWithLifecycle()
-    val listState = rememberLazyListState()
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
-    
-    val isButtonEnabled by remember(screenState.selectedNumbers.size, screenState.uiState) {
-        derivedStateOf {
-            screenState.selectedNumbers.size == LotofacilConstants.GAME_SIZE && screenState.uiState !is CheckerUiState.Loading
-        }
-    }
 
     // Handle UI events (snackbars)
     LaunchedEffect(Unit) {
@@ -94,6 +87,52 @@ fun CheckerScreen(
                 }
                 else -> { /* Handle other events if needed */ }
             }
+        }
+    }
+
+    // Delegate to Content composable
+    CheckerScreenContent(
+        state = screenState,
+        snackbarHostState = snackbarHostState,
+        modifier = modifier,
+        onAction = { action ->
+            when (action) {
+                is CheckerAction.OnNumberClicked -> checkerViewModel.onNumberClicked(action.number)
+                is CheckerAction.OnClearSelectionClicked -> checkerViewModel.onClearSelectionClicked()
+                is CheckerAction.OnCheckGameClicked -> checkerViewModel.onCheckGameClicked()
+                is CheckerAction.ConfirmClearSelection -> checkerViewModel.confirmClearSelection()
+                is CheckerAction.DismissClearConfirmation -> checkerViewModel.dismissClearConfirmation()
+                is CheckerAction.ConfirmClearResults -> checkerViewModel.confirmClearResults()
+                is CheckerAction.DismissClearResultsConfirmation -> checkerViewModel.dismissClearResultsConfirmation()
+            }
+        }
+    )
+}
+
+// ==================== SEALED ACTIONS ====================
+sealed class CheckerAction {
+    data class OnNumberClicked(val number: Int) : CheckerAction()
+    object OnClearSelectionClicked : CheckerAction()
+    object OnCheckGameClicked : CheckerAction()
+    object ConfirmClearSelection : CheckerAction()
+    object DismissClearConfirmation : CheckerAction()
+    object ConfirmClearResults : CheckerAction()
+    object DismissClearResultsConfirmation : CheckerAction()
+}
+
+// ==================== STATELESS CONTENT ====================
+@Composable
+fun CheckerScreenContent(
+    state: CheckerUiState,
+    snackbarHostState: androidx.compose.material3.SnackbarHostState = remember { androidx.compose.material3.SnackbarHostState() },
+    modifier: Modifier = Modifier,
+    onAction: (CheckerAction) -> Unit = {}
+) {
+    val listState = rememberLazyListState()
+    
+    val isButtonEnabled by remember(state.selectedNumbers.size, state.uiState) {
+        derivedStateOf {
+            state.selectedNumbers.size == LotofacilConstants.GAME_SIZE && state.uiState !is CheckerUiState.Loading
         }
     }
 
@@ -123,53 +162,53 @@ fun CheckerScreen(
         ) {
             item(key = "number_grid") {
                 NumberGridSection(
-                    selectedNumbers = screenState.selectedNumbers,
-                    onNumberClicked = checkerViewModel::onNumberClicked
+                    selectedNumbers = state.selectedNumbers,
+                    onNumberClicked = { number -> onAction(CheckerAction.OnNumberClicked(number)) }
                 )
             }
 
             item(key = "actions") {
                 CheckerScrollableActions(
-                    selectedCount = screenState.selectedNumbers.size,
-                    isLoading = screenState.uiState is CheckerUiState.Loading,
+                    selectedCount = state.selectedNumbers.size,
+                    isLoading = state.uiState is CheckerUiState.Loading,
                     isButtonEnabled = isButtonEnabled,
-                    onClearClick = checkerViewModel::onClearSelectionClicked,
-                    onCheckClick = checkerViewModel::onCheckGameClicked
+                    onClearClick = { onAction(CheckerAction.OnClearSelectionClicked) },
+                    onCheckClick = { onAction(CheckerAction.OnCheckGameClicked) }
                 )
             }
 
             item(key = "result") {
-                val currentUiState = screenState.uiState
+                val currentUiState = state.uiState
                 AnimatedContent(
                     targetState = currentUiState,
                     label = "checker_result_content"
-                ) { state ->
-                    when (state) {
+                ) { checkerState ->
+                    when (checkerState) {
                         is CheckerUiState.Idle -> { /* Nothing shown */ }
                         is CheckerUiState.Loading -> {
-                            val loadingMessage = when (state.phase) {
+                            val loadingMessage = when (checkerState.phase) {
                                 GameCheckPhase.HISTORICAL -> stringResource(id = R.string.checker_loading_history)
                                 GameCheckPhase.CALCULATION -> stringResource(id = R.string.checker_calculating_results)
                                 GameCheckPhase.STATISTICS -> stringResource(id = R.string.checker_analyzing_stats)
                             }
                             CheckerLoadingContent(
-                                progress = state.progress,
+                                progress = checkerState.progress,
                                 message = loadingMessage
                             )
                         }
                         is CheckerUiState.Success -> {
                             CheckerSuccessContent(
-                                result = state.result,
-                                stats = state.simpleStats
+                                result = checkerState.result,
+                                stats = checkerState.simpleStats
                             )
                         }
                         is CheckerUiState.Error -> {
                             ErrorCard(
-                                messageResId = state.messageResId,
+                                messageResId = checkerState.messageResId,
                                 actions = {
-                                    if (state.canRetry) {
+                                    if (checkerState.canRetry) {
                                         ErrorActions(
-                                            onRetry = checkerViewModel::onCheckGameClicked,
+                                            onRetry = { onAction(CheckerAction.OnCheckGameClicked) },
                                             retryText = stringResource(id = R.string.try_again)
                                         )
                                     }
@@ -186,26 +225,26 @@ fun CheckerScreen(
     }
 
     // Clear selection confirmation dialog
-    if (screenState.showClearConfirmation) {
+    if (state.showClearConfirmation) {
         ConfirmationDialog(
             title = stringResource(R.string.checker_clear_selection_title),
             message = stringResource(R.string.checker_clear_selection_message),
             confirmText = stringResource(R.string.clear_button),
             dismissText = stringResource(R.string.cancel_button),
-            onConfirm = checkerViewModel::confirmClearSelection,
-            onDismiss = checkerViewModel::dismissClearConfirmation
+            onConfirm = { onAction(CheckerAction.ConfirmClearSelection) },
+            onDismiss = { onAction(CheckerAction.DismissClearConfirmation) }
         )
     }
 
     // Clear results confirmation dialog
-    if (screenState.showClearResultsConfirmation) {
+    if (state.showClearResultsConfirmation) {
         ConfirmationDialog(
             title = stringResource(R.string.checker_results_cleared_title),
             message = stringResource(R.string.checker_results_cleared_message),
             confirmText = stringResource(R.string.check_game_button),
             dismissText = stringResource(R.string.cancel_button),
-            onConfirm = checkerViewModel::confirmClearResults,
-            onDismiss = checkerViewModel::dismissClearResultsConfirmation
+            onConfirm = { onAction(CheckerAction.ConfirmClearResults) },
+            onDismiss = { onAction(CheckerAction.DismissClearResultsConfirmation) }
         )
     }
 }

@@ -1,22 +1,20 @@
 package com.cebolao.lotofacil.ui.screens.home
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Analytics
-import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,24 +35,20 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cebolao.lotofacil.R
-import com.cebolao.lotofacil.core.constants.AppConstants
 import com.cebolao.lotofacil.navigation.UiEvent
 import com.cebolao.lotofacil.ui.components.AnimateOnEntry
-import com.cebolao.lotofacil.ui.components.AppCard
+import com.cebolao.lotofacil.ui.components.ClickableCard
 import com.cebolao.lotofacil.ui.components.SnackbarHost
 import com.cebolao.lotofacil.ui.components.StandardScreenHeader
+import com.cebolao.lotofacil.ui.theme.AppAnimationConstants
 import com.cebolao.lotofacil.ui.theme.AppCardDefaults
 import com.cebolao.lotofacil.ui.theme.AppElevation
 import com.cebolao.lotofacil.ui.theme.AppSpacing
 import com.cebolao.lotofacil.ui.theme.iconButtonSize
-import com.cebolao.lotofacil.ui.components.ClickableCard
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import com.cebolao.lotofacil.ui.theme.iconExtraLarge
 import com.cebolao.lotofacil.ui.theme.iconMedium
 import com.cebolao.lotofacil.viewmodels.HomeViewModel
@@ -71,6 +65,7 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val resources = LocalResources.current
 
+    // Handle events (navigation, snackbar)
     LaunchedEffect(homeViewModel, resources) {
         homeViewModel.uiEvent.collect { event ->
             when (event) {
@@ -90,6 +85,40 @@ fun HomeScreen(
         }
     }
 
+    // Delegate styling and layout to Content composable
+    HomeScreenContent(
+        state = uiState,
+        snackbarHostState = snackbarHostState,
+        onAction = { action ->
+            when (action) {
+                is HomeAction.RefreshData -> homeViewModel.refreshData()
+                is HomeAction.TimeWindowSelected -> homeViewModel.onTimeWindowSelected(action.window)
+                is HomeAction.PatternSelected -> homeViewModel.onPatternSelected(action.pattern)
+            }
+        },
+        onNavigateToExploreFilters = onExploreFilters,
+        onNavigateToChecker = onOpenChecker,
+        onNavigateToInsights = onNavigateToInsights
+    )
+}
+
+// ==================== SEALED ACTIONS ====================
+sealed class HomeAction {
+    object RefreshData : HomeAction()
+    data class TimeWindowSelected(val window: String) : HomeAction()
+    data class PatternSelected(val pattern: String) : HomeAction()
+}
+
+// ==================== STATELESS CONTENT ====================
+@Composable
+fun HomeScreenContent(
+    state: HomeUiState,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    onAction: (HomeAction) -> Unit = {},
+    onNavigateToExploreFilters: () -> Unit = {},
+    onNavigateToChecker: () -> Unit = {},
+    onNavigateToInsights: () -> Unit = {}
+) {
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
@@ -99,8 +128,8 @@ fun HomeScreen(
                 iconPainter = painterResource(id = R.drawable.ic_cebolalogo),
                 actions = {
                     RefreshButton(
-                        isRefreshing = uiState.isRefreshing,
-                        onClick = { homeViewModel.refreshData() }
+                        isRefreshing = state.isRefreshing,
+                        onClick = { onAction(HomeAction.RefreshData) }
                     )
                 }
             )
@@ -120,58 +149,72 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(AppSpacing.lg)
         ) {
             when {
-                uiState.isScreenLoading -> {
+                state.isScreenLoading -> {
                     item(key = "loading") {
                         HomeScreenLoadingState()
                     }
                 }
-                uiState.errorMessageResId != null -> {
+                state.errorMessageResId != null -> {
                     item(key = "error") {
-                        ErrorState(messageResId = uiState.errorMessageResId) {
-                            homeViewModel.refreshData()
+                        HomeErrorState(messageResId = state.errorMessageResId) {
+                            onAction(HomeAction.RefreshData)
                         }
                     }
                 }
                 else -> {
                     item(key = "welcome_banner") {
                         WelcomeBanner(
-                            lastUpdateTime = uiState.lastUpdateTime,
-                            nextDrawDate = uiState.nextDrawDate,
-                            nextDrawContest = uiState.nextDrawContest,
-                            isTodayDrawDay = uiState.isTodayDrawDay,
-                            onExploreFilters = onExploreFilters,
-                            onOpenChecker = onOpenChecker
+                            lastUpdateTime = state.lastUpdateTime,
+                            nextDrawDate = state.nextDrawDate,
+                            nextDrawContest = state.nextDrawContest,
+                            isTodayDrawDay = state.isTodayDrawDay,
+                            onExploreFilters = onNavigateToExploreFilters,
+                            onOpenChecker = onNavigateToChecker
                         )
                     }
                     item(key = "last_draw") {
-                        uiState.lastDrawStats?.let { stats ->
-                            AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_SHORT) { LastDrawSection(stats) }
+                        state.lastDrawStats?.let { stats ->
+                            AnimateOnEntry(
+                                delayMillis = AppAnimationConstants.Delays.Minimal
+                            ) {
+                                LastDrawSection(stats)
+                            }
                         }
                     }
                     item(key = "statistics") {
-                        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_MEDIUM) {
+                        AnimateOnEntry(
+                            delayMillis = AppAnimationConstants.Delays.Short
+                        ) {
                             StatisticsSection(
-                                stats = uiState.statistics,
-                                isStatsLoading = uiState.isStatsLoading,
-                                selectedTimeWindow = uiState.selectedTimeWindow,
-                                selectedPattern = uiState.selectedPattern,
-                                onTimeWindowSelected = { homeViewModel.onTimeWindowSelected(it) },
-                                onPatternSelected = { homeViewModel.onPatternSelected(it) }
+                                stats = state.statistics,
+                                isStatsLoading = state.isStatsLoading,
+                                selectedTimeWindow = state.selectedTimeWindow,
+                                selectedPattern = state.selectedPattern,
+                                onTimeWindowSelected = { onAction(HomeAction.TimeWindowSelected(it)) },
+                                onPatternSelected = { onAction(HomeAction.PatternSelected(it)) }
                             )
                         }
                     }
                     item(key = "advanced_stats_card") {
-                        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_MEDIUM + 100) {
+                        AnimateOnEntry(
+                            delayMillis = AppAnimationConstants.Delays.Medium
+                        ) {
                             AdvancedStatsCard(onClick = onNavigateToInsights)
                         }
                     }
                     item(key = "frequency_summary") {
-                        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_MEDIUM + 200) {
+                        AnimateOnEntry(
+                            delayMillis = AppAnimationConstants.Delays.Long
+                        ) {
                             FrequencyChartSection()
                         }
                     }
                     item(key = "explanation") {
-                        AnimateOnEntry(delayMillis = AppConstants.ANIMATION_DURATION_LONG) { StatisticsExplanationCard() }
+                        AnimateOnEntry(
+                            delayMillis = AppAnimationConstants.Delays.Long + 50
+                        ) {
+                            StatisticsExplanationCard()
+                        }
                     }
                 }
             }
@@ -326,5 +369,71 @@ private fun AdvancedStatsCard(onClick: () -> Unit) {
         }
     }
 }
+
+// ==================== PREVIEW ====================
+// OBSERVAÇÃO: Para adicionar @Preview, precisa incluir:
+// import androidx.compose.ui.tooling.preview.Preview
+// import androidx.compose.material3.Surface
+// import com.cebolao.lotofacil.ui.theme.CebolaoTheme
+//
+// @Preview(name = "HomeScreenContent - Light", showBackground = true)
+// @Composable
+// fun PreviewHomeScreenContentLight() {
+//     CebolaoTheme(darkTheme = false) {
+//         Surface {
+//             HomeScreenContent(
+//                 state = HomeUiState(
+//                     isScreenLoading = false,
+//                     errorMessageResId = null,
+//                     lastUpdateTime = "Última atualização: 2 min atrás",
+//                     nextDrawDate = "20/01/2025",
+//                     nextDrawContest = "Concurso 3000",
+//                     isTodayDrawDay = true,
+//                     isRefreshing = false,
+//                     lastDrawStats = null,
+//                     statistics = emptyMap(),
+//                     isStatsLoading = false,
+//                     selectedTimeWindow = "7_days",
+//                     selectedPattern = "all"
+//                 ),
+//                 snackbarHostState = remember { SnackbarHostState() },
+//                 onAction = {},
+//                 onNavigateToExploreFilters = {},
+//                 onNavigateToChecker = {},
+//                 onNavigateToInsights = {}
+//             )
+//         }
+//     }
+// }
+//
+// @Preview(name = "HomeScreenContent - Dark", showBackground = true)
+// @Composable
+// fun PreviewHomeScreenContentDark() {
+//     CebolaoTheme(darkTheme = true) {
+//         Surface {
+//             HomeScreenContent(
+//                 state = HomeUiState(
+//                     isScreenLoading = false,
+//                     errorMessageResId = null,
+//                     lastUpdateTime = "Última atualização: 2 min atrás",
+//                     nextDrawDate = "20/01/2025",
+//                     nextDrawContest = "Concurso 3000",
+//                     isTodayDrawDay = true,
+//                     isRefreshing = false,
+//                     lastDrawStats = null,
+//                     statistics = emptyMap(),
+//                     isStatsLoading = false,
+//                     selectedTimeWindow = "7_days",
+//                     selectedPattern = "all"
+//                 ),
+//                 snackbarHostState = remember { SnackbarHostState() },
+//                 onAction = {},
+//                 onNavigateToExploreFilters = {},
+//                 onNavigateToChecker = {},
+//                 onNavigateToInsights = {}
+//             )
+//         }
+//     }
+// }
 
 
